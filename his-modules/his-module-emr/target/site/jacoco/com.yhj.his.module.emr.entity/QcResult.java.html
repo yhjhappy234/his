@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QcResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.entity</a> &gt; <span class="el_source">QcResult.java</span></div><h1>QcResult.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.emr.enums.QcLevel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
+
+/**
+ * 质控结果实体
+ */
+<span class="pc" id="L15">@Data</span>
+<span class="nc bnc" id="L16" title="All 176 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;qc_result&quot;, indexes = {
+    @Index(name = &quot;idx_qc_record&quot;, columnList = &quot;record_id, record_type&quot;),
+    @Index(name = &quot;idx_qc_patient_id&quot;, columnList = &quot;patient_id&quot;)
+})
+@Schema(description = &quot;质控结果&quot;)
+public class QcResult extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;病历记录ID&quot;)
+    @Column(name = &quot;record_id&quot;, length = 36, nullable = false)
+<span class="fc" id="L29">    private String recordId;</span>
+
+    @Schema(description = &quot;记录类型(门诊病历/入院记录/病程记录/出院记录/手术记录)&quot;)
+    @Column(name = &quot;record_type&quot;, length = 20, nullable = false)
+<span class="fc" id="L33">    private String recordType;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+    @Column(name = &quot;patient_id&quot;, length = 20)
+<span class="fc" id="L37">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+    @Column(name = &quot;patient_name&quot;, length = 50)
+<span class="fc" id="L41">    private String patientName;</span>
+
+    // 质控结果
+    @Schema(description = &quot;质控评分&quot;)
+    @Column(name = &quot;qc_score&quot;)
+<span class="fc" id="L46">    private Integer qcScore;</span>
+
+    @Schema(description = &quot;质控等级&quot;)
+    @Column(name = &quot;qc_level&quot;, length = 20)
+    @Enumerated(EnumType.STRING)
+<span class="fc" id="L51">    private QcLevel qcLevel;</span>
+
+    @Schema(description = &quot;缺陷数量&quot;)
+    @Column(name = &quot;defect_count&quot;)
+<span class="fc" id="L55">    private Integer defectCount;</span>
+
+    @Schema(description = &quot;缺陷详情(JSON)&quot;)
+    @Column(name = &quot;defect_details&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L59">    private String defectDetails;</span>
+
+    // 时限检查
+    @Schema(description = &quot;时限检查结果&quot;)
+    @Column(name = &quot;time_limit_check&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L64">    private String timeLimitCheck;</span>
+
+    @Schema(description = &quot;时限是否合格&quot;)
+    @Column(name = &quot;time_limit_passed&quot;)
+<span class="fc" id="L68">    private Boolean timeLimitPassed;</span>
+
+    // 内容检查
+    @Schema(description = &quot;内容检查结果&quot;)
+    @Column(name = &quot;content_check&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L73">    private String contentCheck;</span>
+
+    @Schema(description = &quot;内容是否合格&quot;)
+    @Column(name = &quot;content_passed&quot;)
+<span class="fc" id="L77">    private Boolean contentPassed;</span>
+
+    // 质控信息
+    @Schema(description = &quot;质控人ID&quot;)
+    @Column(name = &quot;qc_user_id&quot;, length = 20)
+<span class="fc" id="L82">    private String qcUserId;</span>
+
+    @Schema(description = &quot;质控人姓名&quot;)
+    @Column(name = &quot;qc_user_name&quot;, length = 50)
+<span class="fc" id="L86">    private String qcUserName;</span>
+
+    @Schema(description = &quot;质控时间&quot;)
+    @Column(name = &quot;qc_time&quot;)
+<span class="fc" id="L90">    private LocalDateTime qcTime;</span>
+
+    @Schema(description = &quot;质控备注&quot;)
+    @Column(name = &quot;qc_comment&quot;, length = 500)
+<span class="fc" id="L94">    private String qcComment;</span>
+
+    // 整改信息
+    @Schema(description = &quot;是否需要整改&quot;)
+    @Column(name = &quot;need_rectification&quot;)
+<span class="fc" id="L99">    private Boolean needRectification;</span>
+
+    @Schema(description = &quot;整改状态(待整改/已整改/已超期)&quot;)
+    @Column(name = &quot;rectification_status&quot;, length = 20)
+<span class="fc" id="L103">    private String rectificationStatus;</span>
+
+    @Schema(description = &quot;整改通知时间&quot;)
+    @Column(name = &quot;notify_time&quot;)
+<span class="fc" id="L107">    private LocalDateTime notifyTime;</span>
+
+    @Schema(description = &quot;整改完成时间&quot;)
+    @Column(name = &quot;rectify_time&quot;)
+<span class="fc" id="L111">    private LocalDateTime rectifyTime;</span>
+
+    @Schema(description = &quot;整改备注&quot;)
+    @Column(name = &quot;rectify_comment&quot;, length = 500)
+<span class="fc" id="L115">    private String rectifyComment;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

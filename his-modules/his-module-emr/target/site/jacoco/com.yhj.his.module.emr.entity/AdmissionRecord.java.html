@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdmissionRecord.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.entity</a> &gt; <span class="el_source">AdmissionRecord.java</span></div><h1>AdmissionRecord.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.enums.QcLevel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+/**
+ * 入院记录实体
+ */
+<span class="pc" id="L18">@Data</span>
+<span class="nc bnc" id="L19" title="All 328 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;admission_record&quot;, indexes = {
+    @Index(name = &quot;idx_adm_admission_id&quot;, columnList = &quot;admission_id&quot;),
+    @Index(name = &quot;idx_adm_patient_id&quot;, columnList = &quot;patient_id&quot;)
+})
+@Schema(description = &quot;入院记录&quot;)
+public class AdmissionRecord extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;住院ID&quot;)
+    @Column(name = &quot;admission_id&quot;, length = 36, nullable = false)
+<span class="fc" id="L32">    private String admissionId;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+    @Column(name = &quot;patient_id&quot;, length = 20, nullable = false)
+<span class="fc" id="L36">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+    @Column(name = &quot;patient_name&quot;, length = 50)
+<span class="fc" id="L40">    private String patientName;</span>
+
+    @Schema(description = &quot;性别&quot;)
+    @Column(name = &quot;gender&quot;, length = 1)
+<span class="fc" id="L44">    private String gender;</span>
+
+    @Schema(description = &quot;年龄&quot;)
+    @Column(name = &quot;age&quot;)
+<span class="fc" id="L48">    private Integer age;</span>
+
+    @Schema(description = &quot;入院日期&quot;)
+    @Column(name = &quot;admission_date&quot;, nullable = false)
+<span class="nc" id="L52">    private LocalDate admissionDate;</span>
+
+    @Schema(description = &quot;科室ID&quot;)
+    @Column(name = &quot;dept_id&quot;, length = 20, nullable = false)
+<span class="nc" id="L56">    private String deptId;</span>
+
+    @Schema(description = &quot;科室名称&quot;)
+    @Column(name = &quot;dept_name&quot;, length = 100)
+<span class="nc" id="L60">    private String deptName;</span>
+
+    @Schema(description = &quot;病区ID&quot;)
+    @Column(name = &quot;ward_id&quot;, length = 20)
+<span class="fc" id="L64">    private String wardId;</span>
+
+    @Schema(description = &quot;床位号&quot;)
+    @Column(name = &quot;bed_no&quot;, length = 20)
+<span class="fc" id="L68">    private String bedNo;</span>
+
+    // 主诉与病史
+    @Schema(description = &quot;主诉&quot;)
+    @Column(name = &quot;chief_complaint&quot;, columnDefinition = &quot;TEXT&quot;, nullable = false)
+<span class="fc" id="L73">    private String chiefComplaint;</span>
+
+    @Schema(description = &quot;现病史&quot;)
+    @Column(name = &quot;present_illness&quot;, columnDefinition = &quot;TEXT&quot;, nullable = false)
+<span class="fc" id="L77">    private String presentIllness;</span>
+
+    @Schema(description = &quot;既往史&quot;)
+    @Column(name = &quot;past_history&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L81">    private String pastHistory;</span>
+
+    @Schema(description = &quot;个人史&quot;)
+    @Column(name = &quot;personal_history&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L85">    private String personalHistory;</span>
+
+    @Schema(description = &quot;婚育史&quot;)
+    @Column(name = &quot;marriage_history&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L89">    private String marriageHistory;</span>
+
+    @Schema(description = &quot;家族史&quot;)
+    @Column(name = &quot;family_history&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L93">    private String familyHistory;</span>
+
+    @Schema(description = &quot;过敏史&quot;)
+    @Column(name = &quot;allergy_history&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L97">    private String allergyHistory;</span>
+
+    // 体格检查
+    @Schema(description = &quot;体温&quot;)
+    @Column(name = &quot;temperature&quot;, precision = 4, scale = 1)
+<span class="fc" id="L102">    private BigDecimal temperature;</span>
+
+    @Schema(description = &quot;脉搏&quot;)
+    @Column(name = &quot;pulse&quot;)
+<span class="fc" id="L106">    private Integer pulse;</span>
+
+    @Schema(description = &quot;呼吸&quot;)
+    @Column(name = &quot;respiration&quot;)
+<span class="fc" id="L110">    private Integer respiration;</span>
+
+    @Schema(description = &quot;血压&quot;)
+    @Column(name = &quot;blood_pressure&quot;, length = 20)
+<span class="fc" id="L114">    private String bloodPressure;</span>
+
+    @Schema(description = &quot;体重(kg)&quot;)
+    @Column(name = &quot;weight&quot;, precision = 5, scale = 1)
+<span class="fc" id="L118">    private BigDecimal weight;</span>
+
+    @Schema(description = &quot;身高(cm)&quot;)
+    @Column(name = &quot;height&quot;)
+<span class="fc" id="L122">    private Integer height;</span>
+
+    @Schema(description = &quot;一般检查&quot;)
+    @Column(name = &quot;general_exam&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L126">    private String generalExam;</span>
+
+    @Schema(description = &quot;专科检查&quot;)
+    @Column(name = &quot;specialist_exam&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L130">    private String specialistExam;</span>
+
+    @Schema(description = &quot;辅助检查&quot;)
+    @Column(name = &quot;auxiliary_exam&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L134">    private String auxiliaryExam;</span>
+
+    // 诊断与治疗
+    @Schema(description = &quot;入院诊断编码&quot;)
+    @Column(name = &quot;admission_diagnosis_code&quot;, length = 50)
+<span class="fc" id="L139">    private String admissionDiagnosisCode;</span>
+
+    @Schema(description = &quot;入院诊断名称&quot;)
+    @Column(name = &quot;admission_diagnosis_name&quot;, length = 200)
+<span class="fc" id="L143">    private String admissionDiagnosisName;</span>
+
+    @Schema(description = &quot;诊疗计划&quot;)
+    @Column(name = &quot;treatment_plan&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L147">    private String treatmentPlan;</span>
+
+    // 医生信息
+    @Schema(description = &quot;书写医生ID&quot;)
+    @Column(name = &quot;doctor_id&quot;, length = 20, nullable = false)
+<span class="fc" id="L152">    private String doctorId;</span>
+
+    @Schema(description = &quot;书写医生姓名&quot;)
+    @Column(name = &quot;doctor_name&quot;, length = 50)
+<span class="fc" id="L156">    private String doctorName;</span>
+
+    @Schema(description = &quot;书写时间&quot;)
+    @Column(name = &quot;record_time&quot;)
+<span class="fc" id="L160">    private LocalDateTime recordTime;</span>
+
+    @Schema(description = &quot;上级医生ID&quot;)
+    @Column(name = &quot;superior_doctor_id&quot;, length = 20)
+<span class="fc" id="L164">    private String superiorDoctorId;</span>
+
+    @Schema(description = &quot;上级医生姓名&quot;)
+    @Column(name = &quot;superior_doctor_name&quot;, length = 50)
+<span class="fc" id="L168">    private String superiorDoctorName;</span>
+
+    // 状态与质控
+<span class="fc" id="L171">    @Schema(description = &quot;状态&quot;)</span>
+    @Column(name = &quot;status&quot;, length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="fc" id="L174">    private EmrStatus status = EmrStatus.DRAFT;</span>
+
+    @Schema(description = &quot;质控评分&quot;)
+    @Column(name = &quot;qc_score&quot;)
+<span class="nc" id="L178">    private Integer qcScore;</span>
+
+    @Schema(description = &quot;质控等级&quot;)
+    @Column(name = &quot;qc_level&quot;, length = 20)
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L183">    private QcLevel qcLevel;</span>
+
+    @Schema(description = &quot;缺陷列表(JSON)&quot;)
+    @Column(name = &quot;qc_defects&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L187">    private String qcDefects;</span>
+
+    @Schema(description = &quot;提交时间&quot;)
+    @Column(name = &quot;submit_time&quot;)
+<span class="fc" id="L191">    private LocalDateTime submitTime;</span>
+
+    @Schema(description = &quot;审核时间&quot;)
+    @Column(name = &quot;audit_time&quot;)
+<span class="fc" id="L195">    private LocalDateTime auditTime;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

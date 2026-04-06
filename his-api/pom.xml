@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.yhj.his</groupId>
+        <artifactId>his-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>his-api</artifactId>
+    <packaging>pom</packaging>
+    <name>HIS API接口定义</name>
+
+    <modules>
+        <module>his-api-system</module>
+        <module>his-api-outpatient</module>
+        <module>his-api-inpatient</module>
+        <module>his-api-pharmacy</module>
+        <module>his-api-lis</module>
+        <module>his-api-pacs</module>
+        <module>his-api-finance</module>
+        <module>his-api-inventory</module>
+        <module>his-api-hr</module>
+        <module>his-api-emr</module>
+        <module>his-api-voice</module>
+    </modules>
+
+</project>

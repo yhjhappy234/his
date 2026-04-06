@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------------
+Test set: com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.068 s <<< FAILURE! -- in com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests
+com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedSuccessfully -- Time elapsed: 0.003 s <<< ERROR!
+org.mockito.exceptions.misusing.PotentialStubbingProblem: 
+
+Strict stubbing argument mismatch. Please check:
+ - this invocation of 'findByRequestId' method:
+    testResultRepository.findByRequestId(null);
+    -> at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.audit(TestReportServiceImpl.java:119)
+ - has following stubbing(s) with different arguments:
+    1. testResultRepository.findByRequestId(
+    "request-001"
+);
+      -> at com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedSuccessfully(TestReportServiceTest.java:321)
+Typically, stubbing argument mismatch indicates user mistake when writing tests.
+Mockito fails early so that you can debug potential problem easily.
+However, there are legit scenarios when this exception generates false negative signal:
+  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API
+    Please use 'will().given()' or 'doReturn().when()' API for stubbing.
+  - stubbed method is intentionally invoked with different arguments by code under test
+    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).
+For more information see javadoc for PotentialStubbingProblem class.
+	at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.audit(TestReportServiceImpl.java:119)
+	at com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedSuccessfully(TestReportServiceTest.java:324)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedUpdatesRequestReportStatus -- Time elapsed: 0.052 s <<< ERROR!
+org.mockito.exceptions.misusing.PotentialStubbingProblem: 
+
+Strict stubbing argument mismatch. Please check:
+ - this invocation of 'findByRequestId' method:
+    testResultRepository.findByRequestId(null);
+    -> at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.audit(TestReportServiceImpl.java:119)
+ - has following stubbing(s) with different arguments:
+    1. testResultRepository.findByRequestId(
+    "request-001"
+);
+      -> at com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedUpdatesRequestReportStatus(TestReportServiceTest.java:407)
+Typically, stubbing argument mismatch indicates user mistake when writing tests.
+Mockito fails early so that you can debug potential problem easily.
+However, there are legit scenarios when this exception generates false negative signal:
+  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API
+    Please use 'will().given()' or 'doReturn().when()' API for stubbing.
+  - stubbed method is intentionally invoked with different arguments by code under test
+    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).
+For more information see javadoc for PotentialStubbingProblem class.
+	at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.audit(TestReportServiceImpl.java:119)
+	at com.yhj.his.module.lis.service.TestReportServiceTest$AuditReportTests.auditRejectedUpdatesRequestReportStatus(TestReportServiceTest.java:415)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

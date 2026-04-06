@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OperationLogController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.controller</a> &gt; <span class="el_source">OperationLogController.java</span></div><h1>OperationLogController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.controller;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.system.dto.OperationLogQueryDTO;
+import com.yhj.his.module.system.service.OperationLogService;
+import com.yhj.his.module.system.vo.OperationLogVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 操作日志控制器
+ */
+@Tag(name = &quot;操作日志管理&quot;, description = &quot;操作日志查询、删除等接口&quot;)
+@RestController
+@RequestMapping(&quot;/api/system/v1/log/operation&quot;)
+<span class="nc" id="L22">@RequiredArgsConstructor</span>
+public class OperationLogController {
+
+    private final OperationLogService operationLogService;
+
+    @Operation(summary = &quot;分页查询操作日志&quot;)
+    @GetMapping(&quot;/page&quot;)
+    public Result&lt;PageResult&lt;OperationLogVO&gt;&gt; page(OperationLogQueryDTO dto) {
+<span class="nc" id="L30">        return operationLogService.page(dto);</span>
+    }
+
+    @Operation(summary = &quot;获取用户最近的操作日志&quot;)
+    @GetMapping(&quot;/recent/{userId}&quot;)
+    public Result&lt;List&lt;OperationLogVO&gt;&gt; getRecentLogs(@Parameter(description = &quot;用户ID&quot;) @PathVariable String userId) {
+<span class="nc" id="L36">        return operationLogService.getRecentLogs(userId);</span>
+    }
+
+    @Operation(summary = &quot;删除历史日志&quot;)
+    @DeleteMapping(&quot;/history&quot;)
+    public Result&lt;Void&gt; deleteHistoryLogs(@Parameter(description = &quot;保留天数&quot;) @RequestParam(defaultValue = &quot;180&quot;) Integer days) {
+<span class="nc" id="L42">        return operationLogService.deleteHistoryLogs(days);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

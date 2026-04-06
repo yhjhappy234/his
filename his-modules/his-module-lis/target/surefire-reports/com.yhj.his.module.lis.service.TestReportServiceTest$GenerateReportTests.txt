@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------------
+Test set: com.yhj.his.module.lis.service.TestReportServiceTest$GenerateReportTests
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.060 s <<< FAILURE! -- in com.yhj.his.module.lis.service.TestReportServiceTest$GenerateReportTests
+com.yhj.his.module.lis.service.TestReportServiceTest$GenerateReportTests.generateSuccessfully -- Time elapsed: 0.003 s <<< FAILURE!
+org.mockito.exceptions.verification.TooManyActualInvocations: 
+
+testRequestRepository.findById(
+    "request-001"
+);
+Wanted 1 time:
+-> at com.yhj.his.module.lis.service.TestReportServiceTest$GenerateReportTests.generateSuccessfully(TestReportServiceTest.java:167)
+But was 2 times:
+-> at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.generate(TestReportServiceImpl.java:42)
+-> at com.yhj.his.module.lis.service.impl.TestReportServiceImpl.toVO(TestReportServiceImpl.java:284)
+
+
+	at com.yhj.his.module.lis.service.TestReportServiceTest$GenerateReportTests.generateSuccessfully(TestReportServiceTest.java:167)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

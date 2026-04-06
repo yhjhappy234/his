@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.yhj.his.module.system.service.PermissionServiceTest
+-------------------------------------------------------------------------------
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.396 s -- in com.yhj.his.module.system.service.PermissionServiceTest

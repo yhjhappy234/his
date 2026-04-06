@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImageServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.service.impl</a> &gt; <span class="el_source">ImageServiceImpl.java</span></div><h1>ImageServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.service.impl;
+
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.module.pacs.dto.*;
+import com.yhj.his.module.pacs.entity.*;
+import com.yhj.his.module.pacs.repository.*;
+import com.yhj.his.module.pacs.service.*;
+import com.yhj.his.module.pacs.vo.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 影像采集服务实现
+ */
+<span class="fc" id="L23">@Slf4j</span>
+@Service
+<span class="fc" id="L25">@RequiredArgsConstructor</span>
+public class ImageServiceImpl implements ImageService {
+
+    private final ExamRecordRepository examRecordRepository;
+    private final ExamSeriesRepository examSeriesRepository;
+    private final ExamImageRepository examImageRepository;
+
+    @Override
+    @Transactional
+    public ExamSeriesVO receiveSeries(ImageReceiveDTO dto) {
+<span class="fc" id="L35">        ExamRecord record = examRecordRepository.findById(dto.getExamId())</span>
+<span class="fc" id="L36">                .orElseThrow(() -&gt; new BusinessException(&quot;检查记录不存在&quot;));</span>
+
+<span class="fc" id="L38">        ExamSeries series = new ExamSeries();</span>
+<span class="fc" id="L39">        series.setExamId(dto.getExamId());</span>
+<span class="fc" id="L40">        series.setSeriesNo(dto.getSeriesNo());</span>
+<span class="fc" id="L41">        series.setSeriesUid(dto.getSeriesUid());</span>
+<span class="fc" id="L42">        series.setSeriesDescription(dto.getSeriesDescription());</span>
+<span class="fc" id="L43">        series.setModality(dto.getModality());</span>
+<span class="fc" id="L44">        series.setBodyPart(dto.getBodyPart());</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        series.setImageCount(dto.getImageCount() != null ? dto.getImageCount() : 0);</span>
+<span class="fc" id="L46">        series.setStoragePath(dto.getStoragePath());</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (dto.getScanDate() != null) {</span>
+<span class="fc" id="L48">            series.setScanDate(LocalDate.parse(dto.getScanDate()));</span>
+        }
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (dto.getScanTime() != null) {</span>
+<span class="fc" id="L51">            series.setScanTime(LocalTime.parse(dto.getScanTime()));</span>
+        }
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (dto.getKvp() != null) {</span>
+<span class="fc" id="L54">            series.setKvp(new BigDecimal(dto.getKvp()));</span>
+        }
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (dto.getMas() != null) {</span>
+<span class="fc" id="L57">            series.setMas(new BigDecimal(dto.getMas()));</span>
+        }
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (dto.getSliceThickness() != null) {</span>
+<span class="fc" id="L60">            series.setSliceThickness(new BigDecimal(dto.getSliceThickness()));</span>
+        }
+<span class="fc" id="L62">        series.setPixelSpacing(dto.getPixelSpacing());</span>
+
+<span class="fc" id="L64">        series = examSeriesRepository.save(series);</span>
+
+        // 更新检查记录的序列数
+<span class="fc" id="L67">        Integer seriesCount = examSeriesRepository.countByExamId(dto.getExamId());</span>
+<span class="fc" id="L68">        record.setSeriesCount(seriesCount);</span>
+<span class="fc" id="L69">        examRecordRepository.save(record);</span>
+
+<span class="fc" id="L71">        log.info(&quot;接收影像序列成功: examId={}, seriesNo={}&quot;, dto.getExamId(), dto.getSeriesNo());</span>
+
+<span class="fc" id="L73">        return convertSeriesToVO(series);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamImageVO receiveImage(ImageFileDTO dto) {
+<span class="fc" id="L79">        ExamSeries series = examSeriesRepository.findById(dto.getSeriesId())</span>
+<span class="fc" id="L80">                .orElseThrow(() -&gt; new BusinessException(&quot;序列不存在&quot;));</span>
+
+<span class="fc" id="L82">        ExamImage image = new ExamImage();</span>
+<span class="fc" id="L83">        image.setSeriesId(dto.getSeriesId());</span>
+<span class="fc" id="L84">        image.setExamId(dto.getExamId());</span>
+<span class="fc" id="L85">        image.setImageNo(dto.getImageNo());</span>
+<span class="fc" id="L86">        image.setImageUid(dto.getImageUid());</span>
+<span class="fc" id="L87">        image.setSopUid(dto.getSopUid());</span>
+<span class="fc" id="L88">        image.setImagePath(dto.getImagePath());</span>
+<span class="fc" id="L89">        image.setThumbnailPath(dto.getThumbnailPath());</span>
+<span class="fc" id="L90">        image.setImageWidth(dto.getImageWidth());</span>
+<span class="fc" id="L91">        image.setImageHeight(dto.getImageHeight());</span>
+<span class="fc" id="L92">        image.setBitsAllocated(dto.getBitsAllocated());</span>
+<span class="fc" id="L93">        image.setBitsStored(dto.getBitsStored());</span>
+<span class="fc" id="L94">        image.setWindowCenter(dto.getWindowCenter());</span>
+<span class="fc" id="L95">        image.setWindowWidth(dto.getWindowWidth());</span>
+<span class="fc" id="L96">        image.setIsKeyImage(dto.getIsKeyImage());</span>
+<span class="fc" id="L97">        image.setFileSize(dto.getFileSize());</span>
+<span class="fc" id="L98">        image.setFileFormat(dto.getFileFormat());</span>
+
+<span class="fc" id="L100">        image = examImageRepository.save(image);</span>
+
+        // 更新序列的影像数
+<span class="fc" id="L103">        Integer imageCount = examImageRepository.countBySeriesId(dto.getSeriesId());</span>
+<span class="fc" id="L104">        series.setImageCount(imageCount);</span>
+<span class="fc" id="L105">        examSeriesRepository.save(series);</span>
+
+        // 更新检查记录的影像数
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (dto.getExamId() != null) {</span>
+<span class="fc" id="L109">            updateExamImageStats(dto.getExamId());</span>
+        }
+
+<span class="fc" id="L112">        log.info(&quot;接收影像文件成功: seriesId={}, imageNo={}&quot;, dto.getSeriesId(), dto.getImageNo());</span>
+
+<span class="fc" id="L114">        return convertImageToVO(image);</span>
+    }
+
+    @Override
+    @Transactional
+    public List&lt;ExamImageVO&gt; receiveImages(List&lt;ImageFileDTO&gt; dtoList) {
+<span class="fc" id="L120">        return dtoList.stream()</span>
+<span class="fc" id="L121">                .map(this::receiveImage)</span>
+<span class="fc" id="L122">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;ExamSeriesVO&gt; getSeriesByExamId(String examId) {
+<span class="fc" id="L127">        List&lt;ExamSeries&gt; seriesList = examSeriesRepository.findByExamId(examId);</span>
+<span class="fc" id="L128">        return seriesList.stream()</span>
+<span class="fc" id="L129">                .map(this::convertSeriesToVO)</span>
+<span class="fc" id="L130">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public ExamSeriesVO getSeriesById(String seriesId) {
+<span class="fc" id="L135">        ExamSeries series = examSeriesRepository.findById(seriesId)</span>
+<span class="fc" id="L136">                .orElseThrow(() -&gt; new BusinessException(&quot;序列不存在&quot;));</span>
+<span class="fc" id="L137">        ExamSeriesVO vo = convertSeriesToVO(series);</span>
+        // 加载影像列表
+<span class="fc" id="L139">        List&lt;ExamImage&gt; images = examImageRepository.findBySeriesId(seriesId);</span>
+<span class="fc" id="L140">        vo.setImageList(images.stream().map(this::convertImageToVO).collect(Collectors.toList()));</span>
+<span class="fc" id="L141">        return vo;</span>
+    }
+
+    @Override
+    public List&lt;ExamImageVO&gt; getImagesBySeriesId(String seriesId) {
+<span class="fc" id="L146">        List&lt;ExamImage&gt; images = examImageRepository.findBySeriesId(seriesId);</span>
+<span class="fc" id="L147">        return images.stream()</span>
+<span class="fc" id="L148">                .map(this::convertImageToVO)</span>
+<span class="fc" id="L149">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;ExamImageVO&gt; getImagesByExamId(String examId) {
+<span class="fc" id="L154">        List&lt;ExamImage&gt; images = examImageRepository.findByExamId(examId);</span>
+<span class="fc" id="L155">        return images.stream()</span>
+<span class="fc" id="L156">                .map(this::convertImageToVO)</span>
+<span class="fc" id="L157">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public ExamImageVO getImageById(String imageId) {
+<span class="fc" id="L162">        ExamImage image = examImageRepository.findById(imageId)</span>
+<span class="fc" id="L163">                .orElseThrow(() -&gt; new BusinessException(&quot;影像不存在&quot;));</span>
+<span class="fc" id="L164">        return convertImageToVO(image);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamImageVO setKeyImage(String imageId, boolean isKeyImage) {
+<span class="fc" id="L170">        ExamImage image = examImageRepository.findById(imageId)</span>
+<span class="fc" id="L171">                .orElseThrow(() -&gt; new BusinessException(&quot;影像不存在&quot;));</span>
+<span class="fc" id="L172">        image.setIsKeyImage(isKeyImage);</span>
+<span class="fc" id="L173">        image = examImageRepository.save(image);</span>
+<span class="fc" id="L174">        log.info(&quot;设置关键影像: imageId={}, isKeyImage={}&quot;, imageId, isKeyImage);</span>
+<span class="fc" id="L175">        return convertImageToVO(image);</span>
+    }
+
+    @Override
+    public List&lt;ExamImageVO&gt; getKeyImagesByExamId(String examId) {
+<span class="fc" id="L180">        List&lt;ExamImage&gt; images = examImageRepository.findKeyImagesByExamId(examId);</span>
+<span class="fc" id="L181">        return images.stream()</span>
+<span class="fc" id="L182">                .map(this::convertImageToVO)</span>
+<span class="fc" id="L183">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    @Transactional
+    public void updateExamImageStats(String examId) {
+<span class="fc" id="L189">        Integer imageCount = examImageRepository.countByExamId(examId);</span>
+<span class="fc" id="L190">        ExamRecord record = examRecordRepository.findById(examId).orElse(null);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (record != null) {</span>
+<span class="fc" id="L192">            record.setImageCount(imageCount);</span>
+<span class="fc" id="L193">            examRecordRepository.save(record);</span>
+        }
+<span class="fc" id="L195">    }</span>
+
+    @Override
+    public ExamRecordVO getExamDetail(String examId) {
+<span class="fc" id="L199">        ExamRecord record = examRecordRepository.findById(examId)</span>
+<span class="fc" id="L200">                .orElseThrow(() -&gt; new BusinessException(&quot;检查记录不存在&quot;));</span>
+
+<span class="fc" id="L202">        ExamRecordVO vo = new ExamRecordVO();</span>
+<span class="fc" id="L203">        vo.setId(record.getId());</span>
+<span class="fc" id="L204">        vo.setExamNo(record.getExamNo());</span>
+<span class="fc" id="L205">        vo.setRequestId(record.getRequestId());</span>
+<span class="fc" id="L206">        vo.setPatientId(record.getPatientId());</span>
+<span class="fc" id="L207">        vo.setPatientName(record.getPatientName());</span>
+<span class="fc" id="L208">        vo.setAccessionNo(record.getAccessionNo());</span>
+<span class="fc" id="L209">        vo.setStudyId(record.getStudyId());</span>
+<span class="fc" id="L210">        vo.setExamType(record.getExamType());</span>
+<span class="fc" id="L211">        vo.setExamPart(record.getExamPart());</span>
+<span class="fc" id="L212">        vo.setModality(record.getModality());</span>
+<span class="fc" id="L213">        vo.setEquipmentId(record.getEquipmentId());</span>
+<span class="fc" id="L214">        vo.setEquipmentName(record.getEquipmentName());</span>
+<span class="fc" id="L215">        vo.setRoomNo(record.getRoomNo());</span>
+<span class="fc" id="L216">        vo.setTechnicianId(record.getTechnicianId());</span>
+<span class="fc" id="L217">        vo.setTechnicianName(record.getTechnicianName());</span>
+<span class="fc" id="L218">        vo.setExamTime(record.getExamTime());</span>
+<span class="fc" id="L219">        vo.setExamDuration(record.getExamDuration());</span>
+<span class="fc" id="L220">        vo.setSeriesCount(record.getSeriesCount());</span>
+<span class="fc" id="L221">        vo.setImageCount(record.getImageCount());</span>
+<span class="fc" id="L222">        vo.setStoragePath(record.getStoragePath());</span>
+<span class="fc" id="L223">        vo.setContrastAgent(record.getContrastAgent());</span>
+<span class="fc" id="L224">        vo.setContrastDose(record.getContrastDose());</span>
+<span class="fc" id="L225">        vo.setRadiationDose(record.getRadiationDose());</span>
+<span class="fc" id="L226">        vo.setExamStatus(record.getExamStatus());</span>
+<span class="fc" id="L227">        vo.setReportStatus(record.getReportStatus());</span>
+<span class="fc" id="L228">        vo.setExamDescription(record.getExamDescription());</span>
+<span class="fc" id="L229">        vo.setRemark(record.getRemark());</span>
+<span class="fc" id="L230">        vo.setCreateTime(record.getCreateTime());</span>
+
+        // 加载序列列表
+<span class="fc" id="L233">        List&lt;ExamSeries&gt; seriesList = examSeriesRepository.findByExamId(examId);</span>
+<span class="fc" id="L234">        vo.setSeriesList(seriesList.stream()</span>
+<span class="fc" id="L235">                .map(s -&gt; {</span>
+<span class="fc" id="L236">                    ExamSeriesVO svo = convertSeriesToVO(s);</span>
+<span class="fc" id="L237">                    List&lt;ExamImage&gt; images = examImageRepository.findBySeriesId(s.getId());</span>
+<span class="fc" id="L238">                    svo.setImageList(images.stream().map(this::convertImageToVO).collect(Collectors.toList()));</span>
+<span class="fc" id="L239">                    return svo;</span>
+                })
+<span class="fc" id="L241">                .collect(Collectors.toList()));</span>
+
+<span class="fc" id="L243">        return vo;</span>
+    }
+
+    private ExamSeriesVO convertSeriesToVO(ExamSeries series) {
+<span class="fc" id="L247">        ExamSeriesVO vo = new ExamSeriesVO();</span>
+<span class="fc" id="L248">        vo.setId(series.getId());</span>
+<span class="fc" id="L249">        vo.setExamId(series.getExamId());</span>
+<span class="fc" id="L250">        vo.setSeriesNo(series.getSeriesNo());</span>
+<span class="fc" id="L251">        vo.setSeriesUid(series.getSeriesUid());</span>
+<span class="fc" id="L252">        vo.setSeriesDescription(series.getSeriesDescription());</span>
+<span class="fc" id="L253">        vo.setModality(series.getModality());</span>
+<span class="fc" id="L254">        vo.setBodyPart(series.getBodyPart());</span>
+<span class="fc" id="L255">        vo.setImageCount(series.getImageCount());</span>
+<span class="fc" id="L256">        vo.setStoragePath(series.getStoragePath());</span>
+<span class="fc" id="L257">        vo.setScanDate(series.getScanDate());</span>
+<span class="fc" id="L258">        vo.setScanTime(series.getScanTime());</span>
+<span class="fc" id="L259">        vo.setKvp(series.getKvp());</span>
+<span class="fc" id="L260">        vo.setMas(series.getMas());</span>
+<span class="fc" id="L261">        vo.setSliceThickness(series.getSliceThickness());</span>
+<span class="fc" id="L262">        vo.setPixelSpacing(series.getPixelSpacing());</span>
+<span class="fc" id="L263">        vo.setSeriesDirection(series.getSeriesDirection());</span>
+<span class="fc" id="L264">        vo.setProtocolName(series.getProtocolName());</span>
+<span class="fc" id="L265">        vo.setRemark(series.getRemark());</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        vo.setCreateTime(series.getCreateTime() != null ? series.getCreateTime().toLocalDate() : null);</span>
+<span class="fc" id="L267">        return vo;</span>
+    }
+
+    private ExamImageVO convertImageToVO(ExamImage image) {
+<span class="fc" id="L271">        ExamImageVO vo = new ExamImageVO();</span>
+<span class="fc" id="L272">        vo.setId(image.getId());</span>
+<span class="fc" id="L273">        vo.setSeriesId(image.getSeriesId());</span>
+<span class="fc" id="L274">        vo.setExamId(image.getExamId());</span>
+<span class="fc" id="L275">        vo.setImageNo(image.getImageNo());</span>
+<span class="fc" id="L276">        vo.setImageUid(image.getImageUid());</span>
+<span class="fc" id="L277">        vo.setSopUid(image.getSopUid());</span>
+<span class="fc" id="L278">        vo.setImagePath(image.getImagePath());</span>
+<span class="fc" id="L279">        vo.setThumbnailPath(image.getThumbnailPath());</span>
+<span class="fc" id="L280">        vo.setImageWidth(image.getImageWidth());</span>
+<span class="fc" id="L281">        vo.setImageHeight(image.getImageHeight());</span>
+<span class="fc" id="L282">        vo.setBitsAllocated(image.getBitsAllocated());</span>
+<span class="fc" id="L283">        vo.setBitsStored(image.getBitsStored());</span>
+<span class="fc" id="L284">        vo.setWindowCenter(image.getWindowCenter());</span>
+<span class="fc" id="L285">        vo.setWindowWidth(image.getWindowWidth());</span>
+<span class="fc" id="L286">        vo.setIsKeyImage(image.getIsKeyImage());</span>
+<span class="fc" id="L287">        vo.setImageDescription(image.getImageDescription());</span>
+<span class="fc" id="L288">        vo.setFileSize(image.getFileSize());</span>
+<span class="fc" id="L289">        vo.setFileFormat(image.getFileFormat());</span>
+<span class="fc" id="L290">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

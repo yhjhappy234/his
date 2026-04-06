@@ -1,0 +1,193 @@
+name: HIS Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ master, main, develop ]
+
+env:
+  JAVA_VERSION: '21'
+  MAVEN_VERSION: '3.9.6'
+
+jobs:
+  build:
+    name: Build & Compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn clean compile -DskipTests
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+  unit-tests:
+    name: Unit Tests & Coverage
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Unit Tests with JaCoCo
+        run: mvn test jacoco:report
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: target/site/jacoco/
+
+      - name: Check Coverage Threshold
+        run: |
+          COVERAGE=$(grep -oP '(?<=<td class="ctr2">)[0-9]+(?=%)' target/site/jacoco/index.html | head -1 || echo "0")
+          echo "Coverage: $COVERAGE%"
+          if [ "$COVERAGE" -lt 90 ]; then
+            echo "::warning::Code coverage ($COVERAGE%) is below 90% target"
+          fi
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Test Results
+          path: '**/target/surefire-reports/TEST-*.xml'
+          reporter: java-junit
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python Dependencies
+        run: |
+          cd scripts
+          pip install -r requirements.txt
+
+      - name: Start HIS Application
+        run: |
+          mvn spring-boot:run -pl his-starter/his-starter-all &
+          sleep 60
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Run E2E Tests
+        run: |
+          cd scripts
+          python3 e2e_test.py
+        env:
+          HIS_BASE_URL: http://localhost:8080
+
+      - name: Upload E2E Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-reports
+          path: report/
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests]
+    steps:
+      - name: Download Coverage Report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Download E2E Reports
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-reports
+          path: report/
+
+      - name: Quality Gate Check
+        run: |
+          echo "## Quality Gate Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check coverage
+          if [ -f "coverage/index.html" ]; then
+            COVERAGE=$(grep -oP '(?<=<td class="ctr2">)[0-9]+(?=%)' coverage/index.html | head -1 || echo "0")
+            echo "- Code Coverage: $COVERAGE%" >> $GITHUB_STEP_SUMMARY
+            if [ "$COVERAGE" -lt 90 ]; then
+              echo "  - ⚠️ Below 90% target" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "  - ✅ Above 90% target" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+          # Check E2E tests
+          if [ -f "report/e2e_report_*.json" ]; then
+            PASSED=$(grep -o '"passed": [0-9]*' report/e2e_report_*.json | grep -o '[0-9]*')
+            FAILED=$(grep -o '"failed": [0-9]*' report/e2e_report_*.json | grep -o '[0-9]*')
+            echo "- E2E Tests: $PASSED passed, $FAILED failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Create Report Summary
+        run: |
+          mkdir -p report
+          echo "# HIS Platform Test Report" > report/test_summary.md
+          echo "" >> report/test_summary.md
+          echo "**Date:** $(date)" >> report/test_summary.md
+          echo "**Commit:** ${{ github.sha }}" >> report/test_summary.md
+          echo "" >> report/test_summary.md
+          echo "## Status" >> report/test_summary.md
+          echo "- Build: ✅ Success" >> report/test_summary.md
+          echo "- Unit Tests: See coverage report" >> report/test_summary.md
+          echo "- E2E Tests: See E2E report" >> report/test_summary.md
+
+      - name: Upload Final Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-reports
+          path: report/
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'HIS Platform'
+          path: '.'
+          format: 'HTML'
+          out: 'report/dependency-check'
+        continue-on-error: true
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: report/dependency-check/

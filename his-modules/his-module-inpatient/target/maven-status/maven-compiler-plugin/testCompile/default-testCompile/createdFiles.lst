@@ -1,0 +1,5 @@
+com/yhj/his/module/inpatient/service/MedicalOrderServiceTest.class
+com/yhj/his/module/inpatient/service/NursingRecordServiceTest.class
+com/yhj/his/module/inpatient/service/InpatientFeeServiceTest.class
+com/yhj/his/module/inpatient/service/InpatientAdmissionServiceTest.class
+com/yhj/his/module/inpatient/service/BedServiceTest.class

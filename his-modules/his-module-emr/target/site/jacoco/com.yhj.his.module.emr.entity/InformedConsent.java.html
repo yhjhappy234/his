@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InformedConsent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.entity</a> &gt; <span class="el_source">InformedConsent.java</span></div><h1>InformedConsent.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.emr.enums.ConsentType;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
+
+/**
+ * 知情同意书实体
+ */
+<span class="nc" id="L15">@Data</span>
+<span class="nc bnc" id="L16" title="All 192 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;informed_consent&quot;, indexes = {
+    @Index(name = &quot;idx_consent_admission_id&quot;, columnList = &quot;admission_id&quot;),
+    @Index(name = &quot;idx_consent_patient_id&quot;, columnList = &quot;patient_id&quot;),
+    @Index(name = &quot;idx_consent_type&quot;, columnList = &quot;consent_type&quot;)
+})
+@Schema(description = &quot;知情同意书&quot;)
+public class InformedConsent extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;住院ID&quot;)
+    @Column(name = &quot;admission_id&quot;, length = 36)
+<span class="nc" id="L30">    private String admissionId;</span>
+
+    @Schema(description = &quot;就诊ID&quot;)
+    @Column(name = &quot;visit_id&quot;, length = 36)
+<span class="nc" id="L34">    private String visitId;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+    @Column(name = &quot;patient_id&quot;, length = 20, nullable = false)
+<span class="nc" id="L38">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+    @Column(name = &quot;patient_name&quot;, length = 50)
+<span class="nc" id="L42">    private String patientName;</span>
+
+    @Schema(description = &quot;同意书类型&quot;)
+    @Column(name = &quot;consent_type&quot;, length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L47">    private ConsentType consentType;</span>
+
+    @Schema(description = &quot;同意书名称&quot;)
+    @Column(name = &quot;consent_name&quot;, length = 100)
+<span class="nc" id="L51">    private String consentName;</span>
+
+    @Schema(description = &quot;同意书内容&quot;)
+    @Column(name = &quot;consent_content&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L55">    private String consentContent;</span>
+
+    @Schema(description = &quot;风险说明&quot;)
+    @Column(name = &quot;risk_description&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L59">    private String riskDescription;</span>
+
+    // 医生信息
+    @Schema(description = &quot;告知医生ID&quot;)
+    @Column(name = &quot;doctor_id&quot;, length = 20, nullable = false)
+<span class="nc" id="L64">    private String doctorId;</span>
+
+    @Schema(description = &quot;告知医生姓名&quot;)
+    @Column(name = &quot;doctor_name&quot;, length = 50)
+<span class="nc" id="L68">    private String doctorName;</span>
+
+    @Schema(description = &quot;医生签名(图片URL)&quot;)
+    @Column(name = &quot;doctor_signature&quot;, length = 200)
+<span class="nc" id="L72">    private String doctorSignature;</span>
+
+    @Schema(description = &quot;医生签署时间&quot;)
+    @Column(name = &quot;sign_time&quot;)
+<span class="nc" id="L76">    private LocalDateTime signTime;</span>
+
+    // 患者/代理人签名
+    @Schema(description = &quot;患者签名(图片URL)&quot;)
+    @Column(name = &quot;patient_signature&quot;, length = 200)
+<span class="nc" id="L81">    private String patientSignature;</span>
+
+    @Schema(description = &quot;患者签署时间&quot;)
+    @Column(name = &quot;patient_sign_time&quot;)
+<span class="nc" id="L85">    private LocalDateTime patientSignTime;</span>
+
+    @Schema(description = &quot;代理人姓名&quot;)
+    @Column(name = &quot;agent_name&quot;, length = 50)
+<span class="nc" id="L89">    private String agentName;</span>
+
+    @Schema(description = &quot;代理人与患者关系&quot;)
+    @Column(name = &quot;agent_relation&quot;, length = 50)
+<span class="nc" id="L93">    private String agentRelation;</span>
+
+    @Schema(description = &quot;代理人身份证号&quot;)
+    @Column(name = &quot;agent_id_card&quot;, length = 20)
+<span class="nc" id="L97">    private String agentIdCard;</span>
+
+    @Schema(description = &quot;代理人签名(图片URL)&quot;)
+    @Column(name = &quot;agent_signature&quot;, length = 200)
+<span class="nc" id="L101">    private String agentSignature;</span>
+
+    @Schema(description = &quot;代理人签署时间&quot;)
+    @Column(name = &quot;agent_sign_time&quot;)
+<span class="nc" id="L105">    private LocalDateTime agentSignTime;</span>
+
+    // 状态
+<span class="nc" id="L108">    @Schema(description = &quot;状态(待签署/已签署/已拒绝)&quot;)</span>
+    @Column(name = &quot;status&quot;, length = 20, nullable = false)
+<span class="nc" id="L110">    private String status = &quot;待签署&quot;;</span>
+
+    @Schema(description = &quot;拒绝原因&quot;)
+    @Column(name = &quot;refuse_reason&quot;, length = 500)
+<span class="nc" id="L114">    private String refuseReason;</span>
+
+    @Schema(description = &quot;关联手术ID&quot;)
+    @Column(name = &quot;operation_id&quot;, length = 36)
+<span class="nc" id="L118">    private String operationId;</span>
+
+    @Schema(description = &quot;模板ID&quot;)
+    @Column(name = &quot;template_id&quot;, length = 36)
+<span class="nc" id="L122">    private String templateId;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

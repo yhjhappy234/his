@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutpatientEmrServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.service.impl</a> &gt; <span class="el_source">OutpatientEmrServiceImpl.java</span></div><h1>OutpatientEmrServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.service.impl;
+
+import com.yhj.his.module.emr.dto.EmrSubmitDTO;
+import com.yhj.his.module.emr.dto.OutpatientEmrSaveDTO;
+import com.yhj.his.module.emr.entity.EmrTemplate;
+import com.yhj.his.module.emr.entity.OutpatientEmr;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.repository.EmrTemplateRepository;
+import com.yhj.his.module.emr.repository.OutpatientEmrRepository;
+import com.yhj.his.module.emr.service.EmrTemplateService;
+import com.yhj.his.module.emr.service.OutpatientEmrService;
+import com.yhj.his.module.emr.service.QcService;
+import com.yhj.his.module.emr.vo.QcSubmitResultVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 门诊病历服务实现
+ */
+<span class="fc" id="L29">@Slf4j</span>
+@Service
+<span class="fc" id="L31">@RequiredArgsConstructor</span>
+public class OutpatientEmrServiceImpl implements OutpatientEmrService {
+
+    private final OutpatientEmrRepository emrRepository;
+    private final EmrTemplateRepository templateRepository;
+    private final EmrTemplateService templateService;
+    private final QcService qcService;
+
+    @Override
+    @Transactional
+    public OutpatientEmr createEmr(OutpatientEmrSaveDTO dto) {
+<span class="fc" id="L42">        OutpatientEmr emr = new OutpatientEmr();</span>
+<span class="fc" id="L43">        mapDtoToEntity(dto, emr);</span>
+<span class="fc" id="L44">        emr.setVisitDate(LocalDate.now());</span>
+<span class="fc" id="L45">        emr.setStatus(EmrStatus.DRAFT);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (dto.getTemplateId() != null) {</span>
+<span class="fc" id="L47">            templateService.incrementUseCount(dto.getTemplateId());</span>
+        }
+<span class="fc" id="L49">        return emrRepository.save(emr);</span>
+    }
+
+    @Override
+    @Transactional
+    public OutpatientEmr updateEmr(String id, OutpatientEmrSaveDTO dto) {
+<span class="fc" id="L55">        OutpatientEmr emr = getEmrById(id);</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">        if (emr.getStatus() != EmrStatus.DRAFT &amp;&amp; emr.getStatus() != EmrStatus.REJECTED) {</span>
+<span class="fc" id="L57">            throw new RuntimeException(&quot;只有草稿或退回状态的病历可以修改&quot;);</span>
+        }
+<span class="fc" id="L59">        mapDtoToEntity(dto, emr);</span>
+<span class="fc" id="L60">        return emrRepository.save(emr);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmr(String id) {
+<span class="fc" id="L66">        OutpatientEmr emr = getEmrById(id);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (emr.getStatus() != EmrStatus.DRAFT) {</span>
+<span class="fc" id="L68">            throw new RuntimeException(&quot;只有草稿状态的病历可以删除&quot;);</span>
+        }
+<span class="fc" id="L70">        emr.setDeleted(true);</span>
+<span class="fc" id="L71">        emrRepository.save(emr);</span>
+<span class="fc" id="L72">    }</span>
+
+    @Override
+    public OutpatientEmr getEmrById(String id) {
+<span class="fc" id="L76">        return emrRepository.findById(id)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                .filter(e -&gt; !e.getDeleted())</span>
+<span class="fc" id="L78">                .orElseThrow(() -&gt; new RuntimeException(&quot;门诊病历不存在: &quot; + id));</span>
+    }
+
+    @Override
+    public Optional&lt;OutpatientEmr&gt; getEmrByVisitId(String visitId) {
+<span class="fc" id="L83">        return emrRepository.findByVisitIdAndDeletedFalse(visitId);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; listEmrs(Pageable pageable) {
+<span class="fc" id="L88">        Page&lt;OutpatientEmr&gt; page = emrRepository.findAll(pageable);</span>
+<span class="fc" id="L89">        List&lt;OutpatientEmr&gt; filtered = page.getContent().stream()</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">                .filter(e -&gt; !e.getDeleted())</span>
+<span class="fc" id="L91">                .toList();</span>
+<span class="fc" id="L92">        return new org.springframework.data.domain.PageImpl&lt;&gt;(filtered, pageable, filtered.size());</span>
+    }
+
+    @Override
+    public List&lt;OutpatientEmr&gt; getEmrsByPatientId(String patientId) {
+<span class="fc" id="L97">        return emrRepository.findByPatientIdAndDeletedFalseOrderByVisitDateDesc(patientId);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; getEmrsByDoctorId(String doctorId, Pageable pageable) {
+<span class="fc" id="L102">        return emrRepository.findByDoctorIdAndDeletedFalse(doctorId, pageable);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; getEmrsByDeptIdAndDate(String deptId, LocalDate visitDate, Pageable pageable) {
+<span class="fc" id="L107">        return emrRepository.findByDeptIdAndVisitDateAndDeletedFalse(deptId, visitDate, pageable);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; getEmrsByStatus(EmrStatus status, Pageable pageable) {
+<span class="fc" id="L112">        return emrRepository.findByStatusAndDeletedFalse(status, pageable);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; getEmrsByDeptIdAndStatus(String deptId, EmrStatus status, Pageable pageable) {
+<span class="fc" id="L117">        return emrRepository.findByDeptIdAndStatusAndDeletedFalse(deptId, status, pageable);</span>
+    }
+
+    @Override
+    public Optional&lt;OutpatientEmr&gt; getLatestEmrByPatientId(String patientId) {
+<span class="fc" id="L122">        return emrRepository.findFirstByPatientIdAndDeletedFalseOrderByVisitDateDesc(patientId);</span>
+    }
+
+    @Override
+    public Page&lt;OutpatientEmr&gt; searchByPatientName(String patientName, Pageable pageable) {
+<span class="fc" id="L127">        return emrRepository.findByPatientNameContainingAndDeletedFalse(patientName, pageable);</span>
+    }
+
+    @Override
+    @Transactional
+    public OutpatientEmr submitEmr(EmrSubmitDTO dto) {
+<span class="fc" id="L133">        OutpatientEmr emr = getEmrById(dto.getRecordId());</span>
+<span class="fc bfc" id="L134" title="All 4 branches covered.">        if (emr.getStatus() != EmrStatus.DRAFT &amp;&amp; emr.getStatus() != EmrStatus.REJECTED) {</span>
+<span class="fc" id="L135">            throw new RuntimeException(&quot;只有草稿或退回状态的病历可以提交&quot;);</span>
+        }
+<span class="fc" id="L137">        emr.setStatus(EmrStatus.SUBMITTED);</span>
+<span class="fc" id="L138">        emr.setSubmitTime(LocalDateTime.now());</span>
+<span class="fc" id="L139">        return emrRepository.save(emr);</span>
+    }
+
+    @Override
+    @Transactional
+    public QcSubmitResultVO submitOutpatientEmr(EmrSubmitDTO dto) {
+<span class="nc" id="L145">        submitEmr(dto);</span>
+<span class="nc" id="L146">        return qcService.performQcCheckAndReturn(dto.getRecordId(), &quot;门诊病历&quot;);</span>
+    }
+
+    @Override
+    @Transactional
+    public OutpatientEmr auditEmr(String id, boolean approved, String auditorId, String auditorName, String comment) {
+<span class="fc" id="L152">        OutpatientEmr emr = getEmrById(id);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (emr.getStatus() != EmrStatus.SUBMITTED) {</span>
+<span class="fc" id="L154">            throw new RuntimeException(&quot;只有已提交状态的病历可以审核&quot;);</span>
+        }
+<span class="fc" id="L156">        emr.setAuditorId(auditorId);</span>
+<span class="fc" id="L157">        emr.setAuditorName(auditorName);</span>
+<span class="fc" id="L158">        emr.setAuditComment(comment);</span>
+<span class="fc" id="L159">        emr.setAuditTime(LocalDateTime.now());</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (approved) {</span>
+<span class="fc" id="L161">            emr.setStatus(EmrStatus.AUDITED);</span>
+        } else {
+<span class="fc" id="L163">            emr.setStatus(EmrStatus.REJECTED);</span>
+        }
+<span class="fc" id="L165">        return emrRepository.save(emr);</span>
+    }
+
+    @Override
+    public Long countByDeptIdAndVisitDate(String deptId, LocalDate visitDate) {
+<span class="fc" id="L170">        return emrRepository.countByDeptIdAndVisitDate(deptId, visitDate);</span>
+    }
+
+    @Override
+    @Transactional
+    public OutpatientEmr createFromTemplate(String templateId, OutpatientEmrSaveDTO dto) {
+<span class="fc" id="L176">        EmrTemplate template = templateRepository.findById(templateId)</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">                .filter(t -&gt; !t.getDeleted())</span>
+<span class="fc" id="L178">                .orElseThrow(() -&gt; new RuntimeException(&quot;模板不存在: &quot; + templateId));</span>
+<span class="fc" id="L179">        dto.setTemplateId(templateId);</span>
+<span class="fc" id="L180">        OutpatientEmr emr = createEmr(dto);</span>
+        // 应用模板内容
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (template.getTemplateContent() != null) {</span>
+            // 可以根据模板内容填充默认值
+<span class="fc" id="L184">            log.info(&quot;应用模板 {} 创建门诊病历&quot;, template.getTemplateName());</span>
+        }
+<span class="fc" id="L186">        return emr;</span>
+    }
+
+    private void mapDtoToEntity(OutpatientEmrSaveDTO dto, OutpatientEmr emr) {
+<span class="fc" id="L190">        emr.setVisitId(dto.getVisitId());</span>
+<span class="fc" id="L191">        emr.setPatientId(dto.getPatientId());</span>
+<span class="fc" id="L192">        emr.setPatientName(dto.getPatientName());</span>
+<span class="fc" id="L193">        emr.setDeptId(dto.getDeptId());</span>
+<span class="fc" id="L194">        emr.setDeptName(dto.getDeptName());</span>
+<span class="fc" id="L195">        emr.setDoctorId(dto.getDoctorId());</span>
+<span class="fc" id="L196">        emr.setDoctorName(dto.getDoctorName());</span>
+<span class="fc" id="L197">        emr.setChiefComplaint(dto.getChiefComplaint());</span>
+<span class="fc" id="L198">        emr.setPresentIllness(dto.getPresentIllness());</span>
+<span class="fc" id="L199">        emr.setPastHistory(dto.getPastHistory());</span>
+<span class="fc" id="L200">        emr.setPersonalHistory(dto.getPersonalHistory());</span>
+<span class="fc" id="L201">        emr.setFamilyHistory(dto.getFamilyHistory());</span>
+<span class="fc" id="L202">        emr.setAllergyHistory(dto.getAllergyHistory());</span>
+<span class="fc" id="L203">        emr.setTemperature(dto.getTemperature());</span>
+<span class="fc" id="L204">        emr.setPulse(dto.getPulse());</span>
+<span class="fc" id="L205">        emr.setRespiration(dto.getRespiration());</span>
+<span class="fc" id="L206">        emr.setBloodPressure(dto.getBloodPressure());</span>
+<span class="fc" id="L207">        emr.setWeight(dto.getWeight());</span>
+<span class="fc" id="L208">        emr.setHeight(dto.getHeight());</span>
+<span class="fc" id="L209">        emr.setGeneralExam(dto.getGeneralExam());</span>
+<span class="fc" id="L210">        emr.setSpecialistExam(dto.getSpecialistExam());</span>
+<span class="fc" id="L211">        emr.setAuxiliaryExam(dto.getAuxiliaryExam());</span>
+<span class="fc" id="L212">        emr.setPrimaryDiagnosisCode(dto.getPrimaryDiagnosisCode());</span>
+<span class="fc" id="L213">        emr.setPrimaryDiagnosisName(dto.getPrimaryDiagnosisName());</span>
+<span class="fc" id="L214">        emr.setSecondaryDiagnosis(dto.getSecondaryDiagnosis());</span>
+<span class="fc" id="L215">        emr.setTreatmentPlan(dto.getTreatmentPlan());</span>
+<span class="fc" id="L216">        emr.setMedicalAdvice(dto.getMedicalAdvice());</span>
+<span class="fc" id="L217">        emr.setTemplateId(dto.getTemplateId());</span>
+<span class="fc" id="L218">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

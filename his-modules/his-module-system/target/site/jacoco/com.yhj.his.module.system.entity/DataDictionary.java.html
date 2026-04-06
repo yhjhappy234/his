@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataDictionary.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.entity</a> &gt; <span class="el_source">DataDictionary.java</span></div><h1>DataDictionary.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 数据字典实体
+ */
+<span class="nc" id="L11">@Data</span>
+<span class="nc bnc" id="L12" title="All 88 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;sys_dictionary&quot;, indexes = {
+        @Index(name = &quot;idx_dict_type&quot;, columnList = &quot;dict_type&quot;),
+        @Index(name = &quot;idx_parent_code&quot;, columnList = &quot;parent_code&quot;)
+}, uniqueConstraints = {
+        @UniqueConstraint(name = &quot;uk_dict_type_code&quot;, columnNames = {&quot;dict_type&quot;, &quot;dict_code&quot;})
+})
+public class DataDictionary extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 字典类型
+     */
+    @Column(name = &quot;dict_type&quot;, length = 50, nullable = false)
+<span class="nc" id="L28">    private String dictType;</span>
+
+    /**
+     * 字典编码
+     */
+    @Column(name = &quot;dict_code&quot;, length = 50, nullable = false)
+<span class="nc" id="L34">    private String dictCode;</span>
+
+    /**
+     * 字典名称
+     */
+    @Column(name = &quot;dict_name&quot;, length = 100, nullable = false)
+<span class="nc" id="L40">    private String dictName;</span>
+
+    /**
+     * 字典值
+     */
+    @Column(name = &quot;dict_value&quot;, length = 200)
+<span class="nc" id="L46">    private String dictValue;</span>
+
+    /**
+     * 父级编码
+     */
+    @Column(name = &quot;parent_code&quot;, length = 50)
+<span class="nc" id="L52">    private String parentCode;</span>
+
+    /**
+     * 层级
+     */
+<span class="nc" id="L57">    @Column(name = &quot;dict_level&quot;, nullable = false)</span>
+<span class="nc" id="L58">    private Integer dictLevel = 1;</span>
+
+    /**
+     * 排序号
+     */
+<span class="nc" id="L63">    @Column(name = &quot;sort_order&quot;, nullable = false)</span>
+<span class="nc" id="L64">    private Integer sortOrder = 0;</span>
+
+    /**
+     * 是否启用
+     */
+<span class="nc" id="L69">    @Column(name = &quot;is_enabled&quot;, nullable = false)</span>
+<span class="nc" id="L70">    private Boolean isEnabled = true;</span>
+
+    /**
+     * 是否默认值
+     */
+<span class="nc" id="L75">    @Column(name = &quot;is_default&quot;, nullable = false)</span>
+<span class="nc" id="L76">    private Boolean isDefault = false;</span>
+
+    /**
+     * 描述
+     */
+    @Column(name = &quot;description&quot;, length = 200)
+<span class="nc" id="L82">    private String description;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

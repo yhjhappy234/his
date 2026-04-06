@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EquipmentInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.entity</a> &gt; <span class="el_source">EquipmentInfo.java</span></div><h1>EquipmentInfo.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 设备信息实体
+ */
+<span class="pc" id="L11">@Data</span>
+<span class="nc bnc" id="L12" title="All 152 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;equipment_info&quot;)
+public class EquipmentInfo extends BaseEntity {
+
+    @Column(name = &quot;equipment_code&quot;, length = 20, unique = true)
+<span class="fc" id="L18">    private String equipmentCode;</span>
+
+    @Column(name = &quot;equipment_name&quot;, length = 100, nullable = false)
+<span class="fc" id="L21">    private String equipmentName;</span>
+
+    @Column(name = &quot;equipment_type&quot;, length = 20, nullable = false)
+<span class="fc" id="L24">    private String equipmentType;</span>
+
+    @Column(name = &quot;model&quot;, length = 100)
+<span class="fc" id="L27">    private String model;</span>
+
+    @Column(name = &quot;manufacturer&quot;, length = 100)
+<span class="fc" id="L30">    private String manufacturer;</span>
+
+    @Column(name = &quot;serial_number&quot;, length = 50)
+<span class="fc" id="L33">    private String serialNumber;</span>
+
+    @Column(name = &quot;ae_title&quot;, length = 16)
+<span class="fc" id="L36">    private String aeTitle;</span>
+
+    @Column(name = &quot;ip_address&quot;, length = 50)
+<span class="fc" id="L39">    private String ipAddress;</span>
+
+    @Column(name = &quot;port&quot;)
+<span class="fc" id="L42">    private Integer port;</span>
+
+    @Column(name = &quot;room_no&quot;, length = 20)
+<span class="fc" id="L45">    private String roomNo;</span>
+
+    @Column(name = &quot;room_name&quot;, length = 50)
+<span class="fc" id="L48">    private String roomName;</span>
+
+    @Column(name = &quot;purchase_date&quot;)
+<span class="fc" id="L51">    private String purchaseDate;</span>
+
+    @Column(name = &quot;enable_date&quot;)
+<span class="fc" id="L54">    private String enableDate;</span>
+
+<span class="fc" id="L56">    @Column(name = &quot;status&quot;, length = 20, nullable = false)</span>
+<span class="fc" id="L57">    private String status = &quot;正常&quot;;</span>
+
+    @Column(name = &quot;manager_id&quot;, length = 20)
+<span class="fc" id="L60">    private String managerId;</span>
+
+    @Column(name = &quot;manager_name&quot;, length = 50)
+<span class="fc" id="L63">    private String managerName;</span>
+
+<span class="fc" id="L65">    @Column(name = &quot;sort_order&quot;)</span>
+<span class="fc" id="L66">    private Integer sortOrder = 0;</span>
+
+    @Column(name = &quot;remark&quot;, length = 500)
+<span class="fc" id="L69">    private String remark;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

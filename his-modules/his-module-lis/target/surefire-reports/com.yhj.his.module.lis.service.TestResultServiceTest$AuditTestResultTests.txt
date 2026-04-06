@@ -1,0 +1,38 @@
+-------------------------------------------------------------------------------
+Test set: com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.102 s <<< FAILURE! -- in com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests
+com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests.auditFailedWithResultNotFound -- Time elapsed: 0.059 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <org.mockito.exceptions.misusing.PotentialStubbingProblem>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests.auditFailedWithResultNotFound(TestResultServiceTest.java:483)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: org.mockito.exceptions.misusing.PotentialStubbingProblem: 
+Strict stubbing argument mismatch. Please check:
+ - this invocation of 'findById' method:
+    testResultRepository.findById("result-001");
+    -> at com.yhj.his.module.lis.service.impl.TestResultServiceImpl.audit(TestResultServiceImpl.java:150)
+ - has following stubbing(s) with different arguments:
+    1. testResultRepository.findById(
+    "non-existent"
+);
+      -> at com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests.auditFailedWithResultNotFound(TestResultServiceTest.java:480)
+Typically, stubbing argument mismatch indicates user mistake when writing tests.
+Mockito fails early so that you can debug potential problem easily.
+However, there are legit scenarios when this exception generates false negative signal:
+  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API
+    Please use 'will().given()' or 'doReturn().when()' API for stubbing.
+  - stubbed method is intentionally invoked with different arguments by code under test
+    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).
+For more information see javadoc for PotentialStubbingProblem class.
+	at com.yhj.his.module.lis.service.impl.TestResultServiceImpl.audit(TestResultServiceImpl.java:150)
+	at com.yhj.his.module.lis.service.TestResultServiceTest$AuditTestResultTests.lambda$auditFailedWithResultNotFound$1(TestResultServiceTest.java:484)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+	... 7 more
+

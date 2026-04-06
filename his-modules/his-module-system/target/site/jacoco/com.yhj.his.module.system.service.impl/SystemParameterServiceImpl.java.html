@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SystemParameterServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.service.impl</a> &gt; <span class="el_source">SystemParameterServiceImpl.java</span></div><h1>SystemParameterServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.service.impl;
+
+import com.yhj.his.common.core.domain.ErrorCode;
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.system.dto.SystemParameterDTO;
+import com.yhj.his.module.system.entity.SystemParameter;
+import com.yhj.his.module.system.repository.SystemParameterRepository;
+import com.yhj.his.module.system.service.SystemParameterService;
+import com.yhj.his.module.system.vo.SystemParameterVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 系统参数服务实现
+ */
+<span class="nc" id="L25">@Slf4j</span>
+@Service
+<span class="nc" id="L27">@RequiredArgsConstructor</span>
+public class SystemParameterServiceImpl implements SystemParameterService {
+
+    private final SystemParameterRepository systemParameterRepository;
+
+    @Override
+    @Transactional
+    public Result&lt;SystemParameterVO&gt; create(SystemParameterDTO dto) {
+        // 检查参数编码是否存在
+<span class="nc bnc" id="L36" title="All 4 branches missed.">        if (dto.getParamCode() != null &amp;&amp; systemParameterRepository.existsByParamCodeAndDeletedFalse(dto.getParamCode())) {</span>
+<span class="nc" id="L37">            throw new BusinessException(ErrorCode.DATA_ALREADY_EXISTS, &quot;参数编码已存在&quot;);</span>
+        }
+
+<span class="nc" id="L40">        SystemParameter param = new SystemParameter();</span>
+<span class="nc" id="L41">        param.setParamCode(dto.getParamCode());</span>
+<span class="nc" id="L42">        param.setParamName(dto.getParamName());</span>
+<span class="nc" id="L43">        param.setParamValue(dto.getParamValue());</span>
+<span class="nc" id="L44">        param.setParamType(dto.getParamType());</span>
+<span class="nc" id="L45">        param.setParamGroup(dto.getParamGroup());</span>
+<span class="nc" id="L46">        param.setDescription(dto.getDescription());</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        param.setIsSystem(dto.getIsSystem() != null ? dto.getIsSystem() : false);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        param.setIsEditable(dto.getIsEditable() != null ? dto.getIsEditable() : true);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        param.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);</span>
+
+<span class="nc" id="L51">        param = systemParameterRepository.save(param);</span>
+<span class="nc" id="L52">        return Result.success(&quot;创建成功&quot;, convertToVO(param));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;SystemParameterVO&gt; update(SystemParameterDTO dto) {
+<span class="nc" id="L58">        SystemParameter param = systemParameterRepository.findById(dto.getId())</span>
+<span class="nc" id="L59">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数不存在&quot;));</span>
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (param.getDeleted()) {</span>
+<span class="nc" id="L62">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数已删除&quot;);</span>
+        }
+
+        // 检查是否可编辑
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (!param.getIsEditable()) {</span>
+<span class="nc" id="L67">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED, &quot;该参数不可编辑&quot;);</span>
+        }
+
+<span class="nc" id="L70">        param.setParamName(dto.getParamName());</span>
+<span class="nc" id="L71">        param.setParamValue(dto.getParamValue());</span>
+<span class="nc" id="L72">        param.setParamType(dto.getParamType());</span>
+<span class="nc" id="L73">        param.setParamGroup(dto.getParamGroup());</span>
+<span class="nc" id="L74">        param.setDescription(dto.getDescription());</span>
+<span class="nc" id="L75">        param.setSortOrder(dto.getSortOrder());</span>
+
+<span class="nc" id="L77">        param = systemParameterRepository.save(param);</span>
+<span class="nc" id="L78">        return Result.success(&quot;更新成功&quot;, convertToVO(param));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; delete(String paramId) {
+<span class="nc" id="L84">        SystemParameter param = systemParameterRepository.findById(paramId)</span>
+<span class="nc" id="L85">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数不存在&quot;));</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (param.getDeleted()) {</span>
+<span class="nc" id="L88">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数已删除&quot;);</span>
+        }
+
+        // 检查是否为系统参数
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (param.getIsSystem()) {</span>
+<span class="nc" id="L93">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED, &quot;系统参数不可删除&quot;);</span>
+        }
+
+        // 逻辑删除
+<span class="nc" id="L97">        param.setDeleted(true);</span>
+<span class="nc" id="L98">        systemParameterRepository.save(param);</span>
+
+<span class="nc" id="L100">        return Result.successVoid();</span>
+    }
+
+    @Override
+    public Result&lt;SystemParameterVO&gt; getById(String paramId) {
+<span class="nc" id="L105">        SystemParameter param = systemParameterRepository.findById(paramId)</span>
+<span class="nc" id="L106">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数不存在&quot;));</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (param.getDeleted()) {</span>
+<span class="nc" id="L109">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数已删除&quot;);</span>
+        }
+
+<span class="nc" id="L112">        return Result.success(convertToVO(param));</span>
+    }
+
+    @Override
+    public Result&lt;String&gt; getValueByCode(String paramCode) {
+<span class="nc" id="L117">        SystemParameter param = systemParameterRepository.findByParamCodeAndDeletedFalse(paramCode)</span>
+<span class="nc" id="L118">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;参数不存在: &quot; + paramCode));</span>
+
+<span class="nc" id="L120">        return Result.success(param.getParamValue());</span>
+    }
+
+    @Override
+    public Result&lt;PageResult&lt;SystemParameterVO&gt;&gt; page(String paramName, String paramCode, String paramGroup,
+                                                      String paramType, Integer pageNum, Integer pageSize) {
+<span class="nc" id="L126">        Page&lt;SystemParameter&gt; page = systemParameterRepository.findByCondition(paramName, paramCode, paramGroup, paramType,</span>
+<span class="nc" id="L127">                PageUtils.of(pageNum, pageSize));</span>
+
+<span class="nc" id="L129">        List&lt;SystemParameterVO&gt; list = page.getContent().stream()</span>
+<span class="nc" id="L130">                .map(this::convertToVO)</span>
+<span class="nc" id="L131">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L133">        return Result.success(PageResult.of(list, page.getTotalElements(), pageNum, pageSize));</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;SystemParameterVO&gt;&gt; listAll() {
+<span class="nc" id="L138">        List&lt;SystemParameter&gt; params = systemParameterRepository.findByDeletedFalseOrderBySortOrderAsc();</span>
+<span class="nc" id="L139">        List&lt;SystemParameterVO&gt; list = params.stream()</span>
+<span class="nc" id="L140">                .map(this::convertToVO)</span>
+<span class="nc" id="L141">                .collect(Collectors.toList());</span>
+<span class="nc" id="L142">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;SystemParameterVO&gt;&gt; listByGroup(String paramGroup) {
+<span class="nc" id="L147">        List&lt;SystemParameter&gt; params = systemParameterRepository.findByParamGroupAndDeletedFalseOrderBySortOrderAsc(paramGroup);</span>
+<span class="nc" id="L148">        List&lt;SystemParameterVO&gt; list = params.stream()</span>
+<span class="nc" id="L149">                .map(this::convertToVO)</span>
+<span class="nc" id="L150">                .collect(Collectors.toList());</span>
+<span class="nc" id="L151">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;Map&lt;String, String&gt;&gt; getValuesByCodes(List&lt;String&gt; paramCodes) {
+<span class="nc" id="L156">        List&lt;SystemParameter&gt; params = systemParameterRepository.findByParamCodeInAndDeletedFalse(paramCodes);</span>
+<span class="nc" id="L157">        Map&lt;String, String&gt; map = params.stream()</span>
+<span class="nc" id="L158">                .collect(Collectors.toMap(SystemParameter::getParamCode,</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                        p -&gt; p.getParamValue() != null ? p.getParamValue() : &quot;&quot;,</span>
+<span class="nc" id="L160">                        (v1, v2) -&gt; v1));</span>
+<span class="nc" id="L161">        return Result.success(map);</span>
+    }
+
+    /**
+     * 转换SystemParameter实体到VO
+     */
+    private SystemParameterVO convertToVO(SystemParameter param) {
+<span class="nc" id="L168">        SystemParameterVO vo = new SystemParameterVO();</span>
+<span class="nc" id="L169">        vo.setId(param.getId());</span>
+<span class="nc" id="L170">        vo.setParamCode(param.getParamCode());</span>
+<span class="nc" id="L171">        vo.setParamName(param.getParamName());</span>
+<span class="nc" id="L172">        vo.setParamValue(param.getParamValue());</span>
+<span class="nc" id="L173">        vo.setParamType(param.getParamType());</span>
+<span class="nc" id="L174">        vo.setParamGroup(param.getParamGroup());</span>
+<span class="nc" id="L175">        vo.setDescription(param.getDescription());</span>
+<span class="nc" id="L176">        vo.setIsSystem(param.getIsSystem());</span>
+<span class="nc" id="L177">        vo.setIsEditable(param.getIsEditable());</span>
+<span class="nc" id="L178">        vo.setSortOrder(param.getSortOrder());</span>
+<span class="nc" id="L179">        vo.setCreateTime(param.getCreateTime());</span>
+<span class="nc" id="L180">        vo.setUpdateTime(param.getUpdateTime());</span>
+<span class="nc" id="L181">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

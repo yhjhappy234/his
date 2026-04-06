@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProgressRecordController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.controller</a> &gt; <span class="el_source">ProgressRecordController.java</span></div><h1>ProgressRecordController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.controller;
+
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.emr.dto.EmrSubmitDTO;
+import com.yhj.his.module.emr.dto.ProgressRecordSaveDTO;
+import com.yhj.his.module.emr.entity.ProgressRecord;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.enums.ProgressRecordType;
+import com.yhj.his.module.emr.service.ProgressRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 病程记录REST控制器
+ */
+@Tag(name = &quot;病程记录管理&quot;, description = &quot;病程记录的CRUD及业务操作&quot;)
+@RestController
+@RequestMapping(&quot;/api/emr/v1/progress-records&quot;)
+<span class="nc" id="L32">@RequiredArgsConstructor</span>
+public class ProgressRecordController {
+
+    private final ProgressRecordService recordService;
+
+    @Operation(summary = &quot;创建病程记录&quot;, description = &quot;创建新的病程记录&quot;)
+    @PostMapping
+    public Result&lt;ProgressRecord&gt; createRecord(@Valid @RequestBody ProgressRecordSaveDTO dto) {
+<span class="nc" id="L40">        ProgressRecord record = recordService.createRecord(dto);</span>
+<span class="nc" id="L41">        return Result.success(&quot;病程记录创建成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;创建首次病程记录&quot;, description = &quot;创建住院的首次病程记录&quot;)
+    @PostMapping(&quot;/first-progress&quot;)
+    public Result&lt;ProgressRecord&gt; createFirstProgressRecord(@Valid @RequestBody ProgressRecordSaveDTO dto) {
+<span class="nc" id="L47">        ProgressRecord record = recordService.createFirstProgressRecord(dto);</span>
+<span class="nc" id="L48">        return Result.success(&quot;首次病程记录创建成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;创建上级医师查房记录&quot;, description = &quot;创建上级医师查房记录&quot;)
+    @PostMapping(&quot;/chief-round&quot;)
+    public Result&lt;ProgressRecord&gt; createChiefRoundRecord(@Valid @RequestBody ProgressRecordSaveDTO dto) {
+<span class="nc" id="L54">        ProgressRecord record = recordService.createChiefRoundRecord(dto);</span>
+<span class="nc" id="L55">        return Result.success(&quot;上级医师查房记录创建成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;更新病程记录&quot;, description = &quot;更新指定的病程记录&quot;)
+    @PutMapping(&quot;/{id}&quot;)
+    public Result&lt;ProgressRecord&gt; updateRecord(
+            @Parameter(description = &quot;记录ID&quot;) @PathVariable String id,
+            @Valid @RequestBody ProgressRecordSaveDTO dto) {
+<span class="nc" id="L63">        ProgressRecord record = recordService.updateRecord(id, dto);</span>
+<span class="nc" id="L64">        return Result.success(&quot;病程记录更新成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;删除病程记录&quot;, description = &quot;删除指定的病程记录&quot;)
+    @DeleteMapping(&quot;/{id}&quot;)
+    public Result&lt;Void&gt; deleteRecord(@Parameter(description = &quot;记录ID&quot;) @PathVariable String id) {
+<span class="nc" id="L70">        recordService.deleteRecord(id);</span>
+<span class="nc" id="L71">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;获取病程记录详情&quot;, description = &quot;根据ID获取病程记录详情&quot;)
+    @GetMapping(&quot;/{id}&quot;)
+    public Result&lt;ProgressRecord&gt; getRecord(@Parameter(description = &quot;记录ID&quot;) @PathVariable String id) {
+<span class="nc" id="L77">        ProgressRecord record = recordService.getRecordById(id);</span>
+<span class="nc" id="L78">        return Result.success(record);</span>
+    }
+
+    @Operation(summary = &quot;根据住院ID查询病程记录列表&quot;, description = &quot;获取住院的所有病程记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}&quot;)
+    public Result&lt;List&lt;ProgressRecord&gt;&gt; getRecordsByAdmissionId(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId) {
+<span class="nc" id="L85">        List&lt;ProgressRecord&gt; records = recordService.getRecordsByAdmissionId(admissionId);</span>
+<span class="nc" id="L86">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据住院ID和类型查询&quot;, description = &quot;获取住院指定类型的病程记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}/type/{recordType}&quot;)
+    public Result&lt;List&lt;ProgressRecord&gt;&gt; getRecordsByAdmissionIdAndType(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId,
+            @Parameter(description = &quot;记录类型&quot;) @PathVariable ProgressRecordType recordType) {
+<span class="nc" id="L94">        List&lt;ProgressRecord&gt; records = recordService.getRecordsByAdmissionIdAndType(admissionId, recordType);</span>
+<span class="nc" id="L95">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据住院ID和日期查询&quot;, description = &quot;获取住院指定日期的病程记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}/date/{recordDate}&quot;)
+    public Result&lt;List&lt;ProgressRecord&gt;&gt; getRecordsByAdmissionIdAndDate(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId,
+            @Parameter(description = &quot;记录日期&quot;) @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate) {
+<span class="nc" id="L103">        List&lt;ProgressRecord&gt; records = recordService.getRecordsByAdmissionIdAndDate(admissionId, recordDate);</span>
+<span class="nc" id="L104">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据住院ID和日期范围查询&quot;, description = &quot;获取住院指定日期范围的病程记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}/range&quot;)
+    public Result&lt;List&lt;ProgressRecord&gt;&gt; getRecordsByAdmissionIdAndDateRange(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId,
+            @Parameter(description = &quot;开始日期&quot;) @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @Parameter(description = &quot;结束日期&quot;) @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+<span class="nc" id="L113">        List&lt;ProgressRecord&gt; records = recordService.getRecordsByAdmissionIdAndDateRange(admissionId, startDate, endDate);</span>
+<span class="nc" id="L114">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;分页查询病程记录&quot;, description = &quot;分页查询所有病程记录&quot;)
+    @GetMapping
+    public Result&lt;Page&lt;ProgressRecord&gt;&gt; listRecords(
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size,
+            @Parameter(description = &quot;排序字段&quot;) @RequestParam(defaultValue = &quot;createTime&quot;) String sortBy,
+            @Parameter(description = &quot;排序方向&quot;) @RequestParam(defaultValue = &quot;DESC&quot;) String sortDir) {
+<span class="nc" id="L124">        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);</span>
+<span class="nc" id="L125">        Pageable pageable = PageRequest.of(page, size, sort);</span>
+<span class="nc" id="L126">        Page&lt;ProgressRecord&gt; records = recordService.listRecords(pageable);</span>
+<span class="nc" id="L127">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据患者ID查询病程记录&quot;, description = &quot;分页查询患者的病程记录&quot;)
+    @GetMapping(&quot;/patient/{patientId}&quot;)
+    public Result&lt;Page&lt;ProgressRecord&gt;&gt; getRecordsByPatientId(
+            @Parameter(description = &quot;患者ID&quot;) @PathVariable String patientId,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L136">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L137">        Page&lt;ProgressRecord&gt; records = recordService.getRecordsByPatientId(patientId, pageable);</span>
+<span class="nc" id="L138">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据医生ID查询病程记录&quot;, description = &quot;分页查询医生书写的病程记录&quot;)
+    @GetMapping(&quot;/doctor/{doctorId}&quot;)
+    public Result&lt;Page&lt;ProgressRecord&gt;&gt; getRecordsByDoctorId(
+            @Parameter(description = &quot;医生ID&quot;) @PathVariable String doctorId,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L147">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L148">        Page&lt;ProgressRecord&gt; records = recordService.getRecordsByDoctorId(doctorId, pageable);</span>
+<span class="nc" id="L149">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;获取首次病程记录&quot;, description = &quot;获取住院的首次病程记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}/first&quot;)
+    public Result&lt;ProgressRecord&gt; getFirstProgressRecord(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId) {
+<span class="nc" id="L156">        Optional&lt;ProgressRecord&gt; record = recordService.getFirstProgressRecord(admissionId);</span>
+<span class="nc" id="L157">        return record.map(Result::success)</span>
+<span class="nc" id="L158">                .orElseGet(() -&gt; Result.error(404, &quot;未找到首次病程记录&quot;));</span>
+    }
+
+    @Operation(summary = &quot;根据状态查询病程记录&quot;, description = &quot;分页查询指定状态的病程记录&quot;)
+    @GetMapping(&quot;/status/{status}&quot;)
+    public Result&lt;Page&lt;ProgressRecord&gt;&gt; getRecordsByStatus(
+            @Parameter(description = &quot;记录状态&quot;) @PathVariable EmrStatus status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L167">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L168">        Page&lt;ProgressRecord&gt; records = recordService.getRecordsByStatus(status, pageable);</span>
+<span class="nc" id="L169">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;统计病程记录数&quot;, description = &quot;统计住院期间的病程记录数&quot;)
+    @GetMapping(&quot;/admission/{admissionId}/count&quot;)
+    public Result&lt;Long&gt; countByAdmissionId(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId) {
+<span class="nc" id="L176">        Long count = recordService.countByAdmissionId(admissionId);</span>
+<span class="nc" id="L177">        return Result.success(count);</span>
+    }
+
+    @Operation(summary = &quot;提交病程记录&quot;, description = &quot;提交病程记录待审核&quot;)
+    @PostMapping(&quot;/submit&quot;)
+    public Result&lt;ProgressRecord&gt; submitRecord(@Valid @RequestBody EmrSubmitDTO dto) {
+<span class="nc" id="L183">        ProgressRecord record = recordService.submitRecord(dto);</span>
+<span class="nc" id="L184">        return Result.success(&quot;病程记录提交成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;审核病程记录&quot;, description = &quot;审核病程记录&quot;)
+    @PostMapping(&quot;/{id}/audit&quot;)
+    public Result&lt;ProgressRecord&gt; auditRecord(
+            @Parameter(description = &quot;记录ID&quot;) @PathVariable String id,
+            @Parameter(description = &quot;是否通过&quot;) @RequestParam boolean approved,
+            @Parameter(description = &quot;审核人ID&quot;) @RequestParam String reviewerId,
+            @Parameter(description = &quot;审核人姓名&quot;) @RequestParam String reviewerName) {
+<span class="nc" id="L194">        ProgressRecord record = recordService.auditRecord(id, approved, reviewerId, reviewerName);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        return Result.success(approved ? &quot;病程记录审核通过&quot; : &quot;病程记录审核退回&quot;, record);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

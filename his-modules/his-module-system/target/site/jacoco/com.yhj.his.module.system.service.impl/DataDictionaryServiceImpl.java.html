@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataDictionaryServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.service.impl</a> &gt; <span class="el_source">DataDictionaryServiceImpl.java</span></div><h1>DataDictionaryServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.service.impl;
+
+import com.yhj.his.common.core.domain.ErrorCode;
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.system.dto.DataDictionaryDTO;
+import com.yhj.his.module.system.entity.DataDictionary;
+import com.yhj.his.module.system.repository.DataDictionaryRepository;
+import com.yhj.his.module.system.service.DataDictionaryService;
+import com.yhj.his.module.system.vo.DataDictionaryVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 数据字典服务实现
+ */
+<span class="nc" id="L25">@Slf4j</span>
+@Service
+<span class="nc" id="L27">@RequiredArgsConstructor</span>
+public class DataDictionaryServiceImpl implements DataDictionaryService {
+
+    private final DataDictionaryRepository dataDictionaryRepository;
+
+    @Override
+    @Transactional
+    public Result&lt;DataDictionaryVO&gt; create(DataDictionaryDTO dto) {
+        // 检查字典类型和编码是否存在
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (dto.getDictCode() != null &amp;&amp;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            dataDictionaryRepository.existsByDictTypeAndDictCodeAndDeletedFalse(dto.getDictType(), dto.getDictCode())) {</span>
+<span class="nc" id="L38">            throw new BusinessException(ErrorCode.DATA_ALREADY_EXISTS, &quot;字典编码已存在&quot;);</span>
+        }
+
+<span class="nc" id="L41">        DataDictionary dict = new DataDictionary();</span>
+<span class="nc" id="L42">        dict.setDictType(dto.getDictType());</span>
+<span class="nc" id="L43">        dict.setDictCode(dto.getDictCode());</span>
+<span class="nc" id="L44">        dict.setDictName(dto.getDictName());</span>
+<span class="nc" id="L45">        dict.setDictValue(dto.getDictValue());</span>
+<span class="nc" id="L46">        dict.setParentCode(dto.getParentCode());</span>
+<span class="nc" id="L47">        dict.setDescription(dto.getDescription());</span>
+
+        // 计算层级
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (dto.getParentCode() != null) {</span>
+<span class="nc" id="L51">            DataDictionary parent = dataDictionaryRepository.findByDictTypeAndDictCodeAndDeletedFalse(</span>
+<span class="nc" id="L52">                    dto.getDictType(), dto.getParentCode()).orElse(null);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (parent != null) {</span>
+<span class="nc" id="L54">                dict.setDictLevel(parent.getDictLevel() + 1);</span>
+            } else {
+<span class="nc" id="L56">                dict.setDictLevel(1);</span>
+            }
+<span class="nc" id="L58">        } else {</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            dict.setDictLevel(dto.getDictLevel() != null ? dto.getDictLevel() : 1);</span>
+        }
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        dict.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        dict.setIsEnabled(dto.getIsEnabled() != null ? dto.getIsEnabled() : true);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        dict.setIsDefault(dto.getIsDefault() != null ? dto.getIsDefault() : false);</span>
+
+<span class="nc" id="L66">        dict = dataDictionaryRepository.save(dict);</span>
+<span class="nc" id="L67">        return Result.success(&quot;创建成功&quot;, convertToVO(dict));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;DataDictionaryVO&gt; update(DataDictionaryDTO dto) {
+<span class="nc" id="L73">        DataDictionary dict = dataDictionaryRepository.findById(dto.getId())</span>
+<span class="nc" id="L74">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项不存在&quot;));</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (dict.getDeleted()) {</span>
+<span class="nc" id="L77">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项已删除&quot;);</span>
+        }
+
+<span class="nc" id="L80">        dict.setDictName(dto.getDictName());</span>
+<span class="nc" id="L81">        dict.setDictValue(dto.getDictValue());</span>
+<span class="nc" id="L82">        dict.setParentCode(dto.getParentCode());</span>
+<span class="nc" id="L83">        dict.setSortOrder(dto.getSortOrder());</span>
+<span class="nc" id="L84">        dict.setIsEnabled(dto.getIsEnabled());</span>
+<span class="nc" id="L85">        dict.setIsDefault(dto.getIsDefault());</span>
+<span class="nc" id="L86">        dict.setDescription(dto.getDescription());</span>
+
+        // 更新层级
+<span class="nc bnc" id="L89" title="All 4 branches missed.">        if (dto.getParentCode() != null &amp;&amp; !dto.getParentCode().equals(dict.getParentCode())) {</span>
+<span class="nc" id="L90">            DataDictionary parent = dataDictionaryRepository.findByDictTypeAndDictCodeAndDeletedFalse(</span>
+<span class="nc" id="L91">                    dto.getDictType(), dto.getParentCode()).orElse(null);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (parent != null) {</span>
+<span class="nc" id="L93">                dict.setDictLevel(parent.getDictLevel() + 1);</span>
+            }
+        }
+
+<span class="nc" id="L97">        dict = dataDictionaryRepository.save(dict);</span>
+<span class="nc" id="L98">        return Result.success(&quot;更新成功&quot;, convertToVO(dict));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; delete(String dictId) {
+<span class="nc" id="L104">        DataDictionary dict = dataDictionaryRepository.findById(dictId)</span>
+<span class="nc" id="L105">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项不存在&quot;));</span>
+
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (dict.getDeleted()) {</span>
+<span class="nc" id="L108">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项已删除&quot;);</span>
+        }
+
+        // 检查是否有子字典项
+<span class="nc" id="L112">        List&lt;DataDictionary&gt; children = dataDictionaryRepository.findByDictTypeAndParentCodeAndDeletedFalseOrderBySortOrderAsc(</span>
+<span class="nc" id="L113">                dict.getDictType(), dict.getDictCode());</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (!children.isEmpty()) {</span>
+<span class="nc" id="L115">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED,</span>
+<span class="nc" id="L116">                    &quot;该字典项有&quot; + children.size() + &quot;个子项，无法删除&quot;);</span>
+        }
+
+        // 逻辑删除
+<span class="nc" id="L120">        dict.setDeleted(true);</span>
+<span class="nc" id="L121">        dataDictionaryRepository.save(dict);</span>
+
+<span class="nc" id="L123">        return Result.successVoid();</span>
+    }
+
+    @Override
+    public Result&lt;DataDictionaryVO&gt; getById(String dictId) {
+<span class="nc" id="L128">        DataDictionary dict = dataDictionaryRepository.findById(dictId)</span>
+<span class="nc" id="L129">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项不存在&quot;));</span>
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (dict.getDeleted()) {</span>
+<span class="nc" id="L132">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;字典项已删除&quot;);</span>
+        }
+
+<span class="nc" id="L135">        return Result.success(convertToVO(dict));</span>
+    }
+
+    @Override
+    public Result&lt;PageResult&lt;DataDictionaryVO&gt;&gt; page(String dictType, String dictName, String dictCode,
+                                                      Boolean isEnabled, Integer pageNum, Integer pageSize) {
+<span class="nc" id="L141">        Page&lt;DataDictionary&gt; page = dataDictionaryRepository.findByCondition(dictType, dictName, dictCode, isEnabled,</span>
+<span class="nc" id="L142">                PageUtils.of(pageNum, pageSize));</span>
+
+<span class="nc" id="L144">        List&lt;DataDictionaryVO&gt; list = page.getContent().stream()</span>
+<span class="nc" id="L145">                .map(this::convertToVO)</span>
+<span class="nc" id="L146">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L148">        return Result.success(PageResult.of(list, page.getTotalElements(), pageNum, pageSize));</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DataDictionaryVO&gt;&gt; listByType(String dictType) {
+<span class="nc" id="L153">        List&lt;DataDictionary&gt; dicts = dataDictionaryRepository.findByDictTypeAndDeletedFalseOrderBySortOrderAsc(dictType);</span>
+<span class="nc" id="L154">        List&lt;DataDictionaryVO&gt; list = dicts.stream()</span>
+<span class="nc" id="L155">                .map(this::convertToVO)</span>
+<span class="nc" id="L156">                .collect(Collectors.toList());</span>
+<span class="nc" id="L157">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DataDictionaryVO&gt;&gt; listEnabledByType(String dictType) {
+<span class="nc" id="L162">        List&lt;DataDictionary&gt; dicts = dataDictionaryRepository.findByDictTypeAndIsEnabledTrueAndDeletedFalseOrderBySortOrderAsc(dictType);</span>
+<span class="nc" id="L163">        List&lt;DataDictionaryVO&gt; list = dicts.stream()</span>
+<span class="nc" id="L164">                .map(this::convertToVO)</span>
+<span class="nc" id="L165">                .collect(Collectors.toList());</span>
+<span class="nc" id="L166">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;String&gt;&gt; listAllTypes() {
+<span class="nc" id="L171">        List&lt;String&gt; types = dataDictionaryRepository.findAllDictTypes();</span>
+<span class="nc" id="L172">        return Result.success(types);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DataDictionaryVO&gt;&gt; getTree(String dictType) {
+<span class="nc" id="L177">        List&lt;DataDictionary&gt; dicts = dataDictionaryRepository.findByDictTypeAndDeletedFalseOrderBySortOrderAsc(dictType);</span>
+<span class="nc" id="L178">        List&lt;DataDictionaryVO&gt; tree = buildTree(dicts, null);</span>
+<span class="nc" id="L179">        return Result.success(tree);</span>
+    }
+
+    @Override
+    public Result&lt;DataDictionaryVO&gt; getDefault(String dictType) {
+<span class="nc" id="L184">        DataDictionary dict = dataDictionaryRepository.findByDictTypeAndIsEnabledTrueAndIsDefaultTrueAndDeletedFalse(dictType)</span>
+<span class="nc" id="L185">                .orElse(null);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        return Result.success(dict != null ? convertToVO(dict) : null);</span>
+    }
+
+    /**
+     * 构建字典树
+     */
+    private List&lt;DataDictionaryVO&gt; buildTree(List&lt;DataDictionary&gt; dicts, String parentCode) {
+<span class="nc" id="L193">        List&lt;DataDictionaryVO&gt; tree = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">        for (DataDictionary dict : dicts) {</span>
+<span class="nc" id="L196">            String dictParentCode = dict.getParentCode();</span>
+<span class="nc bnc" id="L197" title="All 6 branches missed.">            boolean matchParent = (parentCode == null &amp;&amp; dictParentCode == null) ||</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                                  (parentCode != null &amp;&amp; parentCode.equals(dictParentCode));</span>
+
+<span class="nc bnc" id="L200" title="All 2 branches missed.">            if (matchParent) {</span>
+<span class="nc" id="L201">                DataDictionaryVO vo = convertToVO(dict);</span>
+                // 递归构建子字典
+<span class="nc" id="L203">                List&lt;DataDictionaryVO&gt; children = buildTree(dicts, dict.getDictCode());</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                if (!children.isEmpty()) {</span>
+<span class="nc" id="L205">                    vo.setChildren(children);</span>
+                }
+<span class="nc" id="L207">                tree.add(vo);</span>
+            }
+<span class="nc" id="L209">        }</span>
+
+<span class="nc" id="L211">        return tree.stream()</span>
+<span class="nc" id="L212">                .sorted(Comparator.comparing(DataDictionaryVO::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder())))</span>
+<span class="nc" id="L213">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * 转换DataDictionary实体到VO
+     */
+    private DataDictionaryVO convertToVO(DataDictionary dict) {
+<span class="nc" id="L220">        DataDictionaryVO vo = new DataDictionaryVO();</span>
+<span class="nc" id="L221">        vo.setId(dict.getId());</span>
+<span class="nc" id="L222">        vo.setDictType(dict.getDictType());</span>
+<span class="nc" id="L223">        vo.setDictCode(dict.getDictCode());</span>
+<span class="nc" id="L224">        vo.setDictName(dict.getDictName());</span>
+<span class="nc" id="L225">        vo.setDictValue(dict.getDictValue());</span>
+<span class="nc" id="L226">        vo.setParentCode(dict.getParentCode());</span>
+<span class="nc" id="L227">        vo.setDictLevel(dict.getDictLevel());</span>
+<span class="nc" id="L228">        vo.setSortOrder(dict.getSortOrder());</span>
+<span class="nc" id="L229">        vo.setIsEnabled(dict.getIsEnabled());</span>
+<span class="nc" id="L230">        vo.setIsDefault(dict.getIsDefault());</span>
+<span class="nc" id="L231">        vo.setDescription(dict.getDescription());</span>
+<span class="nc" id="L232">        vo.setCreateTime(dict.getCreateTime());</span>
+<span class="nc" id="L233">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

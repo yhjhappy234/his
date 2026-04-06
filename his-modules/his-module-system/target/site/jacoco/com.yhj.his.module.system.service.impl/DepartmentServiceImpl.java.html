@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DepartmentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.service.impl</a> &gt; <span class="el_source">DepartmentServiceImpl.java</span></div><h1>DepartmentServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.service.impl;
+
+import com.yhj.his.common.core.domain.ErrorCode;
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.system.dto.DepartmentDTO;
+import com.yhj.his.module.system.entity.Department;
+import com.yhj.his.module.system.repository.DepartmentRepository;
+import com.yhj.his.module.system.repository.UserRepository;
+import com.yhj.his.module.system.service.DepartmentService;
+import com.yhj.his.module.system.vo.DepartmentVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 科室服务实现
+ */
+<span class="fc" id="L26">@Slf4j</span>
+@Service
+<span class="fc" id="L28">@RequiredArgsConstructor</span>
+public class DepartmentServiceImpl implements DepartmentService {
+
+    private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public Result&lt;DepartmentVO&gt; create(DepartmentDTO dto) {
+        // 检查科室编码是否存在
+<span class="pc bpc" id="L38" title="1 of 4 branches missed.">        if (dto.getDeptCode() != null &amp;&amp; departmentRepository.existsByDeptCodeAndDeletedFalse(dto.getDeptCode())) {</span>
+<span class="fc" id="L39">            throw new BusinessException(ErrorCode.DATA_ALREADY_EXISTS, &quot;科室编码已存在&quot;);</span>
+        }
+
+<span class="fc" id="L42">        Department dept = new Department();</span>
+<span class="fc" id="L43">        dept.setDeptCode(dto.getDeptCode());</span>
+<span class="fc" id="L44">        dept.setDeptName(dto.getDeptName());</span>
+<span class="fc" id="L45">        dept.setShortName(dto.getShortName());</span>
+<span class="fc" id="L46">        dept.setParentId(dto.getParentId());</span>
+<span class="fc" id="L47">        dept.setDeptType(dto.getDeptType());</span>
+<span class="fc" id="L48">        dept.setLeaderId(dto.getLeaderId());</span>
+<span class="fc" id="L49">        dept.setLeaderName(dto.getLeaderName());</span>
+<span class="fc" id="L50">        dept.setPhone(dto.getPhone());</span>
+<span class="fc" id="L51">        dept.setAddress(dto.getAddress());</span>
+<span class="fc" id="L52">        dept.setRemark(dto.getRemark());</span>
+
+        // 计算层级
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (dto.getParentId() != null) {</span>
+<span class="fc" id="L56">            Department parent = departmentRepository.findById(dto.getParentId()).orElse(null);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            if (parent != null) {</span>
+<span class="fc" id="L58">                dept.setDeptLevel(parent.getDeptLevel() + 1);</span>
+            } else {
+<span class="fc" id="L60">                dept.setDeptLevel(1);</span>
+            }
+<span class="fc" id="L62">        } else {</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">            dept.setDeptLevel(dto.getDeptLevel() != null ? dto.getDeptLevel() : 1);</span>
+        }
+
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        dept.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        dept.setStatus(dto.getStatus() != null ? dto.getStatus() : &quot;NORMAL&quot;);</span>
+
+<span class="fc" id="L69">        dept = departmentRepository.save(dept);</span>
+<span class="fc" id="L70">        return Result.success(&quot;创建成功&quot;, convertToVO(dept));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;DepartmentVO&gt; update(DepartmentDTO dto) {
+<span class="fc" id="L76">        Department dept = departmentRepository.findById(dto.getId())</span>
+<span class="fc" id="L77">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室不存在&quot;));</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (dept.getDeleted()) {</span>
+<span class="fc" id="L80">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室已删除&quot;);</span>
+        }
+
+<span class="fc" id="L83">        dept.setDeptName(dto.getDeptName());</span>
+<span class="fc" id="L84">        dept.setShortName(dto.getShortName());</span>
+<span class="fc" id="L85">        dept.setDeptType(dto.getDeptType());</span>
+<span class="fc" id="L86">        dept.setLeaderId(dto.getLeaderId());</span>
+<span class="fc" id="L87">        dept.setLeaderName(dto.getLeaderName());</span>
+<span class="fc" id="L88">        dept.setPhone(dto.getPhone());</span>
+<span class="fc" id="L89">        dept.setAddress(dto.getAddress());</span>
+<span class="fc" id="L90">        dept.setSortOrder(dto.getSortOrder());</span>
+<span class="fc" id="L91">        dept.setStatus(dto.getStatus());</span>
+<span class="fc" id="L92">        dept.setRemark(dto.getRemark());</span>
+
+        // 更新父级关系
+<span class="fc bfc" id="L95" title="All 4 branches covered.">        if (dto.getParentId() != null &amp;&amp; !dto.getParentId().equals(dept.getParentId())) {</span>
+            // 检查是否将科室设为自己的子科室
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">            if (dto.getParentId().equals(dto.getId())) {</span>
+<span class="fc" id="L98">                throw new BusinessException(ErrorCode.PARAM_ERROR, &quot;不能将科室设为自己的子科室&quot;);</span>
+            }
+
+<span class="nc" id="L101">            Department parent = departmentRepository.findById(dto.getParentId()).orElse(null);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            if (parent != null) {</span>
+<span class="nc" id="L103">                dept.setParentId(dto.getParentId());</span>
+<span class="nc" id="L104">                dept.setDeptLevel(parent.getDeptLevel() + 1);</span>
+            }
+        }
+
+<span class="fc" id="L108">        dept = departmentRepository.save(dept);</span>
+<span class="fc" id="L109">        return Result.success(&quot;更新成功&quot;, convertToVO(dept));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; delete(String deptId) {
+<span class="fc" id="L115">        Department dept = departmentRepository.findById(deptId)</span>
+<span class="fc" id="L116">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室不存在&quot;));</span>
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (dept.getDeleted()) {</span>
+<span class="fc" id="L119">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室已删除&quot;);</span>
+        }
+
+        // 检查是否有子科室
+<span class="fc" id="L123">        long childCount = departmentRepository.countByParentIdAndDeletedFalse(deptId);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (childCount &gt; 0) {</span>
+<span class="fc" id="L125">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED,</span>
+                    &quot;该科室有&quot; + childCount + &quot;个子科室，无法删除&quot;);
+        }
+
+        // 检查是否有用户绑定该科室
+<span class="fc" id="L130">        long userCount = userRepository.countByDeptIdAndDeletedFalse(deptId);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (userCount &gt; 0) {</span>
+<span class="fc" id="L132">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED,</span>
+                    &quot;该科室有&quot; + userCount + &quot;个用户，无法删除&quot;);
+        }
+
+        // 逻辑删除
+<span class="fc" id="L137">        dept.setDeleted(true);</span>
+<span class="fc" id="L138">        departmentRepository.save(dept);</span>
+
+<span class="fc" id="L140">        return Result.successVoid();</span>
+    }
+
+    @Override
+    public Result&lt;DepartmentVO&gt; getById(String deptId) {
+<span class="fc" id="L145">        Department dept = departmentRepository.findById(deptId)</span>
+<span class="fc" id="L146">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室不存在&quot;));</span>
+
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (dept.getDeleted()) {</span>
+<span class="fc" id="L149">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;科室已删除&quot;);</span>
+        }
+
+<span class="fc" id="L152">        return Result.success(convertToVO(dept));</span>
+    }
+
+    @Override
+    public Result&lt;PageResult&lt;DepartmentVO&gt;&gt; page(String deptName, String deptCode, String deptType,
+                                                  String status, String parentId, Integer pageNum, Integer pageSize) {
+<span class="fc" id="L158">        Page&lt;Department&gt; page = departmentRepository.findByCondition(deptName, deptCode, deptType, status, parentId,</span>
+<span class="fc" id="L159">                PageUtils.of(pageNum, pageSize));</span>
+
+<span class="fc" id="L161">        List&lt;DepartmentVO&gt; list = page.getContent().stream()</span>
+<span class="fc" id="L162">                .map(this::convertToVO)</span>
+<span class="fc" id="L163">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L165">        return Result.success(PageResult.of(list, page.getTotalElements(), pageNum, pageSize));</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DepartmentVO&gt;&gt; listAll() {
+<span class="fc" id="L170">        List&lt;Department&gt; depts = departmentRepository.findByDeletedFalseOrderBySortOrderAsc();</span>
+<span class="fc" id="L171">        List&lt;DepartmentVO&gt; list = depts.stream()</span>
+<span class="fc" id="L172">                .map(this::convertToVO)</span>
+<span class="fc" id="L173">                .collect(Collectors.toList());</span>
+<span class="fc" id="L174">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DepartmentVO&gt;&gt; getTree() {
+<span class="fc" id="L179">        List&lt;Department&gt; depts = departmentRepository.findByDeletedFalseOrderBySortOrderAsc();</span>
+<span class="fc" id="L180">        List&lt;DepartmentVO&gt; tree = buildTree(depts, null);</span>
+<span class="fc" id="L181">        return Result.success(tree);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DepartmentVO&gt;&gt; listByParentId(String parentId) {
+<span class="fc" id="L186">        List&lt;Department&gt; depts = departmentRepository.findByParentIdAndDeletedFalseOrderBySortOrderAsc(parentId);</span>
+<span class="fc" id="L187">        List&lt;DepartmentVO&gt; list = depts.stream()</span>
+<span class="fc" id="L188">                .map(this::convertToVO)</span>
+<span class="fc" id="L189">                .collect(Collectors.toList());</span>
+<span class="fc" id="L190">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;DepartmentVO&gt;&gt; listByType(String deptType) {
+<span class="fc" id="L195">        List&lt;Department&gt; depts = departmentRepository.findByDeptTypeAndDeletedFalseOrderBySortOrderAsc(deptType);</span>
+<span class="fc" id="L196">        List&lt;DepartmentVO&gt; list = depts.stream()</span>
+<span class="fc" id="L197">                .map(this::convertToVO)</span>
+<span class="fc" id="L198">                .collect(Collectors.toList());</span>
+<span class="fc" id="L199">        return Result.success(list);</span>
+    }
+
+    /**
+     * 构建科室树
+     */
+    private List&lt;DepartmentVO&gt; buildTree(List&lt;Department&gt; depts, String parentId) {
+<span class="fc" id="L206">        List&lt;DepartmentVO&gt; tree = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        for (Department dept : depts) {</span>
+<span class="fc" id="L209">            String deptParentId = dept.getParentId();</span>
+<span class="fc bfc" id="L210" title="All 6 branches covered.">            boolean matchParent = (parentId == null &amp;&amp; deptParentId == null) ||</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">                                  (parentId != null &amp;&amp; parentId.equals(deptParentId));</span>
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            if (matchParent) {</span>
+<span class="fc" id="L214">                DepartmentVO vo = convertToVO(dept);</span>
+                // 递归构建子科室
+<span class="fc" id="L216">                List&lt;DepartmentVO&gt; children = buildTree(depts, dept.getId());</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">                if (!children.isEmpty()) {</span>
+<span class="fc" id="L218">                    vo.setChildren(children);</span>
+                }
+<span class="fc" id="L220">                tree.add(vo);</span>
+            }
+<span class="fc" id="L222">        }</span>
+
+<span class="fc" id="L224">        return tree.stream()</span>
+<span class="fc" id="L225">                .sorted(Comparator.comparing(DepartmentVO::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder())))</span>
+<span class="fc" id="L226">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * 转换Department实体到VO
+     */
+    private DepartmentVO convertToVO(Department dept) {
+<span class="fc" id="L233">        DepartmentVO vo = new DepartmentVO();</span>
+<span class="fc" id="L234">        vo.setId(dept.getId());</span>
+<span class="fc" id="L235">        vo.setDeptCode(dept.getDeptCode());</span>
+<span class="fc" id="L236">        vo.setDeptName(dept.getDeptName());</span>
+<span class="fc" id="L237">        vo.setShortName(dept.getShortName());</span>
+<span class="fc" id="L238">        vo.setParentId(dept.getParentId());</span>
+<span class="fc" id="L239">        vo.setDeptLevel(dept.getDeptLevel());</span>
+<span class="fc" id="L240">        vo.setDeptType(dept.getDeptType());</span>
+<span class="fc" id="L241">        vo.setLeaderId(dept.getLeaderId());</span>
+<span class="fc" id="L242">        vo.setLeaderName(dept.getLeaderName());</span>
+<span class="fc" id="L243">        vo.setPhone(dept.getPhone());</span>
+<span class="fc" id="L244">        vo.setAddress(dept.getAddress());</span>
+<span class="fc" id="L245">        vo.setSortOrder(dept.getSortOrder());</span>
+<span class="fc" id="L246">        vo.setStatus(dept.getStatus());</span>
+<span class="fc" id="L247">        vo.setRemark(dept.getRemark());</span>
+<span class="fc" id="L248">        vo.setCreateTime(dept.getCreateTime());</span>
+<span class="fc" id="L249">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

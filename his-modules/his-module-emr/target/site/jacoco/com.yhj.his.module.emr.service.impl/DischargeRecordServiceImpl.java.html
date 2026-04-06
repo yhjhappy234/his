@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DischargeRecordServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.service.impl</a> &gt; <span class="el_source">DischargeRecordServiceImpl.java</span></div><h1>DischargeRecordServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.service.impl;
+
+import com.yhj.his.module.emr.dto.DischargeRecordSaveDTO;
+import com.yhj.his.module.emr.dto.EmrSubmitDTO;
+import com.yhj.his.module.emr.entity.DischargeRecord;
+import com.yhj.his.module.emr.entity.EmrTemplate;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.repository.DischargeRecordRepository;
+import com.yhj.his.module.emr.repository.EmrTemplateRepository;
+import com.yhj.his.module.emr.service.DischargeRecordService;
+import com.yhj.his.module.emr.service.EmrTemplateService;
+import com.yhj.his.module.emr.service.QcService;
+import com.yhj.his.module.emr.vo.QcSubmitResultVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 出院记录服务实现
+ */
+<span class="nc" id="L27">@Slf4j</span>
+@Service
+<span class="nc" id="L29">@RequiredArgsConstructor</span>
+public class DischargeRecordServiceImpl implements DischargeRecordService {
+
+    private final DischargeRecordRepository recordRepository;
+    private final EmrTemplateRepository templateRepository;
+    private final EmrTemplateService templateService;
+    private final QcService qcService;
+
+    @Override
+    @Transactional
+    public DischargeRecord createRecord(DischargeRecordSaveDTO dto) {
+<span class="nc" id="L40">        DischargeRecord record = new DischargeRecord();</span>
+<span class="nc" id="L41">        mapDtoToEntity(dto, record);</span>
+<span class="nc" id="L42">        record.setStatus(EmrStatus.DRAFT);</span>
+<span class="nc" id="L43">        return recordRepository.save(record);</span>
+    }
+
+    @Override
+    @Transactional
+    public DischargeRecord updateRecord(String id, DischargeRecordSaveDTO dto) {
+<span class="nc" id="L49">        DischargeRecord record = getRecordById(id);</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        if (record.getStatus() != EmrStatus.DRAFT &amp;&amp; record.getStatus() != EmrStatus.REJECTED) {</span>
+<span class="nc" id="L51">            throw new RuntimeException(&quot;只有草稿或退回状态的出院记录可以修改&quot;);</span>
+        }
+<span class="nc" id="L53">        mapDtoToEntity(dto, record);</span>
+<span class="nc" id="L54">        return recordRepository.save(record);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteRecord(String id) {
+<span class="nc" id="L60">        DischargeRecord record = getRecordById(id);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (record.getStatus() != EmrStatus.DRAFT) {</span>
+<span class="nc" id="L62">            throw new RuntimeException(&quot;只有草稿状态的出院记录可以删除&quot;);</span>
+        }
+<span class="nc" id="L64">        record.setDeleted(true);</span>
+<span class="nc" id="L65">        recordRepository.save(record);</span>
+<span class="nc" id="L66">    }</span>
+
+    @Override
+    public DischargeRecord getRecordById(String id) {
+<span class="nc" id="L70">        return recordRepository.findById(id)</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                .filter(r -&gt; !r.getDeleted())</span>
+<span class="nc" id="L72">                .orElseThrow(() -&gt; new RuntimeException(&quot;出院记录不存在: &quot; + id));</span>
+    }
+
+    @Override
+    public Optional&lt;DischargeRecord&gt; getRecordByAdmissionId(String admissionId) {
+<span class="nc" id="L77">        return recordRepository.findByAdmissionIdAndDeletedFalse(admissionId);</span>
+    }
+
+    @Override
+    public Page&lt;DischargeRecord&gt; listRecords(Pageable pageable) {
+<span class="nc" id="L82">        Page&lt;DischargeRecord&gt; page = recordRepository.findAll(pageable);</span>
+<span class="nc" id="L83">        List&lt;DischargeRecord&gt; filtered = page.getContent().stream()</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                .filter(r -&gt; !r.getDeleted())</span>
+<span class="nc" id="L85">                .toList();</span>
+<span class="nc" id="L86">        return new org.springframework.data.domain.PageImpl&lt;&gt;(filtered, pageable, filtered.size());</span>
+    }
+
+    @Override
+    public List&lt;DischargeRecord&gt; getRecordsByPatientId(String patientId) {
+<span class="nc" id="L91">        return recordRepository.findByPatientIdAndDeletedFalseOrderByDischargeDateDesc(patientId);</span>
+    }
+
+    @Override
+    public Page&lt;DischargeRecord&gt; getRecordsByDeptId(String deptId, Pageable pageable) {
+<span class="nc" id="L96">        return recordRepository.findByDeptIdAndDeletedFalse(deptId, pageable);</span>
+    }
+
+    @Override
+    public Page&lt;DischargeRecord&gt; getRecordsByStatus(EmrStatus status, Pageable pageable) {
+<span class="nc" id="L101">        return recordRepository.findByStatusAndDeletedFalse(status, pageable);</span>
+    }
+
+    @Override
+    public Page&lt;DischargeRecord&gt; getRecordsByDeptIdAndStatus(String deptId, EmrStatus status, Pageable pageable) {
+<span class="nc" id="L106">        return recordRepository.findByDeptIdAndStatusAndDeletedFalse(deptId, status, pageable);</span>
+    }
+
+    @Override
+    public Optional&lt;DischargeRecord&gt; getLatestRecordByPatientId(String patientId) {
+<span class="nc" id="L111">        return recordRepository.findFirstByPatientIdAndDeletedFalseOrderByDischargeDateDesc(patientId);</span>
+    }
+
+    @Override
+    public Page&lt;DischargeRecord&gt; searchByPatientName(String patientName, Pageable pageable) {
+<span class="nc" id="L116">        return recordRepository.findByPatientNameContainingAndDeletedFalse(patientName, pageable);</span>
+    }
+
+    @Override
+    @Transactional
+    public DischargeRecord submitRecord(EmrSubmitDTO dto) {
+<span class="nc" id="L122">        DischargeRecord record = getRecordById(dto.getRecordId());</span>
+<span class="nc bnc" id="L123" title="All 4 branches missed.">        if (record.getStatus() != EmrStatus.DRAFT &amp;&amp; record.getStatus() != EmrStatus.REJECTED) {</span>
+<span class="nc" id="L124">            throw new RuntimeException(&quot;只有草稿或退回状态的出院记录可以提交&quot;);</span>
+        }
+<span class="nc" id="L126">        record.setStatus(EmrStatus.SUBMITTED);</span>
+<span class="nc" id="L127">        return recordRepository.save(record);</span>
+    }
+
+    @Override
+    @Transactional
+    public QcSubmitResultVO submitDischargeRecord(EmrSubmitDTO dto) {
+<span class="nc" id="L133">        submitRecord(dto);</span>
+<span class="nc" id="L134">        return qcService.performQcCheckAndReturn(dto.getRecordId(), &quot;出院记录&quot;);</span>
+    }
+
+    @Override
+    @Transactional
+    public DischargeRecord auditRecord(String id, boolean approved, String auditorId, String auditorName, String comment) {
+<span class="nc" id="L140">        DischargeRecord record = getRecordById(id);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (record.getStatus() != EmrStatus.SUBMITTED) {</span>
+<span class="nc" id="L142">            throw new RuntimeException(&quot;只有已提交状态的出院记录可以审核&quot;);</span>
+        }
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (approved) {</span>
+<span class="nc" id="L145">            record.setStatus(EmrStatus.AUDITED);</span>
+        } else {
+<span class="nc" id="L147">            record.setStatus(EmrStatus.REJECTED);</span>
+        }
+<span class="nc" id="L149">        return recordRepository.save(record);</span>
+    }
+
+    @Override
+    @Transactional
+    public DischargeRecord createFromTemplate(String templateId, DischargeRecordSaveDTO dto) {
+<span class="nc" id="L155">        EmrTemplate template = templateRepository.findById(templateId)</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                .filter(t -&gt; !t.getDeleted())</span>
+<span class="nc" id="L157">                .orElseThrow(() -&gt; new RuntimeException(&quot;模板不存在: &quot; + templateId));</span>
+<span class="nc" id="L158">        templateService.incrementUseCount(templateId);</span>
+<span class="nc" id="L159">        DischargeRecord record = createRecord(dto);</span>
+<span class="nc" id="L160">        log.info(&quot;应用模板 {} 创建出院记录&quot;, template.getTemplateName());</span>
+<span class="nc" id="L161">        return record;</span>
+    }
+
+    private void mapDtoToEntity(DischargeRecordSaveDTO dto, DischargeRecord record) {
+<span class="nc" id="L165">        record.setAdmissionId(dto.getAdmissionId());</span>
+<span class="nc" id="L166">        record.setPatientId(dto.getPatientId());</span>
+<span class="nc" id="L167">        record.setPatientName(dto.getPatientName());</span>
+<span class="nc" id="L168">        record.setAdmissionDate(dto.getAdmissionDate());</span>
+<span class="nc" id="L169">        record.setDischargeDate(dto.getDischargeDate());</span>
+<span class="nc" id="L170">        record.setHospitalDays(dto.getHospitalDays());</span>
+<span class="nc" id="L171">        record.setAdmissionSituation(dto.getAdmissionSituation());</span>
+<span class="nc" id="L172">        record.setTreatmentProcess(dto.getTreatmentProcess());</span>
+<span class="nc" id="L173">        record.setDischargeDiagnosisCode(dto.getDischargeDiagnosisCode());</span>
+<span class="nc" id="L174">        record.setDischargeDiagnosisName(dto.getDischargeDiagnosisName());</span>
+<span class="nc" id="L175">        record.setDischargeCondition(dto.getDischargeCondition());</span>
+<span class="nc" id="L176">        record.setDischargeAdvice(dto.getDischargeAdvice());</span>
+<span class="nc" id="L177">        record.setDischargeMedication(dto.getDischargeMedication());</span>
+<span class="nc" id="L178">        record.setFollowUpDate(dto.getFollowUpDate());</span>
+<span class="nc" id="L179">        record.setFollowUpDept(dto.getFollowUpDept());</span>
+<span class="nc" id="L180">        record.setDoctorId(dto.getDoctorId());</span>
+<span class="nc" id="L181">        record.setDoctorName(dto.getDoctorName());</span>
+<span class="nc" id="L182">        record.setDeptId(dto.getDeptId());</span>
+<span class="nc" id="L183">        record.setDeptName(dto.getDeptName());</span>
+<span class="nc" id="L184">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

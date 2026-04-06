@@ -1,0 +1,10 @@
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/config/CorsConfig.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/config/SQLiteDataSourceConfig.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/domain/BaseEntity.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/domain/ErrorCode.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/domain/PageResult.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/domain/Result.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/exception/BusinessException.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/exception/GlobalExceptionHandler.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/util/PageUtils.java
+/home/admin/workspace/his/his-common/his-common-core/src/main/java/com/yhj/his/common/core/util/SequenceGenerator.java

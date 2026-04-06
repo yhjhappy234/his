@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmrTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.entity</a> &gt; <span class="el_source">EmrTemplate.java</span></div><h1>EmrTemplate.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.emr.enums.TemplateType;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 病历模板实体
+ */
+<span class="pc" id="L13">@Data</span>
+<span class="nc bnc" id="L14" title="All 104 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;emr_template&quot;)
+@Schema(description = &quot;病历模板&quot;)
+public class EmrTemplate extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;模板名称&quot;)
+    @Column(name = &quot;template_name&quot;, length = 100, nullable = false)
+<span class="fc" id="L24">    private String templateName;</span>
+
+    @Schema(description = &quot;模板类型&quot;)
+    @Column(name = &quot;template_type&quot;, length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="fc" id="L29">    private TemplateType templateType;</span>
+
+    @Schema(description = &quot;模板分类&quot;)
+    @Column(name = &quot;category&quot;, length = 50)
+<span class="fc" id="L33">    private String category;</span>
+
+    @Schema(description = &quot;模板内容&quot;)
+    @Column(name = &quot;template_content&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="fc" id="L37">    private String templateContent;</span>
+
+    @Schema(description = &quot;适用科室ID&quot;)
+    @Column(name = &quot;dept_id&quot;, length = 20)
+<span class="fc" id="L41">    private String deptId;</span>
+
+    @Schema(description = &quot;适用科室名称&quot;)
+    @Column(name = &quot;dept_name&quot;, length = 100)
+<span class="nc" id="L45">    private String deptName;</span>
+
+    @Schema(description = &quot;创建医生ID&quot;)
+    @Column(name = &quot;creator_id&quot;, length = 20)
+<span class="fc" id="L49">    private String creatorId;</span>
+
+    @Schema(description = &quot;创建医生姓名&quot;)
+    @Column(name = &quot;creator_name&quot;, length = 50)
+<span class="nc" id="L53">    private String creatorName;</span>
+
+<span class="fc" id="L55">    @Schema(description = &quot;是否公开&quot;)</span>
+    @Column(name = &quot;is_public&quot;, nullable = false)
+<span class="fc" id="L57">    private Boolean isPublic = false;</span>
+
+<span class="fc" id="L59">    @Schema(description = &quot;是否启用&quot;)</span>
+    @Column(name = &quot;is_enabled&quot;, nullable = false)
+<span class="fc" id="L61">    private Boolean isEnabled = true;</span>
+
+<span class="fc" id="L63">    @Schema(description = &quot;使用次数&quot;)</span>
+    @Column(name = &quot;use_count&quot;)
+<span class="fc" id="L65">    private Integer useCount = 0;</span>
+
+    @Schema(description = &quot;备注&quot;)
+    @Column(name = &quot;remark&quot;, length = 500)
+<span class="nc" id="L69">    private String remark;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

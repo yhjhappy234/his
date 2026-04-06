@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportWriteDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.dto</a> &gt; <span class="el_source">ReportWriteDTO.java</span></div><h1>ReportWriteDTO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+<span class="pc bnc" id="L7" title="All 126 branches missed.">@Data</span>
+@Schema(description = &quot;报告书写DTO&quot;)
+public class ReportWriteDTO {
+
+    @Schema(description = &quot;报告ID(更新时必填)&quot;)
+<span class="fc" id="L12">    private String reportId;</span>
+
+    @Schema(description = &quot;检查ID&quot;, required = true)
+    @NotBlank(message = &quot;检查ID不能为空&quot;)
+<span class="fc" id="L16">    private String examId;</span>
+
+    @Schema(description = &quot;申请ID&quot;)
+<span class="fc" id="L19">    private String requestId;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+<span class="fc" id="L22">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+<span class="fc" id="L25">    private String patientName;</span>
+
+    @Schema(description = &quot;报告类型&quot;)
+<span class="fc" id="L28">    private String reportType;</span>
+
+    @Schema(description = &quot;报告模板ID&quot;)
+<span class="fc" id="L31">    private String reportTemplateId;</span>
+
+    @Schema(description = &quot;检查所见&quot;, required = true)
+    @NotBlank(message = &quot;检查所见不能为空&quot;)
+<span class="fc" id="L35">    private String examDescription;</span>
+
+    @Schema(description = &quot;诊断结论&quot;, required = true)
+    @NotBlank(message = &quot;诊断结论不能为空&quot;)
+<span class="fc" id="L39">    private String diagnosisResult;</span>
+
+    @Schema(description = &quot;诊断编码&quot;)
+<span class="fc" id="L42">    private String diagnosisCode;</span>
+
+    @Schema(description = &quot;诊断名称&quot;)
+<span class="fc" id="L45">    private String diagnosisName;</span>
+
+    @Schema(description = &quot;关键影像&quot;)
+<span class="fc" id="L48">    private String keyImages;</span>
+
+    @Schema(description = &quot;书写医生ID&quot;)
+<span class="fc" id="L51">    private String writerId;</span>
+
+    @Schema(description = &quot;书写医生姓名&quot;)
+<span class="fc" id="L54">    private String writerName;</span>
+
+    @Schema(description = &quot;备注&quot;)
+<span class="fc" id="L57">    private String remark;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

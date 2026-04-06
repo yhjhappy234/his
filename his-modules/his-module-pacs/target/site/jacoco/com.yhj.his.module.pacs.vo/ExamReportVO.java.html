@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExamReportVO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.vo</a> &gt; <span class="el_source">ExamReportVO.java</span></div><h1>ExamReportVO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+<span class="pc bnc" id="L8" title="All 230 branches missed.">@Data</span>
+@Schema(description = &quot;诊断报告VO&quot;)
+public class ExamReportVO {
+
+    @Schema(description = &quot;报告ID&quot;)
+<span class="fc" id="L13">    private String id;</span>
+
+    @Schema(description = &quot;报告编号&quot;)
+<span class="fc" id="L16">    private String reportNo;</span>
+
+    @Schema(description = &quot;检查ID&quot;)
+<span class="fc" id="L19">    private String examId;</span>
+
+    @Schema(description = &quot;申请ID&quot;)
+<span class="fc" id="L22">    private String requestId;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+<span class="fc" id="L25">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+<span class="fc" id="L28">    private String patientName;</span>
+
+    @Schema(description = &quot;报告类型&quot;)
+<span class="nc" id="L31">    private String reportType;</span>
+
+    @Schema(description = &quot;报告模板ID&quot;)
+<span class="nc" id="L34">    private String reportTemplateId;</span>
+
+    @Schema(description = &quot;检查所见&quot;)
+<span class="nc" id="L37">    private String examDescription;</span>
+
+    @Schema(description = &quot;诊断结论&quot;)
+<span class="fc" id="L40">    private String diagnosisResult;</span>
+
+    @Schema(description = &quot;诊断编码&quot;)
+<span class="nc" id="L43">    private String diagnosisCode;</span>
+
+    @Schema(description = &quot;诊断名称&quot;)
+<span class="nc" id="L46">    private String diagnosisName;</span>
+
+    @Schema(description = &quot;关键影像&quot;)
+<span class="nc" id="L49">    private String keyImages;</span>
+
+    @Schema(description = &quot;报告状态&quot;)
+<span class="fc" id="L52">    private String reportStatus;</span>
+
+    @Schema(description = &quot;书写医生ID&quot;)
+<span class="fc" id="L55">    private String writerId;</span>
+
+    @Schema(description = &quot;书写医生姓名&quot;)
+<span class="nc" id="L58">    private String writerName;</span>
+
+    @Schema(description = &quot;书写时间&quot;)
+<span class="nc" id="L61">    private LocalDateTime writeTime;</span>
+
+    @Schema(description = &quot;审核医生ID&quot;)
+<span class="fc" id="L64">    private String reviewerId;</span>
+
+    @Schema(description = &quot;审核医生姓名&quot;)
+<span class="fc" id="L67">    private String reviewerName;</span>
+
+    @Schema(description = &quot;审核时间&quot;)
+<span class="fc" id="L70">    private LocalDateTime reviewTime;</span>
+
+    @Schema(description = &quot;发布时间&quot;)
+<span class="fc" id="L73">    private LocalDateTime publishTime;</span>
+
+    @Schema(description = &quot;发布人ID&quot;)
+<span class="fc" id="L76">    private String publisherId;</span>
+
+    @Schema(description = &quot;发布人姓名&quot;)
+<span class="fc" id="L79">    private String publisherName;</span>
+
+    @Schema(description = &quot;打印次数&quot;)
+<span class="fc" id="L82">    private Integer printCount;</span>
+
+    @Schema(description = &quot;审核意见&quot;)
+<span class="fc" id="L85">    private String reviewComment;</span>
+
+    @Schema(description = &quot;备注&quot;)
+<span class="nc" id="L88">    private String remark;</span>
+
+    @Schema(description = &quot;创建时间&quot;)
+<span class="nc" id="L91">    private LocalDateTime createTime;</span>
+
+    @Schema(description = &quot;更新时间&quot;)
+<span class="fc" id="L94">    private LocalDateTime updateTime;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutpatientEmrController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.controller</a> &gt; <span class="el_source">OutpatientEmrController.java</span></div><h1>OutpatientEmrController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.controller;
+
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.emr.dto.EmrSubmitDTO;
+import com.yhj.his.module.emr.dto.OutpatientEmrSaveDTO;
+import com.yhj.his.module.emr.entity.OutpatientEmr;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.service.OutpatientEmrService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 门诊病历REST控制器
+ */
+@Tag(name = &quot;门诊病历管理&quot;, description = &quot;门诊病历的CRUD及业务操作&quot;)
+@RestController
+@RequestMapping(&quot;/api/emr/v1/outpatient-emrs&quot;)
+<span class="nc" id="L31">@RequiredArgsConstructor</span>
+public class OutpatientEmrController {
+
+    private final OutpatientEmrService emrService;
+
+    @Operation(summary = &quot;创建门诊病历&quot;, description = &quot;创建新的门诊病历&quot;)
+    @PostMapping
+    public Result&lt;OutpatientEmr&gt; createEmr(@Valid @RequestBody OutpatientEmrSaveDTO dto) {
+<span class="nc" id="L39">        OutpatientEmr emr = emrService.createEmr(dto);</span>
+<span class="nc" id="L40">        return Result.success(&quot;门诊病历创建成功&quot;, emr);</span>
+    }
+
+    @Operation(summary = &quot;从模板创建门诊病历&quot;, description = &quot;使用模板创建门诊病历&quot;)
+    @PostMapping(&quot;/from-template/{templateId}&quot;)
+    public Result&lt;OutpatientEmr&gt; createFromTemplate(
+            @Parameter(description = &quot;模板ID&quot;) @PathVariable String templateId,
+            @Valid @RequestBody OutpatientEmrSaveDTO dto) {
+<span class="nc" id="L48">        OutpatientEmr emr = emrService.createFromTemplate(templateId, dto);</span>
+<span class="nc" id="L49">        return Result.success(&quot;从模板创建门诊病历成功&quot;, emr);</span>
+    }
+
+    @Operation(summary = &quot;更新门诊病历&quot;, description = &quot;更新指定的门诊病历&quot;)
+    @PutMapping(&quot;/{id}&quot;)
+    public Result&lt;OutpatientEmr&gt; updateEmr(
+            @Parameter(description = &quot;病历ID&quot;) @PathVariable String id,
+            @Valid @RequestBody OutpatientEmrSaveDTO dto) {
+<span class="nc" id="L57">        OutpatientEmr emr = emrService.updateEmr(id, dto);</span>
+<span class="nc" id="L58">        return Result.success(&quot;门诊病历更新成功&quot;, emr);</span>
+    }
+
+    @Operation(summary = &quot;删除门诊病历&quot;, description = &quot;删除指定的门诊病历&quot;)
+    @DeleteMapping(&quot;/{id}&quot;)
+    public Result&lt;Void&gt; deleteEmr(@Parameter(description = &quot;病历ID&quot;) @PathVariable String id) {
+<span class="nc" id="L64">        emrService.deleteEmr(id);</span>
+<span class="nc" id="L65">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;获取门诊病历详情&quot;, description = &quot;根据ID获取门诊病历详情&quot;)
+    @GetMapping(&quot;/{id}&quot;)
+    public Result&lt;OutpatientEmr&gt; getEmr(@Parameter(description = &quot;病历ID&quot;) @PathVariable String id) {
+<span class="nc" id="L71">        OutpatientEmr emr = emrService.getEmrById(id);</span>
+<span class="nc" id="L72">        return Result.success(emr);</span>
+    }
+
+    @Operation(summary = &quot;根据就诊ID获取门诊病历&quot;, description = &quot;根据就诊ID获取门诊病历&quot;)
+    @GetMapping(&quot;/visit/{visitId}&quot;)
+    public Result&lt;OutpatientEmr&gt; getEmrByVisitId(
+            @Parameter(description = &quot;就诊ID&quot;) @PathVariable String visitId) {
+<span class="nc" id="L79">        Optional&lt;OutpatientEmr&gt; emr = emrService.getEmrByVisitId(visitId);</span>
+<span class="nc" id="L80">        return emr.map(Result::success)</span>
+<span class="nc" id="L81">                .orElseGet(() -&gt; Result.error(404, &quot;未找到该就诊ID对应的门诊病历&quot;));</span>
+    }
+
+    @Operation(summary = &quot;分页查询门诊病历&quot;, description = &quot;分页查询所有门诊病历&quot;)
+    @GetMapping
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; listEmrs(
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size,
+            @Parameter(description = &quot;排序字段&quot;) @RequestParam(defaultValue = &quot;createTime&quot;) String sortBy,
+            @Parameter(description = &quot;排序方向&quot;) @RequestParam(defaultValue = &quot;DESC&quot;) String sortDir) {
+<span class="nc" id="L91">        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);</span>
+<span class="nc" id="L92">        Pageable pageable = PageRequest.of(page, size, sort);</span>
+<span class="nc" id="L93">        Page&lt;OutpatientEmr&gt; emrs = emrService.listEmrs(pageable);</span>
+<span class="nc" id="L94">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;根据患者ID查询病历列表&quot;, description = &quot;获取患者的所有门诊病历&quot;)
+    @GetMapping(&quot;/patient/{patientId}&quot;)
+    public Result&lt;List&lt;OutpatientEmr&gt;&gt; getEmrsByPatientId(
+            @Parameter(description = &quot;患者ID&quot;) @PathVariable String patientId) {
+<span class="nc" id="L101">        List&lt;OutpatientEmr&gt; emrs = emrService.getEmrsByPatientId(patientId);</span>
+<span class="nc" id="L102">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;根据医生ID查询病历&quot;, description = &quot;分页查询医生的门诊病历&quot;)
+    @GetMapping(&quot;/doctor/{doctorId}&quot;)
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; getEmrsByDoctorId(
+            @Parameter(description = &quot;医生ID&quot;) @PathVariable String doctorId,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L111">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L112">        Page&lt;OutpatientEmr&gt; emrs = emrService.getEmrsByDoctorId(doctorId, pageable);</span>
+<span class="nc" id="L113">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;根据科室和日期查询&quot;, description = &quot;分页查询指定科室某日期的门诊病历&quot;)
+    @GetMapping(&quot;/dept/{deptId}/date/{visitDate}&quot;)
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; getEmrsByDeptIdAndDate(
+            @Parameter(description = &quot;科室ID&quot;) @PathVariable String deptId,
+            @Parameter(description = &quot;就诊日期&quot;) @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate visitDate,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L123">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L124">        Page&lt;OutpatientEmr&gt; emrs = emrService.getEmrsByDeptIdAndDate(deptId, visitDate, pageable);</span>
+<span class="nc" id="L125">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;根据状态查询&quot;, description = &quot;分页查询指定状态的门诊病历&quot;)
+    @GetMapping(&quot;/status/{status}&quot;)
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; getEmrsByStatus(
+            @Parameter(description = &quot;病历状态&quot;) @PathVariable EmrStatus status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L134">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L135">        Page&lt;OutpatientEmr&gt; emrs = emrService.getEmrsByStatus(status, pageable);</span>
+<span class="nc" id="L136">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;根据科室和状态查询&quot;, description = &quot;分页查询指定科室和状态的门诊病历&quot;)
+    @GetMapping(&quot;/dept/{deptId}/status/{status}&quot;)
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; getEmrsByDeptIdAndStatus(
+            @Parameter(description = &quot;科室ID&quot;) @PathVariable String deptId,
+            @Parameter(description = &quot;病历状态&quot;) @PathVariable EmrStatus status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L146">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L147">        Page&lt;OutpatientEmr&gt; emrs = emrService.getEmrsByDeptIdAndStatus(deptId, status, pageable);</span>
+<span class="nc" id="L148">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;获取患者最新病历&quot;, description = &quot;获取患者最新的门诊病历&quot;)
+    @GetMapping(&quot;/patient/{patientId}/latest&quot;)
+    public Result&lt;OutpatientEmr&gt; getLatestEmrByPatientId(
+            @Parameter(description = &quot;患者ID&quot;) @PathVariable String patientId) {
+<span class="nc" id="L155">        Optional&lt;OutpatientEmr&gt; emr = emrService.getLatestEmrByPatientId(patientId);</span>
+<span class="nc" id="L156">        return emr.map(Result::success)</span>
+<span class="nc" id="L157">                .orElseGet(() -&gt; Result.error(404, &quot;未找到该患者的门诊病历&quot;));</span>
+    }
+
+    @Operation(summary = &quot;搜索门诊病历&quot;, description = &quot;根据患者姓名模糊搜索门诊病历&quot;)
+    @GetMapping(&quot;/search&quot;)
+    public Result&lt;Page&lt;OutpatientEmr&gt;&gt; searchByPatientName(
+            @Parameter(description = &quot;患者姓名&quot;) @RequestParam String patientName,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L166">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L167">        Page&lt;OutpatientEmr&gt; emrs = emrService.searchByPatientName(patientName, pageable);</span>
+<span class="nc" id="L168">        return Result.success(emrs);</span>
+    }
+
+    @Operation(summary = &quot;提交门诊病历&quot;, description = &quot;提交门诊病历待审核&quot;)
+    @PostMapping(&quot;/submit&quot;)
+    public Result&lt;OutpatientEmr&gt; submitEmr(@Valid @RequestBody EmrSubmitDTO dto) {
+<span class="nc" id="L174">        OutpatientEmr emr = emrService.submitEmr(dto);</span>
+<span class="nc" id="L175">        return Result.success(&quot;门诊病历提交成功&quot;, emr);</span>
+    }
+
+    @Operation(summary = &quot;审核门诊病历&quot;, description = &quot;审核门诊病历&quot;)
+    @PostMapping(&quot;/{id}/audit&quot;)
+    public Result&lt;OutpatientEmr&gt; auditEmr(
+            @Parameter(description = &quot;病历ID&quot;) @PathVariable String id,
+            @Parameter(description = &quot;是否通过&quot;) @RequestParam boolean approved,
+            @Parameter(description = &quot;审核人ID&quot;) @RequestParam String auditorId,
+            @Parameter(description = &quot;审核人姓名&quot;) @RequestParam String auditorName,
+            @Parameter(description = &quot;审核意见&quot;) @RequestParam(required = false) String comment) {
+<span class="nc" id="L186">        OutpatientEmr emr = emrService.auditEmr(id, approved, auditorId, auditorName, comment);</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        return Result.success(approved ? &quot;门诊病历审核通过&quot; : &quot;门诊病历审核退回&quot;, emr);</span>
+    }
+
+    @Operation(summary = &quot;统计科室某日期病历数&quot;, description = &quot;统计指定科室某日期的门诊病历数量&quot;)
+    @GetMapping(&quot;/dept/{deptId}/date/{visitDate}/count&quot;)
+    public Result&lt;Long&gt; countByDeptIdAndVisitDate(
+            @Parameter(description = &quot;科室ID&quot;) @PathVariable String deptId,
+            @Parameter(description = &quot;就诊日期&quot;) @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate visitDate) {
+<span class="nc" id="L195">        Long count = emrService.countByDeptIdAndVisitDate(deptId, visitDate);</span>
+<span class="nc" id="L196">        return Result.success(count);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

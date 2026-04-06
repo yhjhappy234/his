@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EquipmentServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.service.impl</a> &gt; <span class="el_source">EquipmentServiceImpl.java</span></div><h1>EquipmentServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.service.impl;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.pacs.dto.*;
+import com.yhj.his.module.pacs.entity.*;
+import com.yhj.his.module.pacs.repository.*;
+import com.yhj.his.module.pacs.service.*;
+import com.yhj.his.module.pacs.vo.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 设备机房管理服务实现
+ */
+<span class="fc" id="L24">@Slf4j</span>
+@Service
+<span class="fc" id="L26">@RequiredArgsConstructor</span>
+public class EquipmentServiceImpl implements EquipmentService {
+
+    private final EquipmentInfoRepository equipmentInfoRepository;
+    private final RoomScheduleRepository roomScheduleRepository;
+
+    @Override
+    @Transactional
+    public EquipmentVO createEquipment(EquipmentDTO dto) {
+        // 检查设备编码是否已存在
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (dto.getEquipmentCode() != null &amp;&amp; equipmentInfoRepository.findByEquipmentCode(dto.getEquipmentCode()).isPresent()) {</span>
+<span class="fc" id="L37">            throw new BusinessException(&quot;设备编码已存在&quot;);</span>
+        }
+
+<span class="fc" id="L40">        EquipmentInfo equipment = new EquipmentInfo();</span>
+<span class="fc" id="L41">        equipment.setEquipmentCode(dto.getEquipmentCode());</span>
+<span class="fc" id="L42">        equipment.setEquipmentName(dto.getEquipmentName());</span>
+<span class="fc" id="L43">        equipment.setEquipmentType(dto.getEquipmentType());</span>
+<span class="fc" id="L44">        equipment.setModel(dto.getModel());</span>
+<span class="fc" id="L45">        equipment.setManufacturer(dto.getManufacturer());</span>
+<span class="fc" id="L46">        equipment.setSerialNumber(dto.getSerialNumber());</span>
+<span class="fc" id="L47">        equipment.setAeTitle(dto.getAeTitle());</span>
+<span class="fc" id="L48">        equipment.setIpAddress(dto.getIpAddress());</span>
+<span class="fc" id="L49">        equipment.setPort(dto.getPort());</span>
+<span class="fc" id="L50">        equipment.setRoomNo(dto.getRoomNo());</span>
+<span class="fc" id="L51">        equipment.setRoomName(dto.getRoomName());</span>
+<span class="fc" id="L52">        equipment.setPurchaseDate(dto.getPurchaseDate());</span>
+<span class="fc" id="L53">        equipment.setEnableDate(dto.getEnableDate());</span>
+<span class="fc" id="L54">        equipment.setStatus(dto.getStatus());</span>
+<span class="fc" id="L55">        equipment.setManagerId(dto.getManagerId());</span>
+<span class="fc" id="L56">        equipment.setManagerName(dto.getManagerName());</span>
+<span class="fc" id="L57">        equipment.setSortOrder(dto.getSortOrder());</span>
+<span class="fc" id="L58">        equipment.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L60">        equipment = equipmentInfoRepository.save(equipment);</span>
+<span class="fc" id="L61">        log.info(&quot;创建设备成功: equipmentCode={}, equipmentName={}&quot;, equipment.getEquipmentCode(), equipment.getEquipmentName());</span>
+
+<span class="fc" id="L63">        return convertEquipmentToVO(equipment);</span>
+    }
+
+    @Override
+    @Transactional
+    public EquipmentVO updateEquipment(EquipmentDTO dto) {
+<span class="fc" id="L69">        EquipmentInfo equipment = equipmentInfoRepository.findById(dto.getId())</span>
+<span class="fc" id="L70">                .orElseThrow(() -&gt; new BusinessException(&quot;设备不存在&quot;));</span>
+
+<span class="fc" id="L72">        equipment.setEquipmentCode(dto.getEquipmentCode());</span>
+<span class="fc" id="L73">        equipment.setEquipmentName(dto.getEquipmentName());</span>
+<span class="fc" id="L74">        equipment.setEquipmentType(dto.getEquipmentType());</span>
+<span class="fc" id="L75">        equipment.setModel(dto.getModel());</span>
+<span class="fc" id="L76">        equipment.setManufacturer(dto.getManufacturer());</span>
+<span class="fc" id="L77">        equipment.setSerialNumber(dto.getSerialNumber());</span>
+<span class="fc" id="L78">        equipment.setAeTitle(dto.getAeTitle());</span>
+<span class="fc" id="L79">        equipment.setIpAddress(dto.getIpAddress());</span>
+<span class="fc" id="L80">        equipment.setPort(dto.getPort());</span>
+<span class="fc" id="L81">        equipment.setRoomNo(dto.getRoomNo());</span>
+<span class="fc" id="L82">        equipment.setRoomName(dto.getRoomName());</span>
+<span class="fc" id="L83">        equipment.setPurchaseDate(dto.getPurchaseDate());</span>
+<span class="fc" id="L84">        equipment.setEnableDate(dto.getEnableDate());</span>
+<span class="fc" id="L85">        equipment.setStatus(dto.getStatus());</span>
+<span class="fc" id="L86">        equipment.setManagerId(dto.getManagerId());</span>
+<span class="fc" id="L87">        equipment.setManagerName(dto.getManagerName());</span>
+<span class="fc" id="L88">        equipment.setSortOrder(dto.getSortOrder());</span>
+<span class="fc" id="L89">        equipment.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L91">        equipment = equipmentInfoRepository.save(equipment);</span>
+<span class="fc" id="L92">        log.info(&quot;更新设备成功: equipmentId={}&quot;, equipment.getId());</span>
+
+<span class="fc" id="L94">        return convertEquipmentToVO(equipment);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteEquipment(String equipmentId) {
+<span class="fc" id="L100">        EquipmentInfo equipment = equipmentInfoRepository.findById(equipmentId)</span>
+<span class="fc" id="L101">                .orElseThrow(() -&gt; new BusinessException(&quot;设备不存在&quot;));</span>
+
+<span class="fc" id="L103">        equipmentInfoRepository.delete(equipment);</span>
+<span class="fc" id="L104">        log.info(&quot;删除设备成功: equipmentId={}&quot;, equipmentId);</span>
+<span class="fc" id="L105">    }</span>
+
+    @Override
+    public EquipmentVO getEquipmentById(String equipmentId) {
+<span class="fc" id="L109">        EquipmentInfo equipment = equipmentInfoRepository.findById(equipmentId)</span>
+<span class="fc" id="L110">                .orElseThrow(() -&gt; new BusinessException(&quot;设备不存在&quot;));</span>
+<span class="fc" id="L111">        return convertEquipmentToVO(equipment);</span>
+    }
+
+    @Override
+    public EquipmentVO getEquipmentByCode(String equipmentCode) {
+<span class="fc" id="L116">        EquipmentInfo equipment = equipmentInfoRepository.findByEquipmentCode(equipmentCode)</span>
+<span class="fc" id="L117">                .orElseThrow(() -&gt; new BusinessException(&quot;设备不存在&quot;));</span>
+<span class="fc" id="L118">        return convertEquipmentToVO(equipment);</span>
+    }
+
+    @Override
+    public EquipmentVO getEquipmentByRoomNo(String roomNo) {
+<span class="fc" id="L123">        EquipmentInfo equipment = equipmentInfoRepository.findByRoomNo(roomNo).orElse(null);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        return equipment != null ? convertEquipmentToVO(equipment) : null;</span>
+    }
+
+    @Override
+    public List&lt;EquipmentVO&gt; getEquipmentByType(String equipmentType) {
+<span class="fc" id="L129">        List&lt;EquipmentInfo&gt; list = equipmentInfoRepository.findByEquipmentType(equipmentType);</span>
+<span class="fc" id="L130">        return list.stream().map(this::convertEquipmentToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;EquipmentVO&gt; getNormalEquipment() {
+<span class="fc" id="L135">        List&lt;EquipmentInfo&gt; list = equipmentInfoRepository.findNormalEquipment();</span>
+<span class="fc" id="L136">        return list.stream().map(this::convertEquipmentToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public PageResult&lt;EquipmentVO&gt; queryEquipment(String equipmentCode, String equipmentName, String equipmentType, String status, String roomNo, Integer pageNum, Integer pageSize) {
+<span class="fc" id="L141">        Page&lt;EquipmentInfo&gt; page = equipmentInfoRepository.findByConditions(</span>
+                equipmentCode, equipmentName, equipmentType, status, roomNo,
+<span class="fc" id="L143">                PageUtils.toPageable(pageNum, pageSize)</span>
+        );
+<span class="fc" id="L145">        List&lt;EquipmentVO&gt; list = page.getContent().stream().map(this::convertEquipmentToVO).collect(Collectors.toList());</span>
+<span class="fc" id="L146">        return PageResult.of(list, page.getTotalElements(), pageNum, pageSize);</span>
+    }
+
+    @Override
+    @Transactional
+    public EquipmentVO updateEquipmentStatus(String equipmentId, String status) {
+<span class="fc" id="L152">        EquipmentInfo equipment = equipmentInfoRepository.findById(equipmentId)</span>
+<span class="fc" id="L153">                .orElseThrow(() -&gt; new BusinessException(&quot;设备不存在&quot;));</span>
+
+<span class="fc" id="L155">        equipment.setStatus(status);</span>
+<span class="fc" id="L156">        equipment = equipmentInfoRepository.save(equipment);</span>
+<span class="fc" id="L157">        log.info(&quot;更新设备状态成功: equipmentId={}, status={}&quot;, equipmentId, status);</span>
+
+<span class="fc" id="L159">        return convertEquipmentToVO(equipment);</span>
+    }
+
+    @Override
+    @Transactional
+    public RoomScheduleVO createSchedule(RoomScheduleDTO dto) {
+<span class="fc" id="L165">        RoomSchedule schedule = new RoomSchedule();</span>
+<span class="fc" id="L166">        schedule.setRoomNo(dto.getRoomNo());</span>
+<span class="fc" id="L167">        schedule.setRoomName(dto.getRoomName());</span>
+<span class="fc" id="L168">        schedule.setEquipmentId(dto.getEquipmentId());</span>
+<span class="fc" id="L169">        schedule.setEquipmentName(dto.getEquipmentName());</span>
+<span class="fc" id="L170">        schedule.setScheduleDate(dto.getScheduleDate());</span>
+<span class="fc" id="L171">        schedule.setShift(dto.getShift());</span>
+<span class="fc" id="L172">        schedule.setStartTime(dto.getStartTime());</span>
+<span class="fc" id="L173">        schedule.setEndTime(dto.getEndTime());</span>
+<span class="fc" id="L174">        schedule.setTotalQuota(dto.getTotalQuota());</span>
+<span class="fc" id="L175">        schedule.setScheduledCount(0);</span>
+<span class="fc" id="L176">        schedule.setAvailableQuota(dto.getTotalQuota());</span>
+<span class="fc" id="L177">        schedule.setExamTypeLimit(dto.getExamTypeLimit());</span>
+<span class="fc" id="L178">        schedule.setDoctorId(dto.getDoctorId());</span>
+<span class="fc" id="L179">        schedule.setDoctorName(dto.getDoctorName());</span>
+<span class="fc" id="L180">        schedule.setTechnicianId(dto.getTechnicianId());</span>
+<span class="fc" id="L181">        schedule.setTechnicianName(dto.getTechnicianName());</span>
+<span class="fc" id="L182">        schedule.setStatus(dto.getStatus());</span>
+<span class="fc" id="L183">        schedule.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L185">        schedule = roomScheduleRepository.save(schedule);</span>
+<span class="fc" id="L186">        log.info(&quot;创建排班成功: roomNo={}, scheduleDate={}&quot;, dto.getRoomNo(), dto.getScheduleDate());</span>
+
+<span class="fc" id="L188">        return convertScheduleToVO(schedule);</span>
+    }
+
+    @Override
+    @Transactional
+    public RoomScheduleVO updateSchedule(RoomScheduleDTO dto) {
+<span class="fc" id="L194">        RoomSchedule schedule = roomScheduleRepository.findById(dto.getId())</span>
+<span class="fc" id="L195">                .orElseThrow(() -&gt; new BusinessException(&quot;排班不存在&quot;));</span>
+
+<span class="fc" id="L197">        schedule.setRoomNo(dto.getRoomNo());</span>
+<span class="fc" id="L198">        schedule.setRoomName(dto.getRoomName());</span>
+<span class="fc" id="L199">        schedule.setEquipmentId(dto.getEquipmentId());</span>
+<span class="fc" id="L200">        schedule.setEquipmentName(dto.getEquipmentName());</span>
+<span class="fc" id="L201">        schedule.setScheduleDate(dto.getScheduleDate());</span>
+<span class="fc" id="L202">        schedule.setShift(dto.getShift());</span>
+<span class="fc" id="L203">        schedule.setStartTime(dto.getStartTime());</span>
+<span class="fc" id="L204">        schedule.setEndTime(dto.getEndTime());</span>
+<span class="fc" id="L205">        schedule.setTotalQuota(dto.getTotalQuota());</span>
+<span class="fc" id="L206">        schedule.setAvailableQuota(dto.getTotalQuota() - schedule.getScheduledCount());</span>
+<span class="fc" id="L207">        schedule.setExamTypeLimit(dto.getExamTypeLimit());</span>
+<span class="fc" id="L208">        schedule.setDoctorId(dto.getDoctorId());</span>
+<span class="fc" id="L209">        schedule.setDoctorName(dto.getDoctorName());</span>
+<span class="fc" id="L210">        schedule.setTechnicianId(dto.getTechnicianId());</span>
+<span class="fc" id="L211">        schedule.setTechnicianName(dto.getTechnicianName());</span>
+<span class="fc" id="L212">        schedule.setStatus(dto.getStatus());</span>
+<span class="fc" id="L213">        schedule.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L215">        schedule = roomScheduleRepository.save(schedule);</span>
+<span class="fc" id="L216">        log.info(&quot;更新排班成功: scheduleId={}&quot;, schedule.getId());</span>
+
+<span class="fc" id="L218">        return convertScheduleToVO(schedule);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteSchedule(String scheduleId) {
+<span class="fc" id="L224">        RoomSchedule schedule = roomScheduleRepository.findById(scheduleId)</span>
+<span class="fc" id="L225">                .orElseThrow(() -&gt; new BusinessException(&quot;排班不存在&quot;));</span>
+
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (schedule.getScheduledCount() &gt; 0) {</span>
+<span class="fc" id="L228">            throw new BusinessException(&quot;排班已有预约，无法删除&quot;);</span>
+        }
+
+<span class="fc" id="L231">        roomScheduleRepository.delete(schedule);</span>
+<span class="fc" id="L232">        log.info(&quot;删除排班成功: scheduleId={}&quot;, scheduleId);</span>
+<span class="fc" id="L233">    }</span>
+
+    @Override
+    public RoomScheduleVO getScheduleById(String scheduleId) {
+<span class="fc" id="L237">        RoomSchedule schedule = roomScheduleRepository.findById(scheduleId)</span>
+<span class="fc" id="L238">                .orElseThrow(() -&gt; new BusinessException(&quot;排班不存在&quot;));</span>
+<span class="fc" id="L239">        return convertScheduleToVO(schedule);</span>
+    }
+
+    @Override
+    public List&lt;RoomScheduleVO&gt; getSchedulesByRoomNo(String roomNo) {
+<span class="fc" id="L244">        List&lt;RoomSchedule&gt; list = roomScheduleRepository.findByRoomNo(roomNo);</span>
+<span class="fc" id="L245">        return list.stream().map(this::convertScheduleToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;RoomScheduleVO&gt; getSchedulesByDate(String date) {
+<span class="fc" id="L250">        LocalDate localDate = LocalDate.parse(date);</span>
+<span class="fc" id="L251">        List&lt;RoomSchedule&gt; list = roomScheduleRepository.findByScheduleDate(localDate);</span>
+<span class="fc" id="L252">        return list.stream().map(this::convertScheduleToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;RoomScheduleVO&gt; getAvailableSchedules(String date, String examType) {
+<span class="fc" id="L257">        LocalDate localDate = LocalDate.parse(date);</span>
+<span class="fc" id="L258">        List&lt;RoomSchedule&gt; list = roomScheduleRepository.findAvailableByDateAndExamType(localDate, examType);</span>
+<span class="fc" id="L259">        return list.stream().map(this::convertScheduleToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public PageResult&lt;RoomScheduleVO&gt; querySchedules(String roomNo, String date, String shift, String status, Integer pageNum, Integer pageSize) {
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        LocalDate scheduleDate = date != null ? LocalDate.parse(date) : null;</span>
+<span class="fc" id="L265">        Page&lt;RoomSchedule&gt; page = roomScheduleRepository.findByConditions(</span>
+                roomNo, scheduleDate, shift, status,
+<span class="fc" id="L267">                PageUtils.toPageable(pageNum, pageSize)</span>
+        );
+<span class="fc" id="L269">        List&lt;RoomScheduleVO&gt; list = page.getContent().stream().map(this::convertScheduleToVO).collect(Collectors.toList());</span>
+<span class="fc" id="L270">        return PageResult.of(list, page.getTotalElements(), pageNum, pageSize);</span>
+    }
+
+    @Override
+    @Transactional
+    public RoomScheduleVO openSchedule(String scheduleId) {
+<span class="fc" id="L276">        RoomSchedule schedule = roomScheduleRepository.findById(scheduleId)</span>
+<span class="fc" id="L277">                .orElseThrow(() -&gt; new BusinessException(&quot;排班不存在&quot;));</span>
+
+<span class="fc" id="L279">        schedule.setStatus(&quot;开放&quot;);</span>
+<span class="fc" id="L280">        schedule = roomScheduleRepository.save(schedule);</span>
+<span class="fc" id="L281">        log.info(&quot;开放排班成功: scheduleId={}&quot;, scheduleId);</span>
+
+<span class="fc" id="L283">        return convertScheduleToVO(schedule);</span>
+    }
+
+    @Override
+    @Transactional
+    public RoomScheduleVO closeSchedule(String scheduleId) {
+<span class="fc" id="L289">        RoomSchedule schedule = roomScheduleRepository.findById(scheduleId)</span>
+<span class="fc" id="L290">                .orElseThrow(() -&gt; new BusinessException(&quot;排班不存在&quot;));</span>
+
+<span class="fc" id="L292">        schedule.setStatus(&quot;关闭&quot;);</span>
+<span class="fc" id="L293">        schedule = roomScheduleRepository.save(schedule);</span>
+<span class="fc" id="L294">        log.info(&quot;关闭排班成功: scheduleId={}&quot;, scheduleId);</span>
+
+<span class="fc" id="L296">        return convertScheduleToVO(schedule);</span>
+    }
+
+    @Override
+    @Transactional
+    public List&lt;RoomScheduleVO&gt; batchCreateSchedules(List&lt;RoomScheduleDTO&gt; dtoList) {
+<span class="fc" id="L302">        return dtoList.stream()</span>
+<span class="fc" id="L303">                .map(this::createSchedule)</span>
+<span class="fc" id="L304">                .collect(Collectors.toList());</span>
+    }
+
+    private EquipmentVO convertEquipmentToVO(EquipmentInfo equipment) {
+<span class="fc" id="L308">        EquipmentVO vo = new EquipmentVO();</span>
+<span class="fc" id="L309">        vo.setId(equipment.getId());</span>
+<span class="fc" id="L310">        vo.setEquipmentCode(equipment.getEquipmentCode());</span>
+<span class="fc" id="L311">        vo.setEquipmentName(equipment.getEquipmentName());</span>
+<span class="fc" id="L312">        vo.setEquipmentType(equipment.getEquipmentType());</span>
+<span class="fc" id="L313">        vo.setModel(equipment.getModel());</span>
+<span class="fc" id="L314">        vo.setManufacturer(equipment.getManufacturer());</span>
+<span class="fc" id="L315">        vo.setSerialNumber(equipment.getSerialNumber());</span>
+<span class="fc" id="L316">        vo.setAeTitle(equipment.getAeTitle());</span>
+<span class="fc" id="L317">        vo.setIpAddress(equipment.getIpAddress());</span>
+<span class="fc" id="L318">        vo.setPort(equipment.getPort());</span>
+<span class="fc" id="L319">        vo.setRoomNo(equipment.getRoomNo());</span>
+<span class="fc" id="L320">        vo.setRoomName(equipment.getRoomName());</span>
+<span class="fc" id="L321">        vo.setPurchaseDate(equipment.getPurchaseDate());</span>
+<span class="fc" id="L322">        vo.setEnableDate(equipment.getEnableDate());</span>
+<span class="fc" id="L323">        vo.setStatus(equipment.getStatus());</span>
+<span class="fc" id="L324">        vo.setManagerId(equipment.getManagerId());</span>
+<span class="fc" id="L325">        vo.setManagerName(equipment.getManagerName());</span>
+<span class="fc" id="L326">        vo.setSortOrder(equipment.getSortOrder());</span>
+<span class="fc" id="L327">        vo.setRemark(equipment.getRemark());</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        vo.setCreateTime(equipment.getCreateTime() != null ? equipment.getCreateTime().toString() : null);</span>
+<span class="fc" id="L329">        return vo;</span>
+    }
+
+    private RoomScheduleVO convertScheduleToVO(RoomSchedule schedule) {
+<span class="fc" id="L333">        RoomScheduleVO vo = new RoomScheduleVO();</span>
+<span class="fc" id="L334">        vo.setId(schedule.getId());</span>
+<span class="fc" id="L335">        vo.setRoomNo(schedule.getRoomNo());</span>
+<span class="fc" id="L336">        vo.setRoomName(schedule.getRoomName());</span>
+<span class="fc" id="L337">        vo.setEquipmentId(schedule.getEquipmentId());</span>
+<span class="fc" id="L338">        vo.setEquipmentName(schedule.getEquipmentName());</span>
+<span class="fc" id="L339">        vo.setScheduleDate(schedule.getScheduleDate());</span>
+<span class="fc" id="L340">        vo.setShift(schedule.getShift());</span>
+<span class="fc" id="L341">        vo.setStartTime(schedule.getStartTime());</span>
+<span class="fc" id="L342">        vo.setEndTime(schedule.getEndTime());</span>
+<span class="fc" id="L343">        vo.setTotalQuota(schedule.getTotalQuota());</span>
+<span class="fc" id="L344">        vo.setScheduledCount(schedule.getScheduledCount());</span>
+<span class="fc" id="L345">        vo.setAvailableQuota(schedule.getAvailableQuota());</span>
+<span class="fc" id="L346">        vo.setExamTypeLimit(schedule.getExamTypeLimit());</span>
+<span class="fc" id="L347">        vo.setDoctorId(schedule.getDoctorId());</span>
+<span class="fc" id="L348">        vo.setDoctorName(schedule.getDoctorName());</span>
+<span class="fc" id="L349">        vo.setTechnicianId(schedule.getTechnicianId());</span>
+<span class="fc" id="L350">        vo.setTechnicianName(schedule.getTechnicianName());</span>
+<span class="fc" id="L351">        vo.setStatus(schedule.getStatus());</span>
+<span class="fc" id="L352">        vo.setRemark(schedule.getRemark());</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        vo.setCreateTime(schedule.getCreateTime() != null ? schedule.getCreateTime().toLocalDate() : null);</span>
+<span class="fc" id="L354">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

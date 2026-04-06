@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Permission.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.entity</a> &gt; <span class="el_source">Permission.java</span></div><h1>Permission.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.system.enums.PermissionType;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 权限实体
+ */
+<span class="pc" id="L12">@Data</span>
+<span class="nc bnc" id="L13" title="All 80 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;sys_permission&quot;, indexes = {
+        @Index(name = &quot;idx_perm_code&quot;, columnList = &quot;perm_code&quot;),
+        @Index(name = &quot;idx_parent_id&quot;, columnList = &quot;parent_id&quot;)
+})
+public class Permission extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 权限编码
+     */
+    @Column(name = &quot;perm_code&quot;, length = 100, nullable = false, unique = true)
+<span class="fc" id="L27">    private String permCode;</span>
+
+    /**
+     * 权限名称
+     */
+    @Column(name = &quot;perm_name&quot;, length = 50, nullable = false)
+<span class="fc" id="L33">    private String permName;</span>
+
+    /**
+     * 权限类型
+     */
+    @Column(name = &quot;perm_type&quot;, length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="fc" id="L40">    private PermissionType permType;</span>
+
+    /**
+     * 父级ID
+     */
+    @Column(name = &quot;parent_id&quot;, length = 36)
+<span class="fc" id="L46">    private String parentId;</span>
+
+    /**
+     * 路径/接口地址
+     */
+    @Column(name = &quot;path&quot;, length = 200)
+<span class="fc" id="L52">    private String path;</span>
+
+    /**
+     * 图标
+     */
+    @Column(name = &quot;icon&quot;, length = 100)
+<span class="fc" id="L58">    private String icon;</span>
+
+    /**
+     * 排序号
+     */
+<span class="fc" id="L63">    @Column(name = &quot;sort_order&quot;, nullable = false)</span>
+<span class="fc" id="L64">    private Integer sortOrder = 0;</span>
+
+    /**
+     * 状态
+     */
+<span class="fc" id="L69">    @Column(name = &quot;status&quot;, length = 20, nullable = false)</span>
+<span class="fc" id="L70">    private String status = &quot;NORMAL&quot;;</span>
+
+    /**
+     * 备注
+     */
+    @Column(name = &quot;remark&quot;, length = 500)
+<span class="fc" id="L76">    private String remark;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

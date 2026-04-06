@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PermissionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.service.impl</a> &gt; <span class="el_source">PermissionServiceImpl.java</span></div><h1>PermissionServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.service.impl;
+
+import com.yhj.his.common.core.domain.ErrorCode;
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.system.dto.PermissionDTO;
+import com.yhj.his.module.system.entity.Permission;
+import com.yhj.his.module.system.enums.PermissionType;
+import com.yhj.his.module.system.repository.PermissionRepository;
+import com.yhj.his.module.system.repository.RolePermissionRepository;
+import com.yhj.his.module.system.service.PermissionService;
+import com.yhj.his.module.system.vo.PermissionVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * 权限服务实现
+ */
+<span class="fc" id="L27">@Slf4j</span>
+@Service
+<span class="fc" id="L29">@RequiredArgsConstructor</span>
+public class PermissionServiceImpl implements PermissionService {
+
+    private final PermissionRepository permissionRepository;
+    private final RolePermissionRepository rolePermissionRepository;
+
+    @Override
+    @Transactional
+    public Result&lt;PermissionVO&gt; create(PermissionDTO dto) {
+        // 检查权限编码是否存在
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (permissionRepository.existsByPermCodeAndDeletedFalse(dto.getPermCode())) {</span>
+<span class="fc" id="L40">            throw new BusinessException(ErrorCode.DATA_ALREADY_EXISTS, &quot;权限编码已存在&quot;);</span>
+        }
+
+<span class="fc" id="L43">        Permission permission = new Permission();</span>
+<span class="fc" id="L44">        permission.setPermCode(dto.getPermCode());</span>
+<span class="fc" id="L45">        permission.setPermName(dto.getPermName());</span>
+<span class="fc" id="L46">        permission.setPermType(PermissionType.fromCode(dto.getPermType()));</span>
+<span class="fc" id="L47">        permission.setParentId(dto.getParentId());</span>
+<span class="fc" id="L48">        permission.setPath(dto.getPath());</span>
+<span class="fc" id="L49">        permission.setIcon(dto.getIcon());</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        permission.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        permission.setStatus(dto.getStatus() != null ? dto.getStatus() : &quot;NORMAL&quot;);</span>
+<span class="fc" id="L52">        permission.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L54">        permission = permissionRepository.save(permission);</span>
+<span class="fc" id="L55">        return Result.success(&quot;创建成功&quot;, convertToVO(permission));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;PermissionVO&gt; update(PermissionDTO dto) {
+<span class="fc" id="L61">        Permission permission = permissionRepository.findById(dto.getId())</span>
+<span class="fc" id="L62">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限不存在&quot;));</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (permission.getDeleted()) {</span>
+<span class="fc" id="L65">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限已删除&quot;);</span>
+        }
+
+<span class="fc" id="L68">        permission.setPermName(dto.getPermName());</span>
+<span class="fc" id="L69">        permission.setPermType(PermissionType.fromCode(dto.getPermType()));</span>
+<span class="fc" id="L70">        permission.setParentId(dto.getParentId());</span>
+<span class="fc" id="L71">        permission.setPath(dto.getPath());</span>
+<span class="fc" id="L72">        permission.setIcon(dto.getIcon());</span>
+<span class="fc" id="L73">        permission.setSortOrder(dto.getSortOrder());</span>
+<span class="fc" id="L74">        permission.setStatus(dto.getStatus());</span>
+<span class="fc" id="L75">        permission.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L77">        permission = permissionRepository.save(permission);</span>
+<span class="fc" id="L78">        return Result.success(&quot;更新成功&quot;, convertToVO(permission));</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; delete(String permId) {
+<span class="fc" id="L84">        Permission permission = permissionRepository.findById(permId)</span>
+<span class="fc" id="L85">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限不存在&quot;));</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (permission.getDeleted()) {</span>
+<span class="fc" id="L88">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限已删除&quot;);</span>
+        }
+
+        // 检查是否有子权限
+<span class="fc" id="L92">        List&lt;Permission&gt; children = permissionRepository.findByParentIdAndDeletedFalseOrderBySortOrderAsc(permId);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (!children.isEmpty()) {</span>
+<span class="fc" id="L94">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED,</span>
+<span class="fc" id="L95">                    &quot;该权限有&quot; + children.size() + &quot;个子权限，无法删除&quot;);</span>
+        }
+
+        // 检查是否有角色绑定该权限
+<span class="fc" id="L99">        long roleCount = rolePermissionRepository.findByPermId(permId).size();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (roleCount &gt; 0) {</span>
+<span class="fc" id="L101">            throw new BusinessException(ErrorCode.OPERATION_NOT_ALLOWED,</span>
+                    &quot;该权限已授权给&quot; + roleCount + &quot;个角色，无法删除&quot;);
+        }
+
+        // 逻辑删除
+<span class="fc" id="L106">        permission.setDeleted(true);</span>
+<span class="fc" id="L107">        permissionRepository.save(permission);</span>
+
+<span class="fc" id="L109">        return Result.successVoid();</span>
+    }
+
+    @Override
+    public Result&lt;PermissionVO&gt; getById(String permId) {
+<span class="fc" id="L114">        Permission permission = permissionRepository.findById(permId)</span>
+<span class="fc" id="L115">                .orElseThrow(() -&gt; new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限不存在&quot;));</span>
+
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (permission.getDeleted()) {</span>
+<span class="fc" id="L118">            throw new BusinessException(ErrorCode.DATA_NOT_FOUND, &quot;权限已删除&quot;);</span>
+        }
+
+<span class="fc" id="L121">        return Result.success(convertToVO(permission));</span>
+    }
+
+    @Override
+    public Result&lt;PageResult&lt;PermissionVO&gt;&gt; page(String permName, String permCode, String permType,
+                                                 String status, Integer pageNum, Integer pageSize) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        PermissionType type = permType != null ? PermissionType.fromCode(permType) : null;</span>
+<span class="fc" id="L128">        Page&lt;Permission&gt; page = permissionRepository.findByCondition(permName, permCode, type, status,</span>
+<span class="fc" id="L129">                PageUtils.of(pageNum, pageSize));</span>
+
+<span class="fc" id="L131">        List&lt;PermissionVO&gt; list = page.getContent().stream()</span>
+<span class="fc" id="L132">                .map(this::convertToVO)</span>
+<span class="fc" id="L133">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L135">        return Result.success(PageResult.of(list, page.getTotalElements(), pageNum, pageSize));</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;PermissionVO&gt;&gt; listAll() {
+<span class="fc" id="L140">        List&lt;Permission&gt; permissions = permissionRepository.findByDeletedFalseOrderBySortOrderAsc();</span>
+<span class="fc" id="L141">        List&lt;PermissionVO&gt; list = permissions.stream()</span>
+<span class="fc" id="L142">                .map(this::convertToVO)</span>
+<span class="fc" id="L143">                .collect(Collectors.toList());</span>
+<span class="fc" id="L144">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;PermissionVO&gt;&gt; getMenuTree() {
+<span class="fc" id="L149">        List&lt;Permission&gt; menus = permissionRepository.findByPermTypeAndDeletedFalseOrderBySortOrderAsc(PermissionType.MENU);</span>
+<span class="fc" id="L150">        List&lt;PermissionVO&gt; tree = buildTree(menus, null);</span>
+<span class="fc" id="L151">        return Result.success(tree);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;PermissionVO&gt;&gt; getUserMenus(String userId) {
+        // TODO: 需要根据用户角色获取对应的菜单权限
+        // 这里简化实现，返回所有菜单
+<span class="fc" id="L158">        return getMenuTree();</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;PermissionVO&gt;&gt; listByParentId(String parentId) {
+<span class="fc" id="L163">        List&lt;Permission&gt; permissions = permissionRepository.findByParentIdAndDeletedFalseOrderBySortOrderAsc(parentId);</span>
+<span class="fc" id="L164">        List&lt;PermissionVO&gt; list = permissions.stream()</span>
+<span class="fc" id="L165">                .map(this::convertToVO)</span>
+<span class="fc" id="L166">                .collect(Collectors.toList());</span>
+<span class="fc" id="L167">        return Result.success(list);</span>
+    }
+
+    /**
+     * 构建权限树
+     */
+    private List&lt;PermissionVO&gt; buildTree(List&lt;Permission&gt; permissions, String parentId) {
+<span class="fc" id="L174">        List&lt;PermissionVO&gt; tree = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (Permission permission : permissions) {</span>
+<span class="fc" id="L177">            String permParentId = permission.getParentId();</span>
+<span class="fc bfc" id="L178" title="All 6 branches covered.">            boolean matchParent = (parentId == null &amp;&amp; permParentId == null) ||</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">                                  (parentId != null &amp;&amp; parentId.equals(permParentId));</span>
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (matchParent) {</span>
+<span class="fc" id="L182">                PermissionVO vo = convertToVO(permission);</span>
+                // 递归构建子权限
+<span class="fc" id="L184">                List&lt;PermissionVO&gt; children = buildTree(permissions, permission.getId());</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">                if (!children.isEmpty()) {</span>
+<span class="fc" id="L186">                    vo.setChildren(children);</span>
+                }
+<span class="fc" id="L188">                tree.add(vo);</span>
+            }
+<span class="fc" id="L190">        }</span>
+
+<span class="fc" id="L192">        return tree.stream()</span>
+<span class="fc" id="L193">                .sorted(Comparator.comparing(PermissionVO::getSortOrder, Comparator.nullsLast(Comparator.naturalOrder())))</span>
+<span class="fc" id="L194">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * 转换Permission实体到VO
+     */
+    private PermissionVO convertToVO(Permission permission) {
+<span class="fc" id="L201">        PermissionVO vo = new PermissionVO();</span>
+<span class="fc" id="L202">        vo.setId(permission.getId());</span>
+<span class="fc" id="L203">        vo.setPermCode(permission.getPermCode());</span>
+<span class="fc" id="L204">        vo.setPermName(permission.getPermName());</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">        vo.setPermType(permission.getPermType() != null ? permission.getPermType().getCode() : null);</span>
+<span class="fc" id="L206">        vo.setParentId(permission.getParentId());</span>
+<span class="fc" id="L207">        vo.setPath(permission.getPath());</span>
+<span class="fc" id="L208">        vo.setIcon(permission.getIcon());</span>
+<span class="fc" id="L209">        vo.setSortOrder(permission.getSortOrder());</span>
+<span class="fc" id="L210">        vo.setStatus(permission.getStatus());</span>
+<span class="fc" id="L211">        vo.setRemark(permission.getRemark());</span>
+<span class="fc" id="L212">        vo.setCreateTime(permission.getCreateTime());</span>
+<span class="fc" id="L213">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

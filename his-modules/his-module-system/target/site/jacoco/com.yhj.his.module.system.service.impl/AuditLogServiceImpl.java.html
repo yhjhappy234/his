@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditLogServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.service.impl</a> &gt; <span class="el_source">AuditLogServiceImpl.java</span></div><h1>AuditLogServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.service.impl;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.system.dto.AuditLogQueryDTO;
+import com.yhj.his.module.system.entity.AuditLog;
+import com.yhj.his.module.system.enums.AuditLevel;
+import com.yhj.his.module.system.enums.AuditType;
+import com.yhj.his.module.system.repository.AuditLogRepository;
+import com.yhj.his.module.system.service.AuditLogService;
+import com.yhj.his.module.system.vo.AuditLogVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 审计日志服务实现
+ */
+<span class="nc" id="L26">@Slf4j</span>
+@Service
+<span class="nc" id="L28">@RequiredArgsConstructor</span>
+public class AuditLogServiceImpl implements AuditLogService {
+
+    private final AuditLogRepository auditLogRepository;
+
+    @Override
+    public Result&lt;Void&gt; log(AuditLog log) {
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (log.getAuditTime() == null) {</span>
+<span class="nc" id="L36">            log.setAuditTime(LocalDateTime.now());</span>
+        }
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (log.getAuditLevel() == null) {</span>
+<span class="nc" id="L39">            log.setAuditLevel(AuditLevel.NORMAL);</span>
+        }
+<span class="nc" id="L41">        auditLogRepository.save(log);</span>
+<span class="nc" id="L42">        return Result.successVoid();</span>
+    }
+
+    @Override
+    public Result&lt;PageResult&lt;AuditLogVO&gt;&gt; page(AuditLogQueryDTO dto) {
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        AuditType type = dto.getAuditType() != null ? AuditType.fromCode(dto.getAuditType()) : null;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        AuditLevel level = dto.getAuditLevel() != null ? AuditLevel.fromCode(dto.getAuditLevel()) : null;</span>
+
+<span class="nc" id="L50">        Page&lt;AuditLog&gt; page = auditLogRepository.findByCondition(</span>
+<span class="nc" id="L51">                dto.getUserId(),</span>
+<span class="nc" id="L52">                dto.getLoginName(),</span>
+                type,
+                level,
+<span class="nc" id="L55">                dto.getAuditEvent(),</span>
+<span class="nc" id="L56">                dto.getStartTime(),</span>
+<span class="nc" id="L57">                dto.getEndTime(),</span>
+<span class="nc" id="L58">                PageUtils.ofDescByCreateTime(dto.getPageNum(), dto.getPageSize())</span>
+        );
+
+<span class="nc" id="L61">        List&lt;AuditLogVO&gt; list = page.getContent().stream()</span>
+<span class="nc" id="L62">                .map(this::convertToVO)</span>
+<span class="nc" id="L63">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L65">        return Result.success(PageResult.of(list, page.getTotalElements(), dto.getPageNum(), dto.getPageSize()));</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;AuditLogVO&gt;&gt; getRecentLogs(String userId) {
+<span class="nc" id="L70">        List&lt;AuditLog&gt; logs = auditLogRepository.findTop10ByUserIdOrderByAuditTimeDesc(userId);</span>
+<span class="nc" id="L71">        List&lt;AuditLogVO&gt; list = logs.stream()</span>
+<span class="nc" id="L72">                .map(this::convertToVO)</span>
+<span class="nc" id="L73">                .collect(Collectors.toList());</span>
+<span class="nc" id="L74">        return Result.success(list);</span>
+    }
+
+    @Override
+    public Result&lt;List&lt;AuditLogVO&gt;&gt; getUnAlertedCriticalLogs() {
+<span class="nc" id="L79">        List&lt;AuditLog&gt; logs = auditLogRepository.findByAuditLevelAndIsAlertedFalse(AuditLevel.CRITICAL);</span>
+<span class="nc" id="L80">        List&lt;AuditLogVO&gt; list = logs.stream()</span>
+<span class="nc" id="L81">                .map(this::convertToVO)</span>
+<span class="nc" id="L82">                .collect(Collectors.toList());</span>
+<span class="nc" id="L83">        return Result.success(list);</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; markAlerted(String logId) {
+<span class="nc" id="L89">        AuditLog log = auditLogRepository.findById(logId).orElse(null);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (log != null) {</span>
+<span class="nc" id="L91">            log.setIsAlerted(true);</span>
+<span class="nc" id="L92">            log.setAlertTime(LocalDateTime.now());</span>
+<span class="nc" id="L93">            auditLogRepository.save(log);</span>
+        }
+<span class="nc" id="L95">        return Result.successVoid();</span>
+    }
+
+    @Override
+    @Transactional
+    public Result&lt;Void&gt; deleteHistoryLogs(Integer days) {
+<span class="nc" id="L101">        LocalDateTime threshold = LocalDateTime.now().minusDays(days);</span>
+<span class="nc" id="L102">        auditLogRepository.deleteByAuditTimeBefore(threshold);</span>
+<span class="nc" id="L103">        log.info(&quot;已删除{}天前的审计日志&quot;, days);</span>
+<span class="nc" id="L104">        return Result.successVoid();</span>
+    }
+
+    /**
+     * 转换AuditLog实体到VO
+     */
+    private AuditLogVO convertToVO(AuditLog log) {
+<span class="nc" id="L111">        AuditLogVO vo = new AuditLogVO();</span>
+<span class="nc" id="L112">        vo.setId(log.getId());</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        vo.setAuditType(log.getAuditType() != null ? log.getAuditType().getCode() : null);</span>
+<span class="nc" id="L114">        vo.setUserId(log.getUserId());</span>
+<span class="nc" id="L115">        vo.setLoginName(log.getLoginName());</span>
+<span class="nc" id="L116">        vo.setRealName(log.getRealName());</span>
+<span class="nc" id="L117">        vo.setAuditEvent(log.getAuditEvent());</span>
+<span class="nc" id="L118">        vo.setAuditDesc(log.getAuditDesc());</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        vo.setAuditLevel(log.getAuditLevel() != null ? log.getAuditLevel().getCode() : null);</span>
+<span class="nc" id="L120">        vo.setBeforeData(log.getBeforeData());</span>
+<span class="nc" id="L121">        vo.setAfterData(log.getAfterData());</span>
+<span class="nc" id="L122">        vo.setClientIp(log.getClientIp());</span>
+<span class="nc" id="L123">        vo.setAuditTime(log.getAuditTime());</span>
+<span class="nc" id="L124">        vo.setIsAlerted(log.getIsAlerted());</span>
+<span class="nc" id="L125">        vo.setAlertTime(log.getAlertTime());</span>
+<span class="nc" id="L126">        vo.setAlertWay(log.getAlertWay());</span>
+<span class="nc" id="L127">        vo.setCreateTime(log.getCreateTime());</span>
+<span class="nc" id="L128">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

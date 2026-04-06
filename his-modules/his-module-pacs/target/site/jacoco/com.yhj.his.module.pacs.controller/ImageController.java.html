@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImageController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.controller</a> &gt; <span class="el_source">ImageController.java</span></div><h1>ImageController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.controller;
+
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.pacs.dto.*;
+import com.yhj.his.module.pacs.service.*;
+import com.yhj.his.module.pacs.vo.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 影像采集管理Controller
+ */
+@Tag(name = &quot;影像采集管理&quot;, description = &quot;影像接收、影像查询等接口&quot;)
+@RestController
+@RequestMapping(&quot;/api/pacs/v1/image&quot;)
+<span class="nc" id="L22">@RequiredArgsConstructor</span>
+public class ImageController {
+
+    private final ImageService imageService;
+
+    @Operation(summary = &quot;接收影像序列&quot;, description = &quot;接收DICOM影像序列&quot;)
+    @PostMapping(&quot;/series/receive&quot;)
+    public Result&lt;ExamSeriesVO&gt; receiveSeries(@Valid @RequestBody ImageReceiveDTO dto) {
+<span class="nc" id="L30">        ExamSeriesVO vo = imageService.receiveSeries(dto);</span>
+<span class="nc" id="L31">        return Result.success(&quot;接收成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;接收影像文件&quot;, description = &quot;接收单个DICOM影像文件&quot;)
+    @PostMapping(&quot;/receive&quot;)
+    public Result&lt;ExamImageVO&gt; receiveImage(@Valid @RequestBody ImageFileDTO dto) {
+<span class="nc" id="L37">        ExamImageVO vo = imageService.receiveImage(dto);</span>
+<span class="nc" id="L38">        return Result.success(&quot;接收成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;批量接收影像&quot;, description = &quot;批量接收DICOM影像文件&quot;)
+    @PostMapping(&quot;/batch-receive&quot;)
+    public Result&lt;List&lt;ExamImageVO&gt;&gt; receiveImages(@Valid @RequestBody List&lt;ImageFileDTO&gt; dtoList) {
+<span class="nc" id="L44">        List&lt;ExamImageVO&gt; list = imageService.receiveImages(dtoList);</span>
+<span class="nc" id="L45">        return Result.success(&quot;批量接收成功&quot;, list);</span>
+    }
+
+    @Operation(summary = &quot;查询检查序列&quot;, description = &quot;查询检查的所有序列&quot;)
+    @GetMapping(&quot;/series/exam/{examId}&quot;)
+    public Result&lt;List&lt;ExamSeriesVO&gt;&gt; getSeriesByExamId(@PathVariable String examId) {
+<span class="nc" id="L51">        List&lt;ExamSeriesVO&gt; list = imageService.getSeriesByExamId(examId);</span>
+<span class="nc" id="L52">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询序列详情&quot;, description = &quot;查询序列详情(包含影像)&quot;)
+    @GetMapping(&quot;/series/{seriesId}&quot;)
+    public Result&lt;ExamSeriesVO&gt; getSeriesById(@PathVariable String seriesId) {
+<span class="nc" id="L58">        ExamSeriesVO vo = imageService.getSeriesById(seriesId);</span>
+<span class="nc" id="L59">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;查询序列影像&quot;, description = &quot;查询序列的所有影像&quot;)
+    @GetMapping(&quot;/series/{seriesId}/images&quot;)
+    public Result&lt;List&lt;ExamImageVO&gt;&gt; getImagesBySeriesId(@PathVariable String seriesId) {
+<span class="nc" id="L65">        List&lt;ExamImageVO&gt; list = imageService.getImagesBySeriesId(seriesId);</span>
+<span class="nc" id="L66">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询检查影像&quot;, description = &quot;查询检查的所有影像&quot;)
+    @GetMapping(&quot;/exam/{examId}/images&quot;)
+    public Result&lt;List&lt;ExamImageVO&gt;&gt; getImagesByExamId(@PathVariable String examId) {
+<span class="nc" id="L72">        List&lt;ExamImageVO&gt; list = imageService.getImagesByExamId(examId);</span>
+<span class="nc" id="L73">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询影像详情&quot;, description = &quot;查询影像文件详情&quot;)
+    @GetMapping(&quot;/{imageId}&quot;)
+    public Result&lt;ExamImageVO&gt; getImageById(@PathVariable String imageId) {
+<span class="nc" id="L79">        ExamImageVO vo = imageService.getImageById(imageId);</span>
+<span class="nc" id="L80">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;设置关键影像&quot;, description = &quot;设置或取消关键影像标记&quot;)
+    @PostMapping(&quot;/key-image&quot;)
+    public Result&lt;ExamImageVO&gt; setKeyImage(
+            @Parameter(description = &quot;影像ID&quot;) @RequestParam String imageId,
+            @Parameter(description = &quot;是否关键影像&quot;) @RequestParam boolean isKeyImage) {
+<span class="nc" id="L88">        ExamImageVO vo = imageService.setKeyImage(imageId, isKeyImage);</span>
+<span class="nc" id="L89">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;查询关键影像&quot;, description = &quot;查询检查的关键影像&quot;)
+    @GetMapping(&quot;/exam/{examId}/key-images&quot;)
+    public Result&lt;List&lt;ExamImageVO&gt;&gt; getKeyImagesByExamId(@PathVariable String examId) {
+<span class="nc" id="L95">        List&lt;ExamImageVO&gt; list = imageService.getKeyImagesByExamId(examId);</span>
+<span class="nc" id="L96">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询检查详情&quot;, description = &quot;查询检查详情(包含序列和影像)&quot;)
+    @GetMapping(&quot;/exam/{examId}/detail&quot;)
+    public Result&lt;ExamRecordVO&gt; getExamDetail(@PathVariable String examId) {
+<span class="nc" id="L102">        ExamRecordVO vo = imageService.getExamDetail(examId);</span>
+<span class="nc" id="L103">        return Result.success(vo);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

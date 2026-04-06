@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExamSeriesVO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.vo</a> &gt; <span class="el_source">ExamSeriesVO.java</span></div><h1>ExamSeriesVO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+<span class="pc bnc" id="L11" title="All 166 branches missed.">@Data</span>
+@Schema(description = &quot;影像序列VO&quot;)
+public class ExamSeriesVO {
+
+    @Schema(description = &quot;序列ID&quot;)
+<span class="fc" id="L16">    private String id;</span>
+
+    @Schema(description = &quot;检查ID&quot;)
+<span class="fc" id="L19">    private String examId;</span>
+
+    @Schema(description = &quot;序列号&quot;)
+<span class="fc" id="L22">    private String seriesNo;</span>
+
+    @Schema(description = &quot;序列UID&quot;)
+<span class="nc" id="L25">    private String seriesUid;</span>
+
+    @Schema(description = &quot;序列描述&quot;)
+<span class="fc" id="L28">    private String seriesDescription;</span>
+
+    @Schema(description = &quot;设备类型&quot;)
+<span class="fc" id="L31">    private String modality;</span>
+
+    @Schema(description = &quot;检查部位&quot;)
+<span class="fc" id="L34">    private String bodyPart;</span>
+
+    @Schema(description = &quot;影像数量&quot;)
+<span class="fc" id="L37">    private Integer imageCount;</span>
+
+    @Schema(description = &quot;存储路径&quot;)
+<span class="nc" id="L40">    private String storagePath;</span>
+
+    @Schema(description = &quot;扫描日期&quot;)
+<span class="fc" id="L43">    private LocalDate scanDate;</span>
+
+    @Schema(description = &quot;扫描时间&quot;)
+<span class="fc" id="L46">    private LocalTime scanTime;</span>
+
+    @Schema(description = &quot;管电压(kV)&quot;)
+<span class="fc" id="L49">    private BigDecimal kvp;</span>
+
+    @Schema(description = &quot;管电流(mAs)&quot;)
+<span class="fc" id="L52">    private BigDecimal mas;</span>
+
+    @Schema(description = &quot;层厚(mm)&quot;)
+<span class="nc" id="L55">    private BigDecimal sliceThickness;</span>
+
+    @Schema(description = &quot;像素间距&quot;)
+<span class="nc" id="L58">    private String pixelSpacing;</span>
+
+    @Schema(description = &quot;序列方向&quot;)
+<span class="nc" id="L61">    private String seriesDirection;</span>
+
+    @Schema(description = &quot;协议名称&quot;)
+<span class="nc" id="L64">    private String protocolName;</span>
+
+    @Schema(description = &quot;备注&quot;)
+<span class="nc" id="L67">    private String remark;</span>
+
+    @Schema(description = &quot;影像列表&quot;)
+<span class="fc" id="L70">    private List&lt;ExamImageVO&gt; imageList;</span>
+
+    @Schema(description = &quot;创建时间&quot;)
+<span class="nc" id="L73">    private LocalDate createTime;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

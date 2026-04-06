@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditLog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.entity</a> &gt; <span class="el_source">AuditLog.java</span></div><h1>AuditLog.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.module.system.enums.AuditLevel;
+import com.yhj.his.module.system.enums.AuditType;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
+
+/**
+ * 审计日志实体
+ */
+<span class="pc" id="L15">@Data</span>
+<span class="nc bnc" id="L16" title="All 120 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;sys_audit_log&quot;, indexes = {
+        @Index(name = &quot;idx_audit_user_time&quot;, columnList = &quot;user_id, audit_time&quot;),
+        @Index(name = &quot;idx_audit_type_time&quot;, columnList = &quot;audit_type, audit_time&quot;),
+        @Index(name = &quot;idx_audit_level&quot;, columnList = &quot;audit_level&quot;)
+})
+public class AuditLog extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 审计类型
+     */
+    @Column(name = &quot;audit_type&quot;, length = 20, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L32">    private AuditType auditType;</span>
+
+    /**
+     * 用户ID
+     */
+    @Column(name = &quot;user_id&quot;, length = 36)
+<span class="nc" id="L38">    private String userId;</span>
+
+    /**
+     * 登录账号
+     */
+    @Column(name = &quot;login_name&quot;, length = 30)
+<span class="nc" id="L44">    private String loginName;</span>
+
+    /**
+     * 真实姓名
+     */
+    @Column(name = &quot;real_name&quot;, length = 50)
+<span class="nc" id="L50">    private String realName;</span>
+
+    /**
+     * 审计事件
+     */
+    @Column(name = &quot;audit_event&quot;, length = 50)
+<span class="nc" id="L56">    private String auditEvent;</span>
+
+    /**
+     * 审计描述
+     */
+    @Column(name = &quot;audit_desc&quot;, length = 200)
+<span class="nc" id="L62">    private String auditDesc;</span>
+
+    /**
+     * 审计级别
+     */
+    @Column(name = &quot;audit_level&quot;, length = 20)
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L69">    private AuditLevel auditLevel;</span>
+
+    /**
+     * 变更前数据
+     */
+    @Column(name = &quot;before_data&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L75">    private String beforeData;</span>
+
+    /**
+     * 变更后数据
+     */
+    @Column(name = &quot;after_data&quot;, columnDefinition = &quot;TEXT&quot;)
+<span class="nc" id="L81">    private String afterData;</span>
+
+    /**
+     * 客户端IP
+     */
+    @Column(name = &quot;client_ip&quot;, length = 50)
+<span class="nc" id="L87">    private String clientIp;</span>
+
+    /**
+     * 审计时间
+     */
+    @Column(name = &quot;audit_time&quot;, nullable = false)
+<span class="nc" id="L93">    private LocalDateTime auditTime;</span>
+
+    /**
+     * 是否已告警
+     */
+<span class="fc" id="L98">    @Column(name = &quot;is_alerted&quot;)</span>
+<span class="pc" id="L99">    private Boolean isAlerted = false;</span>
+
+    /**
+     * 告警时间
+     */
+    @Column(name = &quot;alert_time&quot;)
+<span class="nc" id="L105">    private LocalDateTime alertTime;</span>
+
+    /**
+     * 告警方式
+     */
+    @Column(name = &quot;alert_way&quot;, length = 20)
+<span class="nc" id="L111">    private String alertWay;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

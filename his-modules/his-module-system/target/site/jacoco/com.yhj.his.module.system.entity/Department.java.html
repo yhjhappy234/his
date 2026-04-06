@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Department.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.entity</a> &gt; <span class="el_source">Department.java</span></div><h1>Department.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.entity;
+
+import com.yhj.his.common.core.domain.BaseEntity;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * 科室实体
+ */
+<span class="pc" id="L11">@Data</span>
+<span class="nc bnc" id="L12" title="All 112 branches missed.">@EqualsAndHashCode(callSuper = true)</span>
+@Entity
+@Table(name = &quot;sys_department&quot;, indexes = {
+        @Index(name = &quot;idx_dept_code&quot;, columnList = &quot;dept_code&quot;),
+        @Index(name = &quot;idx_parent_id&quot;, columnList = &quot;parent_id&quot;),
+        @Index(name = &quot;idx_dept_type&quot;, columnList = &quot;dept_type&quot;)
+})
+public class Department extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 科室编码
+     */
+    @Column(name = &quot;dept_code&quot;, length = 20, nullable = false, unique = true)
+<span class="fc" id="L27">    private String deptCode;</span>
+
+    /**
+     * 科室名称
+     */
+    @Column(name = &quot;dept_name&quot;, length = 100, nullable = false)
+<span class="fc" id="L33">    private String deptName;</span>
+
+    /**
+     * 科室简称
+     */
+    @Column(name = &quot;short_name&quot;, length = 50)
+<span class="fc" id="L39">    private String shortName;</span>
+
+    /**
+     * 父级ID
+     */
+    @Column(name = &quot;parent_id&quot;, length = 36)
+<span class="fc" id="L45">    private String parentId;</span>
+
+    /**
+     * 层级
+     */
+<span class="fc" id="L50">    @Column(name = &quot;dept_level&quot;, nullable = false)</span>
+<span class="fc" id="L51">    private Integer deptLevel = 1;</span>
+
+    /**
+     * 科室类型(临床/医技/行政/后勤)
+     */
+    @Column(name = &quot;dept_type&quot;, length = 20, nullable = false)
+<span class="fc" id="L57">    private String deptType;</span>
+
+    /**
+     * 科室负责人
+     */
+    @Column(name = &quot;leader_id&quot;, length = 36)
+<span class="fc" id="L63">    private String leaderId;</span>
+
+    /**
+     * 科室负责人姓名
+     */
+    @Column(name = &quot;leader_name&quot;, length = 50)
+<span class="fc" id="L69">    private String leaderName;</span>
+
+    /**
+     * 联系电话
+     */
+    @Column(name = &quot;phone&quot;, length = 20)
+<span class="fc" id="L75">    private String phone;</span>
+
+    /**
+     * 科室地址
+     */
+    @Column(name = &quot;address&quot;, length = 200)
+<span class="fc" id="L81">    private String address;</span>
+
+    /**
+     * 排序号
+     */
+<span class="fc" id="L86">    @Column(name = &quot;sort_order&quot;, nullable = false)</span>
+<span class="fc" id="L87">    private Integer sortOrder = 0;</span>
+
+    /**
+     * 状态
+     */
+<span class="fc" id="L92">    @Column(name = &quot;status&quot;, length = 20, nullable = false)</span>
+<span class="fc" id="L93">    private String status = &quot;NORMAL&quot;;</span>
+
+    /**
+     * 备注
+     */
+    @Column(name = &quot;remark&quot;, length = 500)
+<span class="fc" id="L99">    private String remark;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

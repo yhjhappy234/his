@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataDictionaryDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.dto</a> &gt; <span class="el_source">DataDictionaryDTO.java</span></div><h1>DataDictionaryDTO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * 数据字典DTO
+ */
+<span class="nc bnc" id="L13" title="All 94 branches missed.">@Data</span>
+@Schema(description = &quot;数据字典创建/更新请求&quot;)
+public class DataDictionaryDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;字典ID(更新时必填)&quot;)
+<span class="nc" id="L20">    private String id;</span>
+
+    @NotBlank(message = &quot;字典类型不能为空&quot;)
+    @Size(max = 50, message = &quot;字典类型长度不能超过50&quot;)
+    @Schema(description = &quot;字典类型&quot;, required = true)
+<span class="nc" id="L25">    private String dictType;</span>
+
+    @Schema(description = &quot;字典编码(创建时必填)&quot;)
+    @Size(max = 50, message = &quot;字典编码长度不能超过50&quot;)
+<span class="nc" id="L29">    private String dictCode;</span>
+
+    @NotBlank(message = &quot;字典名称不能为空&quot;)
+    @Size(max = 100, message = &quot;字典名称长度不能超过100&quot;)
+    @Schema(description = &quot;字典名称&quot;, required = true)
+<span class="nc" id="L34">    private String dictName;</span>
+
+    @Schema(description = &quot;字典值&quot;)
+    @Size(max = 200, message = &quot;字典值长度不能超过200&quot;)
+<span class="nc" id="L38">    private String dictValue;</span>
+
+    @Schema(description = &quot;父级编码&quot;)
+    @Size(max = 50, message = &quot;父级编码长度不能超过50&quot;)
+<span class="nc" id="L42">    private String parentCode;</span>
+
+    @Schema(description = &quot;层级&quot;)
+<span class="nc" id="L45">    private Integer dictLevel;</span>
+
+    @Schema(description = &quot;排序号&quot;)
+<span class="nc" id="L48">    private Integer sortOrder;</span>
+
+    @Schema(description = &quot;是否启用&quot;)
+<span class="nc" id="L51">    private Boolean isEnabled;</span>
+
+    @Schema(description = &quot;是否默认值&quot;)
+<span class="nc" id="L54">    private Boolean isDefault;</span>
+
+    @Schema(description = &quot;描述&quot;)
+    @Size(max = 200, message = &quot;描述长度不能超过200&quot;)
+<span class="nc" id="L58">    private String description;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

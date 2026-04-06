@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.service.impl</a> &gt; <span class="el_source">ReportServiceImpl.java</span></div><h1>ReportServiceImpl.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.service.impl;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.exception.BusinessException;
+import com.yhj.his.common.core.util.PageUtils;
+import com.yhj.his.module.pacs.dto.*;
+import com.yhj.his.module.pacs.entity.*;
+import com.yhj.his.module.pacs.repository.*;
+import com.yhj.his.module.pacs.service.*;
+import com.yhj.his.module.pacs.vo.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 诊断报告服务实现
+ */
+<span class="fc" id="L25">@Slf4j</span>
+@Service
+<span class="fc" id="L27">@RequiredArgsConstructor</span>
+public class ReportServiceImpl implements ReportService {
+
+    private final ExamReportRepository examReportRepository;
+    private final ExamRecordRepository examRecordRepository;
+    private final ExamRequestRepository examRequestRepository;
+
+<span class="fc" id="L34">    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(&quot;yyyyMMddHHmmss&quot;);</span>
+
+    @Override
+    @Transactional
+    public ExamReportVO writeReport(ReportWriteDTO dto) {
+<span class="fc" id="L39">        ExamRecord record = examRecordRepository.findById(dto.getExamId())</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; new BusinessException(&quot;检查记录不存在&quot;));</span>
+
+        ExamReport report;
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (dto.getReportId() != null) {</span>
+            // 更新现有报告
+<span class="fc" id="L45">            report = examReportRepository.findById(dto.getReportId())</span>
+<span class="fc" id="L46">                    .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+
+            // 记录修改历史
+<span class="fc" id="L49">            String modifyHistory = report.getModifyHistory();</span>
+<span class="fc" id="L50">            String newHistory = String.format(&quot;{\&quot;time\&quot;:\&quot;%s\&quot;,\&quot;user\&quot;:\&quot;%s\&quot;,\&quot;action\&quot;:\&quot;修改\&quot;}&quot;,</span>
+<span class="fc" id="L51">                    LocalDateTime.now().format(DATE_FORMATTER),</span>
+<span class="fc" id="L52">                    dto.getWriterName());</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">            report.setModifyHistory(modifyHistory != null ? modifyHistory + &quot;,&quot; + newHistory : &quot;[&quot; + newHistory + &quot;]&quot;);</span>
+<span class="fc" id="L54">        } else {</span>
+            // 创建新报告
+<span class="fc" id="L56">            report = new ExamReport();</span>
+<span class="fc" id="L57">            report.setReportNo(generateReportNo());</span>
+<span class="fc" id="L58">            report.setExamId(dto.getExamId());</span>
+<span class="fc" id="L59">            report.setRequestId(dto.getRequestId());</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            report.setPatientId(dto.getPatientId() != null ? dto.getPatientId() : record.getPatientId());</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            report.setPatientName(dto.getPatientName() != null ? dto.getPatientName() : record.getPatientName());</span>
+<span class="fc" id="L62">            report.setReportType(dto.getReportType());</span>
+<span class="fc" id="L63">            report.setReportTemplateId(dto.getReportTemplateId());</span>
+<span class="fc" id="L64">            report.setReportStatus(&quot;草稿&quot;);</span>
+        }
+
+<span class="fc" id="L67">        report.setExamDescription(dto.getExamDescription());</span>
+<span class="fc" id="L68">        report.setDiagnosisResult(dto.getDiagnosisResult());</span>
+<span class="fc" id="L69">        report.setDiagnosisCode(dto.getDiagnosisCode());</span>
+<span class="fc" id="L70">        report.setDiagnosisName(dto.getDiagnosisName());</span>
+<span class="fc" id="L71">        report.setKeyImages(dto.getKeyImages());</span>
+<span class="fc" id="L72">        report.setWriterId(dto.getWriterId());</span>
+<span class="fc" id="L73">        report.setWriterName(dto.getWriterName());</span>
+<span class="fc" id="L74">        report.setWriteTime(LocalDateTime.now());</span>
+<span class="fc" id="L75">        report.setRemark(dto.getRemark());</span>
+
+<span class="fc" id="L77">        report = examReportRepository.save(report);</span>
+<span class="fc" id="L78">        log.info(&quot;保存报告成功: reportNo={}&quot;, report.getReportNo());</span>
+
+<span class="fc" id="L80">        return convertToVO(report);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamReportVO submitForReview(String reportId) {
+<span class="fc" id="L86">        ExamReport report = examReportRepository.findById(reportId)</span>
+<span class="fc" id="L87">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+
+<span class="fc bfc" id="L89" title="All 4 branches covered.">        if (!&quot;草稿&quot;.equals(report.getReportStatus()) &amp;&amp; !&quot;审核驳回&quot;.equals(report.getReportStatus())) {</span>
+<span class="fc" id="L90">            throw new BusinessException(&quot;报告状态不正确，无法提交审核&quot;);</span>
+        }
+
+<span class="fc" id="L93">        report.setReportStatus(&quot;待审核&quot;);</span>
+<span class="fc" id="L94">        report = examReportRepository.save(report);</span>
+
+        // 更新检查记录状态
+<span class="fc" id="L97">        ExamRecord record = examRecordRepository.findById(report.getExamId()).orElse(null);</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (record != null) {</span>
+<span class="fc" id="L99">            record.setReportStatus(&quot;待审核&quot;);</span>
+<span class="fc" id="L100">            examRecordRepository.save(record);</span>
+        }
+
+<span class="fc" id="L103">        log.info(&quot;提交报告审核成功: reportNo={}&quot;, report.getReportNo());</span>
+
+<span class="fc" id="L105">        return convertToVO(report);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamReportVO reviewReport(ReportReviewDTO dto) {
+<span class="fc" id="L111">        ExamReport report = examReportRepository.findById(dto.getReportId())</span>
+<span class="fc" id="L112">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (!&quot;待审核&quot;.equals(report.getReportStatus())) {</span>
+<span class="fc" id="L115">            throw new BusinessException(&quot;报告状态不正确，无法审核&quot;);</span>
+        }
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (dto.getApproved()) {</span>
+<span class="fc" id="L119">            report.setReportStatus(&quot;已审核&quot;);</span>
+<span class="fc" id="L120">            report.setReviewerId(dto.getReviewerId());</span>
+<span class="fc" id="L121">            report.setReviewerName(dto.getReviewerName());</span>
+<span class="fc" id="L122">            report.setReviewTime(LocalDateTime.now());</span>
+<span class="fc" id="L123">            report.setReviewComment(dto.getReviewComment());</span>
+        } else {
+<span class="fc" id="L125">            report.setReportStatus(&quot;审核驳回&quot;);</span>
+<span class="fc" id="L126">            report.setReviewerId(dto.getReviewerId());</span>
+<span class="fc" id="L127">            report.setReviewerName(dto.getReviewerName());</span>
+<span class="fc" id="L128">            report.setReviewTime(LocalDateTime.now());</span>
+<span class="fc" id="L129">            report.setReviewComment(dto.getReviewComment());</span>
+        }
+
+<span class="fc" id="L132">        report = examReportRepository.save(report);</span>
+
+        // 更新检查记录状态
+<span class="fc" id="L135">        ExamRecord record = examRecordRepository.findById(report.getExamId()).orElse(null);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (record != null) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            record.setReportStatus(dto.getApproved() ? &quot;已审核&quot; : &quot;审核驳回&quot;);</span>
+<span class="fc" id="L138">            examRecordRepository.save(record);</span>
+        }
+
+<span class="fc" id="L141">        log.info(&quot;审核报告完成: reportNo={}, approved={}&quot;, report.getReportNo(), dto.getApproved());</span>
+
+<span class="fc" id="L143">        return convertToVO(report);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamReportVO publishReport(String reportId, String publisherId, String publisherName) {
+<span class="fc" id="L149">        ExamReport report = examReportRepository.findById(reportId)</span>
+<span class="fc" id="L150">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if (!&quot;已审核&quot;.equals(report.getReportStatus())) {</span>
+<span class="fc" id="L153">            throw new BusinessException(&quot;报告状态不正确，无法发布&quot;);</span>
+        }
+
+<span class="fc" id="L156">        report.setReportStatus(&quot;已发布&quot;);</span>
+<span class="fc" id="L157">        report.setPublishTime(LocalDateTime.now());</span>
+<span class="fc" id="L158">        report.setPublisherId(publisherId);</span>
+<span class="fc" id="L159">        report.setPublisherName(publisherName);</span>
+
+<span class="fc" id="L161">        report = examReportRepository.save(report);</span>
+
+        // 更新检查记录状态
+<span class="fc" id="L164">        ExamRecord record = examRecordRepository.findById(report.getExamId()).orElse(null);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (record != null) {</span>
+<span class="fc" id="L166">            record.setReportStatus(&quot;已发布&quot;);</span>
+<span class="fc" id="L167">            record.setExamStatus(&quot;检查完成&quot;);</span>
+<span class="fc" id="L168">            examRecordRepository.save(record);</span>
+        }
+
+        // 更新申请状态
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (report.getRequestId() != null) {</span>
+<span class="fc" id="L173">            ExamRequest request = examRequestRepository.findById(report.getRequestId()).orElse(null);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">            if (request != null) {</span>
+<span class="fc" id="L175">                request.setStatus(&quot;已报告&quot;);</span>
+<span class="fc" id="L176">                request.setReportTime(LocalDateTime.now());</span>
+<span class="fc" id="L177">                examRequestRepository.save(request);</span>
+            }
+        }
+
+<span class="fc" id="L181">        log.info(&quot;发布报告成功: reportNo={}&quot;, report.getReportNo());</span>
+
+<span class="fc" id="L183">        return convertToVO(report);</span>
+    }
+
+    @Override
+    @Transactional
+    public ExamReportVO printReport(String reportId) {
+<span class="fc" id="L189">        ExamReport report = examReportRepository.findById(reportId)</span>
+<span class="fc" id="L190">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if (!&quot;已发布&quot;.equals(report.getReportStatus())) {</span>
+<span class="fc" id="L193">            throw new BusinessException(&quot;报告未发布，无法打印&quot;);</span>
+        }
+
+<span class="fc" id="L196">        report.setPrintCount(report.getPrintCount() + 1);</span>
+<span class="fc" id="L197">        report.setReportStatus(&quot;已打印&quot;);</span>
+
+<span class="fc" id="L199">        report = examReportRepository.save(report);</span>
+<span class="fc" id="L200">        log.info(&quot;打印报告成功: reportNo={}, printCount={}&quot;, report.getReportNo(), report.getPrintCount());</span>
+
+<span class="fc" id="L202">        return convertToVO(report);</span>
+    }
+
+    @Override
+    public ExamReportVO getReportById(String reportId) {
+<span class="fc" id="L207">        ExamReport report = examReportRepository.findById(reportId)</span>
+<span class="fc" id="L208">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+<span class="fc" id="L209">        return convertToVO(report);</span>
+    }
+
+    @Override
+    public ExamReportVO getReportByExamId(String examId) {
+<span class="fc" id="L214">        ExamReport report = examReportRepository.findByExamId(examId).orElse(null);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        return report != null ? convertToVO(report) : null;</span>
+    }
+
+    @Override
+    public ExamReportVO getReportByRequestId(String requestId) {
+<span class="fc" id="L220">        ExamReport report = examReportRepository.findByRequestId(requestId).orElse(null);</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        return report != null ? convertToVO(report) : null;</span>
+    }
+
+    @Override
+    public ExamReportVO getReportByNo(String reportNo) {
+<span class="fc" id="L226">        ExamReport report = examReportRepository.findByReportNo(reportNo)</span>
+<span class="fc" id="L227">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+<span class="fc" id="L228">        return convertToVO(report);</span>
+    }
+
+    @Override
+    public List&lt;ExamReportVO&gt; getReportsByPatientId(String patientId) {
+<span class="fc" id="L233">        List&lt;ExamReport&gt; reports = examReportRepository.findByPatientId(patientId);</span>
+<span class="fc" id="L234">        return reports.stream().map(this::convertToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public PageResult&lt;ExamReportVO&gt; queryReports(ReportQueryDTO queryDTO) {
+<span class="fc" id="L239">        Page&lt;ExamReport&gt; page = examReportRepository.findByConditions(</span>
+<span class="fc" id="L240">                queryDTO.getReportNo(),</span>
+<span class="fc" id="L241">                queryDTO.getExamId(),</span>
+<span class="fc" id="L242">                queryDTO.getPatientId(),</span>
+<span class="fc" id="L243">                queryDTO.getPatientName(),</span>
+<span class="fc" id="L244">                queryDTO.getReportStatus(),</span>
+<span class="fc" id="L245">                queryDTO.getWriterId(),</span>
+<span class="fc" id="L246">                queryDTO.getReviewerId(),</span>
+<span class="fc" id="L247">                queryDTO.getWriteTimeStart(),</span>
+<span class="fc" id="L248">                queryDTO.getWriteTimeEnd(),</span>
+<span class="fc" id="L249">                PageUtils.toPageable(queryDTO.getPageNum(), queryDTO.getPageSize())</span>
+        );
+<span class="fc" id="L251">        List&lt;ExamReportVO&gt; list = page.getContent().stream().map(this::convertToVO).collect(Collectors.toList());</span>
+<span class="fc" id="L252">        return PageResult.of(list, page.getTotalElements(), queryDTO.getPageNum(), queryDTO.getPageSize());</span>
+    }
+
+    @Override
+    public List&lt;ExamReportVO&gt; getPendingReviewReports() {
+<span class="fc" id="L257">        List&lt;ExamReport&gt; reports = examReportRepository.findPendingReview();</span>
+<span class="fc" id="L258">        return reports.stream().map(this::convertToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;ExamReportVO&gt; getMyReports(String writerId) {
+<span class="fc" id="L263">        List&lt;ExamReport&gt; reports = examReportRepository.findByWriterId(writerId);</span>
+<span class="fc" id="L264">        return reports.stream().map(this::convertToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public List&lt;ExamReportVO&gt; getMyReviewedReports(String reviewerId) {
+<span class="fc" id="L269">        List&lt;ExamReport&gt; reports = examReportRepository.findByReviewerId(reviewerId);</span>
+<span class="fc" id="L270">        return reports.stream().map(this::convertToVO).collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public String getModifyHistory(String reportId) {
+<span class="fc" id="L275">        ExamReport report = examReportRepository.findById(reportId)</span>
+<span class="fc" id="L276">                .orElseThrow(() -&gt; new BusinessException(&quot;报告不存在&quot;));</span>
+<span class="fc" id="L277">        return report.getModifyHistory();</span>
+    }
+
+    private String generateReportNo() {
+<span class="fc" id="L281">        return &quot;RP&quot; + LocalDateTime.now().format(DATE_FORMATTER);</span>
+    }
+
+    private ExamReportVO convertToVO(ExamReport report) {
+<span class="fc" id="L285">        ExamReportVO vo = new ExamReportVO();</span>
+<span class="fc" id="L286">        vo.setId(report.getId());</span>
+<span class="fc" id="L287">        vo.setReportNo(report.getReportNo());</span>
+<span class="fc" id="L288">        vo.setExamId(report.getExamId());</span>
+<span class="fc" id="L289">        vo.setRequestId(report.getRequestId());</span>
+<span class="fc" id="L290">        vo.setPatientId(report.getPatientId());</span>
+<span class="fc" id="L291">        vo.setPatientName(report.getPatientName());</span>
+<span class="fc" id="L292">        vo.setReportType(report.getReportType());</span>
+<span class="fc" id="L293">        vo.setReportTemplateId(report.getReportTemplateId());</span>
+<span class="fc" id="L294">        vo.setExamDescription(report.getExamDescription());</span>
+<span class="fc" id="L295">        vo.setDiagnosisResult(report.getDiagnosisResult());</span>
+<span class="fc" id="L296">        vo.setDiagnosisCode(report.getDiagnosisCode());</span>
+<span class="fc" id="L297">        vo.setDiagnosisName(report.getDiagnosisName());</span>
+<span class="fc" id="L298">        vo.setKeyImages(report.getKeyImages());</span>
+<span class="fc" id="L299">        vo.setReportStatus(report.getReportStatus());</span>
+<span class="fc" id="L300">        vo.setWriterId(report.getWriterId());</span>
+<span class="fc" id="L301">        vo.setWriterName(report.getWriterName());</span>
+<span class="fc" id="L302">        vo.setWriteTime(report.getWriteTime());</span>
+<span class="fc" id="L303">        vo.setReviewerId(report.getReviewerId());</span>
+<span class="fc" id="L304">        vo.setReviewerName(report.getReviewerName());</span>
+<span class="fc" id="L305">        vo.setReviewTime(report.getReviewTime());</span>
+<span class="fc" id="L306">        vo.setPublishTime(report.getPublishTime());</span>
+<span class="fc" id="L307">        vo.setPublisherId(report.getPublisherId());</span>
+<span class="fc" id="L308">        vo.setPublisherName(report.getPublisherName());</span>
+<span class="fc" id="L309">        vo.setPrintCount(report.getPrintCount());</span>
+<span class="fc" id="L310">        vo.setReviewComment(report.getReviewComment());</span>
+<span class="fc" id="L311">        vo.setRemark(report.getRemark());</span>
+<span class="fc" id="L312">        vo.setCreateTime(report.getCreateTime());</span>
+<span class="fc" id="L313">        vo.setUpdateTime(report.getUpdateTime());</span>
+<span class="fc" id="L314">        return vo;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

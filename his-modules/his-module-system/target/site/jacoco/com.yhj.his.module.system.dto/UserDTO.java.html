@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS系统管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.system.dto</a> &gt; <span class="el_source">UserDTO.java</span></div><h1>UserDTO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.system.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * 用户创建/更新DTO
+ */
+<span class="pc bnc" id="L15" title="All 142 branches missed.">@Data</span>
+@Schema(description = &quot;用户创建/更新请求&quot;)
+public class UserDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = &quot;用户ID(更新时必填)&quot;)
+<span class="fc" id="L22">    private String id;</span>
+
+    @NotBlank(message = &quot;用户名不能为空&quot;)
+    @Size(max = 50, message = &quot;用户名长度不能超过50&quot;)
+    @Schema(description = &quot;用户名&quot;, required = true)
+<span class="fc" id="L27">    private String userName;</span>
+
+    @Schema(description = &quot;登录账号(创建时必填)&quot;)
+    @Size(max = 30, message = &quot;登录账号长度不能超过30&quot;)
+<span class="fc" id="L31">    private String loginName;</span>
+
+    @Schema(description = &quot;密码(创建时必填，更新时可选)&quot;)
+    @Size(min = 8, max = 50, message = &quot;密码长度必须在8-50之间&quot;)
+<span class="fc" id="L35">    private String password;</span>
+
+    @Schema(description = &quot;关联员工ID&quot;)
+    @Size(max = 20, message = &quot;员工ID长度不能超过20&quot;)
+<span class="fc" id="L39">    private String employeeId;</span>
+
+    @Schema(description = &quot;真实姓名&quot;)
+    @Size(max = 50, message = &quot;真实姓名长度不能超过50&quot;)
+<span class="fc" id="L43">    private String realName;</span>
+
+    @Schema(description = &quot;所属科室ID&quot;)
+<span class="fc" id="L46">    private String deptId;</span>
+
+    @Schema(description = &quot;联系电话&quot;)
+    @Pattern(regexp = &quot;^$|^1[3-9]\\d{9}$&quot;, message = &quot;手机号格式不正确&quot;)
+<span class="fc" id="L50">    private String phone;</span>
+
+    @Schema(description = &quot;邮箱&quot;)
+    @Email(message = &quot;邮箱格式不正确&quot;)
+    @Size(max = 50, message = &quot;邮箱长度不能超过50&quot;)
+<span class="fc" id="L55">    private String email;</span>
+
+    @Schema(description = &quot;身份证号&quot;)
+    @Pattern(regexp = &quot;^$|^\\d{17}[\\dXx]$&quot;, message = &quot;身份证号格式不正确&quot;)
+<span class="fc" id="L59">    private String idCard;</span>
+
+    @Schema(description = &quot;用户类型&quot;)
+<span class="fc" id="L62">    private String userType;</span>
+
+    @Schema(description = &quot;登录方式&quot;)
+<span class="fc" id="L65">    private String loginType;</span>
+
+    @Schema(description = &quot;会话超时时间(分钟)&quot;)
+<span class="fc" id="L68">    private Integer sessionTimeout;</span>
+
+    @Schema(description = &quot;数据权限级别: ALL/DEPARTMENT/PERSONAL&quot;)
+<span class="fc" id="L71">    private String dataScope;</span>
+
+    @Schema(description = &quot;头像URL&quot;)
+<span class="fc" id="L74">    private String avatar;</span>
+
+    @Schema(description = &quot;备注&quot;)
+    @Size(max = 500, message = &quot;备注长度不能超过500&quot;)
+<span class="fc" id="L78">    private String remark;</span>
+
+    @Schema(description = &quot;角色ID列表&quot;)
+<span class="fc" id="L81">    private java.util.List&lt;String&gt; roleIds;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

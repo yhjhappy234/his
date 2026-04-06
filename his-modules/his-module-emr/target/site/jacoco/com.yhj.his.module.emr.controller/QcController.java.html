@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QcController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.controller</a> &gt; <span class="el_source">QcController.java</span></div><h1>QcController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.controller;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.emr.dto.RectificationDTO;
+import com.yhj.his.module.emr.service.QcService;
+import com.yhj.his.module.emr.vo.QcResultVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * 病历质控Controller
+ */
+@Tag(name = &quot;病历质控管理&quot;, description = &quot;质控检查、评分、缺陷标记、整改通知&quot;)
+@RestController
+@RequestMapping(&quot;/api/emr/v1/qc&quot;)
+<span class="nc" id="L20">@RequiredArgsConstructor</span>
+public class QcController {
+
+    private final QcService qcService;
+
+    @Operation(summary = &quot;执行质控检查&quot;)
+    @PostMapping(&quot;/check&quot;)
+    public Result&lt;QcResultVO&gt; performQcCheck(
+            @Parameter(description = &quot;病历记录ID&quot;, required = true) @RequestParam String recordId,
+            @Parameter(description = &quot;记录类型&quot;, required = true) @RequestParam String recordType) {
+<span class="nc" id="L30">        QcResultVO vo = qcService.performQcCheck(recordId, recordType);</span>
+<span class="nc" id="L31">        return Result.success(&quot;质控检查完成&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;获取质控结果&quot;)
+    @GetMapping(&quot;/result/{recordId}&quot;)
+    public Result&lt;QcResultVO&gt; getQcResult(@PathVariable String recordId) {
+<span class="nc" id="L37">        QcResultVO vo = qcService.getQcResult(recordId);</span>
+<span class="nc" id="L38">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;获取质控结果详情&quot;)
+    @GetMapping(&quot;/detail/{qcResultId}&quot;)
+    public Result&lt;QcResultVO&gt; getQcResultById(@PathVariable String qcResultId) {
+<span class="nc" id="L44">        QcResultVO vo = qcService.getQcResultById(qcResultId);</span>
+<span class="nc" id="L45">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;获取患者质控记录&quot;)
+    @GetMapping(&quot;/patient/{patientId}&quot;)
+    public Result&lt;PageResult&lt;QcResultVO&gt;&gt; getPatientQcResults(
+            @PathVariable String patientId,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;1&quot;) Integer pageNum,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) Integer pageSize) {
+<span class="nc" id="L54">        PageResult&lt;QcResultVO&gt; result = qcService.getPatientQcResults(patientId, pageNum, pageSize);</span>
+<span class="nc" id="L55">        return Result.success(result);</span>
+    }
+
+    @Operation(summary = &quot;获取待整改列表&quot;)
+    @GetMapping(&quot;/pendingRectification&quot;)
+    public Result&lt;PageResult&lt;QcResultVO&gt;&gt; getPendingRectificationList(
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;1&quot;) Integer pageNum,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) Integer pageSize) {
+<span class="nc" id="L63">        PageResult&lt;QcResultVO&gt; result = qcService.getPendingRectificationList(pageNum, pageSize);</span>
+<span class="nc" id="L64">        return Result.success(result);</span>
+    }
+
+    @Operation(summary = &quot;发送整改通知&quot;)
+    @PostMapping(&quot;/notify/{qcResultId}&quot;)
+    public Result&lt;Void&gt; sendRectificationNotice(@PathVariable String qcResultId) {
+<span class="nc" id="L70">        qcService.sendRectificationNotice(qcResultId);</span>
+<span class="nc" id="L71">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;完成整改&quot;)
+    @PostMapping(&quot;/rectify&quot;)
+    public Result&lt;Void&gt; completeRectification(@RequestBody RectificationDTO dto) {
+<span class="nc" id="L77">        qcService.completeRectification(dto);</span>
+<span class="nc" id="L78">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;人工复核质控结果&quot;)
+    @PostMapping(&quot;/review/{qcResultId}&quot;)
+    public Result&lt;QcResultVO&gt; manualReview(
+            @PathVariable String qcResultId,
+            @Parameter(description = &quot;质控人ID&quot;, required = true) @RequestParam String qcUserId,
+            @Parameter(description = &quot;质控人姓名&quot;, required = true) @RequestParam String qcUserName,
+            @Parameter(description = &quot;评分&quot;, required = true) @RequestParam Integer score,
+            @Parameter(description = &quot;备注&quot;) @RequestParam(required = false) String comment) {
+<span class="nc" id="L89">        QcResultVO vo = qcService.manualReview(qcResultId, qcUserId, qcUserName, score, comment);</span>
+<span class="nc" id="L90">        return Result.success(&quot;复核完成&quot;, vo);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

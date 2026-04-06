@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DischargeRecordController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS电子病历模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.emr.controller</a> &gt; <span class="el_source">DischargeRecordController.java</span></div><h1>DischargeRecordController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.emr.controller;
+
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.emr.dto.DischargeRecordSaveDTO;
+import com.yhj.his.module.emr.dto.EmrSubmitDTO;
+import com.yhj.his.module.emr.entity.DischargeRecord;
+import com.yhj.his.module.emr.enums.EmrStatus;
+import com.yhj.his.module.emr.service.DischargeRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 出院记录REST控制器
+ */
+@Tag(name = &quot;出院记录管理&quot;, description = &quot;出院记录的CRUD及业务操作&quot;)
+@RestController
+@RequestMapping(&quot;/api/emr/v1/discharge-records&quot;)
+<span class="nc" id="L29">@RequiredArgsConstructor</span>
+public class DischargeRecordController {
+
+    private final DischargeRecordService recordService;
+
+    @Operation(summary = &quot;创建出院记录&quot;, description = &quot;创建新的出院记录&quot;)
+    @PostMapping
+    public Result&lt;DischargeRecord&gt; createRecord(@Valid @RequestBody DischargeRecordSaveDTO dto) {
+<span class="nc" id="L37">        DischargeRecord record = recordService.createRecord(dto);</span>
+<span class="nc" id="L38">        return Result.success(&quot;出院记录创建成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;从模板创建出院记录&quot;, description = &quot;使用模板创建出院记录&quot;)
+    @PostMapping(&quot;/from-template/{templateId}&quot;)
+    public Result&lt;DischargeRecord&gt; createFromTemplate(
+            @Parameter(description = &quot;模板ID&quot;) @PathVariable String templateId,
+            @Valid @RequestBody DischargeRecordSaveDTO dto) {
+<span class="nc" id="L46">        DischargeRecord record = recordService.createFromTemplate(templateId, dto);</span>
+<span class="nc" id="L47">        return Result.success(&quot;从模板创建出院记录成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;更新出院记录&quot;, description = &quot;更新指定的出院记录&quot;)
+    @PutMapping(&quot;/{id}&quot;)
+    public Result&lt;DischargeRecord&gt; updateRecord(
+            @Parameter(description = &quot;记录ID&quot;) @PathVariable String id,
+            @Valid @RequestBody DischargeRecordSaveDTO dto) {
+<span class="nc" id="L55">        DischargeRecord record = recordService.updateRecord(id, dto);</span>
+<span class="nc" id="L56">        return Result.success(&quot;出院记录更新成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;删除出院记录&quot;, description = &quot;删除指定的出院记录&quot;)
+    @DeleteMapping(&quot;/{id}&quot;)
+    public Result&lt;Void&gt; deleteRecord(@Parameter(description = &quot;记录ID&quot;) @PathVariable String id) {
+<span class="nc" id="L62">        recordService.deleteRecord(id);</span>
+<span class="nc" id="L63">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;获取出院记录详情&quot;, description = &quot;根据ID获取出院记录详情&quot;)
+    @GetMapping(&quot;/{id}&quot;)
+    public Result&lt;DischargeRecord&gt; getRecord(@Parameter(description = &quot;记录ID&quot;) @PathVariable String id) {
+<span class="nc" id="L69">        DischargeRecord record = recordService.getRecordById(id);</span>
+<span class="nc" id="L70">        return Result.success(record);</span>
+    }
+
+    @Operation(summary = &quot;根据住院ID获取出院记录&quot;, description = &quot;根据住院ID获取出院记录&quot;)
+    @GetMapping(&quot;/admission/{admissionId}&quot;)
+    public Result&lt;DischargeRecord&gt; getRecordByAdmissionId(
+            @Parameter(description = &quot;住院ID&quot;) @PathVariable String admissionId) {
+<span class="nc" id="L77">        Optional&lt;DischargeRecord&gt; record = recordService.getRecordByAdmissionId(admissionId);</span>
+<span class="nc" id="L78">        return record.map(Result::success)</span>
+<span class="nc" id="L79">                .orElseGet(() -&gt; Result.error(404, &quot;未找到该住院ID对应的出院记录&quot;));</span>
+    }
+
+    @Operation(summary = &quot;分页查询出院记录&quot;, description = &quot;分页查询所有出院记录&quot;)
+    @GetMapping
+    public Result&lt;Page&lt;DischargeRecord&gt;&gt; listRecords(
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size,
+            @Parameter(description = &quot;排序字段&quot;) @RequestParam(defaultValue = &quot;createTime&quot;) String sortBy,
+            @Parameter(description = &quot;排序方向&quot;) @RequestParam(defaultValue = &quot;DESC&quot;) String sortDir) {
+<span class="nc" id="L89">        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);</span>
+<span class="nc" id="L90">        Pageable pageable = PageRequest.of(page, size, sort);</span>
+<span class="nc" id="L91">        Page&lt;DischargeRecord&gt; records = recordService.listRecords(pageable);</span>
+<span class="nc" id="L92">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据患者ID查询出院记录列表&quot;, description = &quot;获取患者的所有出院记录&quot;)
+    @GetMapping(&quot;/patient/{patientId}&quot;)
+    public Result&lt;List&lt;DischargeRecord&gt;&gt; getRecordsByPatientId(
+            @Parameter(description = &quot;患者ID&quot;) @PathVariable String patientId) {
+<span class="nc" id="L99">        List&lt;DischargeRecord&gt; records = recordService.getRecordsByPatientId(patientId);</span>
+<span class="nc" id="L100">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据科室查询出院记录&quot;, description = &quot;分页查询指定科室的出院记录&quot;)
+    @GetMapping(&quot;/dept/{deptId}&quot;)
+    public Result&lt;Page&lt;DischargeRecord&gt;&gt; getRecordsByDeptId(
+            @Parameter(description = &quot;科室ID&quot;) @PathVariable String deptId,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L109">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L110">        Page&lt;DischargeRecord&gt; records = recordService.getRecordsByDeptId(deptId, pageable);</span>
+<span class="nc" id="L111">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据状态查询出院记录&quot;, description = &quot;分页查询指定状态的出院记录&quot;)
+    @GetMapping(&quot;/status/{status}&quot;)
+    public Result&lt;Page&lt;DischargeRecord&gt;&gt; getRecordsByStatus(
+            @Parameter(description = &quot;记录状态&quot;) @PathVariable EmrStatus status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L120">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L121">        Page&lt;DischargeRecord&gt; records = recordService.getRecordsByStatus(status, pageable);</span>
+<span class="nc" id="L122">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;根据科室和状态查询&quot;, description = &quot;分页查询指定科室和状态的出院记录&quot;)
+    @GetMapping(&quot;/dept/{deptId}/status/{status}&quot;)
+    public Result&lt;Page&lt;DischargeRecord&gt;&gt; getRecordsByDeptIdAndStatus(
+            @Parameter(description = &quot;科室ID&quot;) @PathVariable String deptId,
+            @Parameter(description = &quot;记录状态&quot;) @PathVariable EmrStatus status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L132">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L133">        Page&lt;DischargeRecord&gt; records = recordService.getRecordsByDeptIdAndStatus(deptId, status, pageable);</span>
+<span class="nc" id="L134">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;获取患者最新出院记录&quot;, description = &quot;获取患者最新的出院记录&quot;)
+    @GetMapping(&quot;/patient/{patientId}/latest&quot;)
+    public Result&lt;DischargeRecord&gt; getLatestRecordByPatientId(
+            @Parameter(description = &quot;患者ID&quot;) @PathVariable String patientId) {
+<span class="nc" id="L141">        Optional&lt;DischargeRecord&gt; record = recordService.getLatestRecordByPatientId(patientId);</span>
+<span class="nc" id="L142">        return record.map(Result::success)</span>
+<span class="nc" id="L143">                .orElseGet(() -&gt; Result.error(404, &quot;未找到该患者的出院记录&quot;));</span>
+    }
+
+    @Operation(summary = &quot;搜索出院记录&quot;, description = &quot;根据患者姓名模糊搜索出院记录&quot;)
+    @GetMapping(&quot;/search&quot;)
+    public Result&lt;Page&lt;DischargeRecord&gt;&gt; searchByPatientName(
+            @Parameter(description = &quot;患者姓名&quot;) @RequestParam String patientName,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) int size) {
+<span class="nc" id="L152">        Pageable pageable = PageRequest.of(page, size);</span>
+<span class="nc" id="L153">        Page&lt;DischargeRecord&gt; records = recordService.searchByPatientName(patientName, pageable);</span>
+<span class="nc" id="L154">        return Result.success(records);</span>
+    }
+
+    @Operation(summary = &quot;提交出院记录&quot;, description = &quot;提交出院记录待审核&quot;)
+    @PostMapping(&quot;/submit&quot;)
+    public Result&lt;DischargeRecord&gt; submitRecord(@Valid @RequestBody EmrSubmitDTO dto) {
+<span class="nc" id="L160">        DischargeRecord record = recordService.submitRecord(dto);</span>
+<span class="nc" id="L161">        return Result.success(&quot;出院记录提交成功&quot;, record);</span>
+    }
+
+    @Operation(summary = &quot;审核出院记录&quot;, description = &quot;审核出院记录&quot;)
+    @PostMapping(&quot;/{id}/audit&quot;)
+    public Result&lt;DischargeRecord&gt; auditRecord(
+            @Parameter(description = &quot;记录ID&quot;) @PathVariable String id,
+            @Parameter(description = &quot;是否通过&quot;) @RequestParam boolean approved,
+            @Parameter(description = &quot;审核人ID&quot;) @RequestParam String auditorId,
+            @Parameter(description = &quot;审核人姓名&quot;) @RequestParam String auditorName,
+            @Parameter(description = &quot;审核意见&quot;) @RequestParam(required = false) String comment) {
+<span class="nc" id="L172">        DischargeRecord record = recordService.auditRecord(id, approved, auditorId, auditorName, comment);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        return Result.success(approved ? &quot;出院记录审核通过&quot; : &quot;出院记录审核退回&quot;, record);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

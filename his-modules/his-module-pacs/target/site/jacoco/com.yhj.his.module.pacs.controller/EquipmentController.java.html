@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EquipmentController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.controller</a> &gt; <span class="el_source">EquipmentController.java</span></div><h1>EquipmentController.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.controller;
+
+import com.yhj.his.common.core.domain.PageResult;
+import com.yhj.his.common.core.domain.Result;
+import com.yhj.his.module.pacs.dto.*;
+import com.yhj.his.module.pacs.service.*;
+import com.yhj.his.module.pacs.vo.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 设备机房管理Controller
+ */
+@Tag(name = &quot;设备机房管理&quot;, description = &quot;设备信息管理、机房排班管理接口&quot;)
+@RestController
+@RequestMapping(&quot;/api/pacs/v1/equipment&quot;)
+<span class="nc" id="L23">@RequiredArgsConstructor</span>
+public class EquipmentController {
+
+    private final EquipmentService equipmentService;
+
+    // ==================== 设备管理接口 ====================
+
+    @Operation(summary = &quot;创建设备&quot;, description = &quot;创建新设备&quot;)
+    @PostMapping(&quot;/create&quot;)
+    public Result&lt;EquipmentVO&gt; createEquipment(@Valid @RequestBody EquipmentDTO dto) {
+<span class="nc" id="L33">        EquipmentVO vo = equipmentService.createEquipment(dto);</span>
+<span class="nc" id="L34">        return Result.success(&quot;创建成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;更新设备&quot;, description = &quot;更新设备信息&quot;)
+    @PostMapping(&quot;/update&quot;)
+    public Result&lt;EquipmentVO&gt; updateEquipment(@Valid @RequestBody EquipmentDTO dto) {
+<span class="nc" id="L40">        EquipmentVO vo = equipmentService.updateEquipment(dto);</span>
+<span class="nc" id="L41">        return Result.success(&quot;更新成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;删除设备&quot;, description = &quot;删除设备&quot;)
+    @DeleteMapping(&quot;/{equipmentId}&quot;)
+    public Result&lt;Void&gt; deleteEquipment(@PathVariable String equipmentId) {
+<span class="nc" id="L47">        equipmentService.deleteEquipment(equipmentId);</span>
+<span class="nc" id="L48">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;查询设备详情&quot;, description = &quot;根据ID查询设备详情&quot;)
+    @GetMapping(&quot;/{equipmentId}&quot;)
+    public Result&lt;EquipmentVO&gt; getEquipmentById(@PathVariable String equipmentId) {
+<span class="nc" id="L54">        EquipmentVO vo = equipmentService.getEquipmentById(equipmentId);</span>
+<span class="nc" id="L55">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;根据编码查询设备&quot;, description = &quot;根据设备编码查询&quot;)
+    @GetMapping(&quot;/code/{equipmentCode}&quot;)
+    public Result&lt;EquipmentVO&gt; getEquipmentByCode(@PathVariable String equipmentCode) {
+<span class="nc" id="L61">        EquipmentVO vo = equipmentService.getEquipmentByCode(equipmentCode);</span>
+<span class="nc" id="L62">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;根据机房号查询设备&quot;, description = &quot;根据机房号查询设备&quot;)
+    @GetMapping(&quot;/room/{roomNo}&quot;)
+    public Result&lt;EquipmentVO&gt; getEquipmentByRoomNo(@PathVariable String roomNo) {
+<span class="nc" id="L68">        EquipmentVO vo = equipmentService.getEquipmentByRoomNo(roomNo);</span>
+<span class="nc" id="L69">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;根据类型查询设备&quot;, description = &quot;根据设备类型查询&quot;)
+    @GetMapping(&quot;/type/{equipmentType}&quot;)
+    public Result&lt;List&lt;EquipmentVO&gt;&gt; getEquipmentByType(@PathVariable String equipmentType) {
+<span class="nc" id="L75">        List&lt;EquipmentVO&gt; list = equipmentService.getEquipmentByType(equipmentType);</span>
+<span class="nc" id="L76">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询正常设备&quot;, description = &quot;查询所有正常状态的设备&quot;)
+    @GetMapping(&quot;/normal&quot;)
+    public Result&lt;List&lt;EquipmentVO&gt;&gt; getNormalEquipment() {
+<span class="nc" id="L82">        List&lt;EquipmentVO&gt; list = equipmentService.getNormalEquipment();</span>
+<span class="nc" id="L83">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;分页查询设备&quot;, description = &quot;分页查询设备列表&quot;)
+    @GetMapping(&quot;/query&quot;)
+    public Result&lt;PageResult&lt;EquipmentVO&gt;&gt; queryEquipment(
+            @Parameter(description = &quot;设备编码&quot;) @RequestParam(required = false) String equipmentCode,
+            @Parameter(description = &quot;设备名称&quot;) @RequestParam(required = false) String equipmentName,
+            @Parameter(description = &quot;设备类型&quot;) @RequestParam(required = false) String equipmentType,
+            @Parameter(description = &quot;状态&quot;) @RequestParam(required = false) String status,
+            @Parameter(description = &quot;机房号&quot;) @RequestParam(required = false) String roomNo,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;1&quot;) Integer pageNum,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) Integer pageSize) {
+<span class="nc" id="L96">        PageResult&lt;EquipmentVO&gt; result = equipmentService.queryEquipment(equipmentCode, equipmentName, equipmentType, status, roomNo, pageNum, pageSize);</span>
+<span class="nc" id="L97">        return Result.success(result);</span>
+    }
+
+    @Operation(summary = &quot;更新设备状态&quot;, description = &quot;更新设备运行状态&quot;)
+    @PostMapping(&quot;/status&quot;)
+    public Result&lt;EquipmentVO&gt; updateEquipmentStatus(
+            @Parameter(description = &quot;设备ID&quot;) @RequestParam String equipmentId,
+            @Parameter(description = &quot;状态&quot;) @RequestParam String status) {
+<span class="nc" id="L105">        EquipmentVO vo = equipmentService.updateEquipmentStatus(equipmentId, status);</span>
+<span class="nc" id="L106">        return Result.success(vo);</span>
+    }
+
+    // ==================== 机房排班接口 ====================
+
+    @Operation(summary = &quot;创建排班&quot;, description = &quot;创建机房排班&quot;)
+    @PostMapping(&quot;/schedule/create&quot;)
+    public Result&lt;RoomScheduleVO&gt; createSchedule(@Valid @RequestBody RoomScheduleDTO dto) {
+<span class="nc" id="L114">        RoomScheduleVO vo = equipmentService.createSchedule(dto);</span>
+<span class="nc" id="L115">        return Result.success(&quot;创建成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;更新排班&quot;, description = &quot;更新机房排班&quot;)
+    @PostMapping(&quot;/schedule/update&quot;)
+    public Result&lt;RoomScheduleVO&gt; updateSchedule(@Valid @RequestBody RoomScheduleDTO dto) {
+<span class="nc" id="L121">        RoomScheduleVO vo = equipmentService.updateSchedule(dto);</span>
+<span class="nc" id="L122">        return Result.success(&quot;更新成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;删除排班&quot;, description = &quot;删除机房排班&quot;)
+    @DeleteMapping(&quot;/schedule/{scheduleId}&quot;)
+    public Result&lt;Void&gt; deleteSchedule(@PathVariable String scheduleId) {
+<span class="nc" id="L128">        equipmentService.deleteSchedule(scheduleId);</span>
+<span class="nc" id="L129">        return Result.successVoid();</span>
+    }
+
+    @Operation(summary = &quot;查询排班详情&quot;, description = &quot;根据ID查询排班详情&quot;)
+    @GetMapping(&quot;/schedule/{scheduleId}&quot;)
+    public Result&lt;RoomScheduleVO&gt; getScheduleById(@PathVariable String scheduleId) {
+<span class="nc" id="L135">        RoomScheduleVO vo = equipmentService.getScheduleById(scheduleId);</span>
+<span class="nc" id="L136">        return Result.success(vo);</span>
+    }
+
+    @Operation(summary = &quot;查询机房排班&quot;, description = &quot;查询机房的所有排班&quot;)
+    @GetMapping(&quot;/schedule/room/{roomNo}&quot;)
+    public Result&lt;List&lt;RoomScheduleVO&gt;&gt; getSchedulesByRoomNo(@PathVariable String roomNo) {
+<span class="nc" id="L142">        List&lt;RoomScheduleVO&gt; list = equipmentService.getSchedulesByRoomNo(roomNo);</span>
+<span class="nc" id="L143">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询日期排班&quot;, description = &quot;查询指定日期的排班&quot;)
+    @GetMapping(&quot;/schedule/date/{date}&quot;)
+    public Result&lt;List&lt;RoomScheduleVO&gt;&gt; getSchedulesByDate(@PathVariable String date) {
+<span class="nc" id="L149">        List&lt;RoomScheduleVO&gt; list = equipmentService.getSchedulesByDate(date);</span>
+<span class="nc" id="L150">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;查询可用排班&quot;, description = &quot;查询指定日期的可用排班&quot;)
+    @GetMapping(&quot;/schedule/available&quot;)
+    public Result&lt;List&lt;RoomScheduleVO&gt;&gt; getAvailableSchedules(
+            @Parameter(description = &quot;日期&quot;) @RequestParam String date,
+            @Parameter(description = &quot;检查类型&quot;) @RequestParam(required = false) String examType) {
+<span class="nc" id="L158">        List&lt;RoomScheduleVO&gt; list = equipmentService.getAvailableSchedules(date, examType);</span>
+<span class="nc" id="L159">        return Result.success(list);</span>
+    }
+
+    @Operation(summary = &quot;分页查询排班&quot;, description = &quot;分页查询排班列表&quot;)
+    @GetMapping(&quot;/schedule/query&quot;)
+    public Result&lt;PageResult&lt;RoomScheduleVO&gt;&gt; querySchedules(
+            @Parameter(description = &quot;机房号&quot;) @RequestParam(required = false) String roomNo,
+            @Parameter(description = &quot;日期&quot;) @RequestParam(required = false) String date,
+            @Parameter(description = &quot;班次&quot;) @RequestParam(required = false) String shift,
+            @Parameter(description = &quot;状态&quot;) @RequestParam(required = false) String status,
+            @Parameter(description = &quot;页码&quot;) @RequestParam(defaultValue = &quot;1&quot;) Integer pageNum,
+            @Parameter(description = &quot;每页大小&quot;) @RequestParam(defaultValue = &quot;10&quot;) Integer pageSize) {
+<span class="nc" id="L171">        PageResult&lt;RoomScheduleVO&gt; result = equipmentService.querySchedules(roomNo, date, shift, status, pageNum, pageSize);</span>
+<span class="nc" id="L172">        return Result.success(result);</span>
+    }
+
+    @Operation(summary = &quot;开放排班&quot;, description = &quot;开放机房排班&quot;)
+    @PostMapping(&quot;/schedule/open/{scheduleId}&quot;)
+    public Result&lt;RoomScheduleVO&gt; openSchedule(@PathVariable String scheduleId) {
+<span class="nc" id="L178">        RoomScheduleVO vo = equipmentService.openSchedule(scheduleId);</span>
+<span class="nc" id="L179">        return Result.success(&quot;开放成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;关闭排班&quot;, description = &quot;关闭机房排班&quot;)
+    @PostMapping(&quot;/schedule/close/{scheduleId}&quot;)
+    public Result&lt;RoomScheduleVO&gt; closeSchedule(@PathVariable String scheduleId) {
+<span class="nc" id="L185">        RoomScheduleVO vo = equipmentService.closeSchedule(scheduleId);</span>
+<span class="nc" id="L186">        return Result.success(&quot;关闭成功&quot;, vo);</span>
+    }
+
+    @Operation(summary = &quot;批量创建排班&quot;, description = &quot;批量创建机房排班&quot;)
+    @PostMapping(&quot;/schedule/batch-create&quot;)
+    public Result&lt;List&lt;RoomScheduleVO&gt;&gt; batchCreateSchedules(@Valid @RequestBody List&lt;RoomScheduleDTO&gt; dtoList) {
+<span class="nc" id="L192">        List&lt;RoomScheduleVO&gt; list = equipmentService.batchCreateSchedules(dtoList);</span>
+<span class="nc" id="L193">        return Result.success(&quot;批量创建成功&quot;, list);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

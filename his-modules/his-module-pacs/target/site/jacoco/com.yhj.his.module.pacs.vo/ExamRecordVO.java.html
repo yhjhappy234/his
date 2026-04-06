@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExamRecordVO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">HIS影像管理模块</a> &gt; <a href="index.source.html" class="el_package">com.yhj.his.module.pacs.vo</a> &gt; <span class="el_source">ExamRecordVO.java</span></div><h1>ExamRecordVO.java</h1><pre class="source lang-java linenums">package com.yhj.his.module.pacs.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+<span class="pc bnc" id="L10" title="All 238 branches missed.">@Data</span>
+@Schema(description = &quot;检查记录VO&quot;)
+public class ExamRecordVO {
+
+    @Schema(description = &quot;检查ID&quot;)
+<span class="fc" id="L15">    private String id;</span>
+
+    @Schema(description = &quot;检查编号&quot;)
+<span class="fc" id="L18">    private String examNo;</span>
+
+    @Schema(description = &quot;申请ID&quot;)
+<span class="nc" id="L21">    private String requestId;</span>
+
+    @Schema(description = &quot;患者ID&quot;)
+<span class="fc" id="L24">    private String patientId;</span>
+
+    @Schema(description = &quot;患者姓名&quot;)
+<span class="fc" id="L27">    private String patientName;</span>
+
+    @Schema(description = &quot;流水号&quot;)
+<span class="nc" id="L30">    private String accessionNo;</span>
+
+    @Schema(description = &quot;检查号&quot;)
+<span class="nc" id="L33">    private String studyId;</span>
+
+    @Schema(description = &quot;检查类型&quot;)
+<span class="fc" id="L36">    private String examType;</span>
+
+    @Schema(description = &quot;检查部位&quot;)
+<span class="nc" id="L39">    private String examPart;</span>
+
+    @Schema(description = &quot;检查模态&quot;)
+<span class="nc" id="L42">    private String modality;</span>
+
+    @Schema(description = &quot;设备ID&quot;)
+<span class="nc" id="L45">    private String equipmentId;</span>
+
+    @Schema(description = &quot;设备名称&quot;)
+<span class="nc" id="L48">    private String equipmentName;</span>
+
+    @Schema(description = &quot;机房号&quot;)
+<span class="nc" id="L51">    private String roomNo;</span>
+
+    @Schema(description = &quot;技师ID&quot;)
+<span class="nc" id="L54">    private String technicianId;</span>
+
+    @Schema(description = &quot;技师姓名&quot;)
+<span class="nc" id="L57">    private String technicianName;</span>
+
+    @Schema(description = &quot;检查时间&quot;)
+<span class="nc" id="L60">    private LocalDateTime examTime;</span>
+
+    @Schema(description = &quot;检查时长(分钟)&quot;)
+<span class="nc" id="L63">    private Integer examDuration;</span>
+
+    @Schema(description = &quot;序列数量&quot;)
+<span class="nc" id="L66">    private Integer seriesCount;</span>
+
+    @Schema(description = &quot;影像数量&quot;)
+<span class="nc" id="L69">    private Integer imageCount;</span>
+
+    @Schema(description = &quot;存储路径&quot;)
+<span class="nc" id="L72">    private String storagePath;</span>
+
+    @Schema(description = &quot;造影剂&quot;)
+<span class="nc" id="L75">    private String contrastAgent;</span>
+
+    @Schema(description = &quot;造影剂剂量&quot;)
+<span class="nc" id="L78">    private BigDecimal contrastDose;</span>
+
+    @Schema(description = &quot;辐射剂量&quot;)
+<span class="nc" id="L81">    private BigDecimal radiationDose;</span>
+
+    @Schema(description = &quot;检查状态&quot;)
+<span class="fc" id="L84">    private String examStatus;</span>
+
+    @Schema(description = &quot;报告状态&quot;)
+<span class="fc" id="L87">    private String reportStatus;</span>
+
+    @Schema(description = &quot;检查描述&quot;)
+<span class="nc" id="L90">    private String examDescription;</span>
+
+    @Schema(description = &quot;备注&quot;)
+<span class="nc" id="L93">    private String remark;</span>
+
+    @Schema(description = &quot;序列列表&quot;)
+<span class="fc" id="L96">    private List&lt;ExamSeriesVO&gt; seriesList;</span>
+
+    @Schema(description = &quot;创建时间&quot;)
+<span class="nc" id="L99">    private LocalDateTime createTime;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
