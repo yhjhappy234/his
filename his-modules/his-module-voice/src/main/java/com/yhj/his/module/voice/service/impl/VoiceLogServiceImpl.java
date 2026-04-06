@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 public class VoiceLogServiceImpl implements VoiceLogService {
 
     private final VoiceLogRepository voiceLogRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -45,7 +46,7 @@ public class VoiceLogServiceImpl implements VoiceLogService {
                                 String deviceId, String deviceName, String deviceGroup,
                                 PlayResult playResult, Integer playDuration, String errorMessage) {
         VoiceLog logEntity = new VoiceLog();
-        logEntity.setId(SequenceGenerator.uuid());
+        logEntity.setId(sequenceGenerator.uuid());
         logEntity.setTaskId(taskId);
         logEntity.setTaskNo(taskNo);
         logEntity.setTaskType(taskType);

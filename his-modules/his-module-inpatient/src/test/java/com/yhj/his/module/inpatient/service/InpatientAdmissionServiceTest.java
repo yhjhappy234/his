@@ -50,21 +50,16 @@ class InpatientAdmissionServiceTest {
     @Mock
     private NursingRecordRepository nursingRecordRepository;
 
+    @Mock
+    private com.yhj.his.common.core.util.SequenceGenerator sequenceGenerator;
+
     @InjectMocks
     private AdmissionServiceImpl admissionService;
 
-    private MockedStatic<com.yhj.his.common.core.util.SequenceGenerator> sequenceGeneratorMock;
-
     @BeforeEach
     void setUp() {
-        sequenceGeneratorMock = mockStatic(com.yhj.his.common.core.util.SequenceGenerator.class);
-        sequenceGeneratorMock.when(() -> com.yhj.his.common.core.util.SequenceGenerator.generate(anyString()))
+        lenient().when(sequenceGenerator.generate(anyString()))
                 .thenReturn("ZY20260406001");
-    }
-
-    @AfterEach
-    void tearDown() {
-        sequenceGeneratorMock.close();
     }
 
     // ==================== 入院登记测试 ====================

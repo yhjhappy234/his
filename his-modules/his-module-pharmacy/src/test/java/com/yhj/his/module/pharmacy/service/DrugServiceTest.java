@@ -370,8 +370,8 @@ class DrugServiceTest {
             // Arrange
             List<Drug> drugs = Arrays.asList(testDrug);
             Page<Drug> page = new PageImpl<>(drugs);
-            when(drugRepository.queryDrugs(anyString(), any(DrugCategory.class), any(),
-                    any(), any(), any(), any(), any(DrugStatus.class),
+            lenient().when(drugRepository.queryDrugs(any(), any(), any(),
+                    any(), any(), any(), any(), any(),
                     any(Pageable.class))).thenReturn(page);
 
             // Act
@@ -384,8 +384,8 @@ class DrugServiceTest {
             assertEquals(1, result.getData().getTotal());
             assertEquals(1, result.getData().getList().size());
 
-            verify(drugRepository).queryDrugs(anyString(), any(DrugCategory.class), any(),
-                    any(), any(), any(), any(), any(DrugStatus.class),
+            verify(drugRepository).queryDrugs(any(), any(), any(),
+                    any(), any(), any(), any(), any(),
                     any(Pageable.class));
         }
 
@@ -394,8 +394,8 @@ class DrugServiceTest {
         void shouldReturnEmptyPageWhenNoDrugsFound() {
             // Arrange
             Page<Drug> emptyPage = new PageImpl<>(Collections.emptyList());
-            when(drugRepository.queryDrugs(anyString(), any(DrugCategory.class), any(),
-                    any(), any(), any(), any(), any(DrugStatus.class),
+            lenient().when(drugRepository.queryDrugs(any(), any(), any(),
+                    any(), any(), any(), any(), any(),
                     any(Pageable.class))).thenReturn(emptyPage);
 
             // Act

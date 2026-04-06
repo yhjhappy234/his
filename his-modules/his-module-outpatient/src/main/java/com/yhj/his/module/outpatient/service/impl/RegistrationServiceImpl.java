@@ -136,7 +136,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         Registration registration = registrationRepository.findById(request.getRegistrationId())
                 .orElseThrow(() -> new BusinessException("挂号记录不存在"));
 
-        if (!registration.getStatus().equals("已预约") && !registration.getStatus().equals("已挂号")) {
+        if (!registration.getStatus().equals("已预约") && !registration.getStatus().equals("已挂号")
+                && !registration.getStatus().equals("已签到")) {
             throw new BusinessException("当前状态无法取消预约");
         }
 

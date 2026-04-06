@@ -40,6 +40,7 @@ public class AdmissionServiceImpl implements AdmissionService {
     private final InpatientAdmissionRepository admissionRepository;
     private final BedRepository bedRepository;
     private final NursingRecordRepository nursingRecordRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -51,7 +52,7 @@ public class AdmissionServiceImpl implements AdmissionService {
 
         // 创建住院记录
         InpatientAdmission admission = new InpatientAdmission();
-        admission.setAdmissionNo(SequenceGenerator.generate("ZY"));
+        admission.setAdmissionNo(sequenceGenerator.generate("ZY"));
         admission.setPatientId(dto.getPatientId());
         admission.setPatientName(dto.getPatientName());
         admission.setIdCardNo(dto.getIdCardNo());

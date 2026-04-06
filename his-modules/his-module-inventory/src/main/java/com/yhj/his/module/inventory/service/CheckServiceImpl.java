@@ -46,6 +46,7 @@ public class CheckServiceImpl implements CheckService {
     private final MaterialInventoryRepository inventoryRepository;
     private final InboundService inboundService;
     private final OutboundService outboundService;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -54,7 +55,7 @@ public class CheckServiceImpl implements CheckService {
                 .orElseThrow(() -> new BusinessException("库房不存在"));
 
         MaterialCheck check = new MaterialCheck();
-        check.setCheckNo(SequenceGenerator.generate("PD"));
+        check.setCheckNo(sequenceGenerator.generate("PD"));
         check.setCheckType(CheckType.valueOf(dto.getCheckType()));
         check.setWarehouseId(dto.getWarehouseId());
         check.setWarehouseName(warehouse.getWarehouseName());

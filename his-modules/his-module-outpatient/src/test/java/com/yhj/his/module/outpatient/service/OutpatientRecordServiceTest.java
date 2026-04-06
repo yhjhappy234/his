@@ -112,6 +112,7 @@ class OutpatientRecordServiceTest {
         testRecord.setTreatmentPlan("对症治疗，多休息多饮水");
         testRecord.setMedicalAdvice("注意休息，清淡饮食");
         testRecord.setStatus("已提交");
+        testRecord.setCreateTime(LocalDateTime.now().minusDays(1));
         testRecord.setSubmitTime(LocalDateTime.now());
         testRecord.setDeleted(false);
 
@@ -150,14 +151,19 @@ class OutpatientRecordServiceTest {
             // Given
             when(registrationRepository.findById(anyString())).thenReturn(Optional.of(testRegistration));
             when(outpatientRecordRepository.findByRegistrationId(anyString())).thenReturn(Optional.empty());
-            when(outpatientRecordRepository.save(any(OutpatientRecord.class))).thenReturn(testRecord);
+            when(outpatientRecordRepository.save(any(OutpatientRecord.class))).thenAnswer(invocation -> {
+                OutpatientRecord savedRecord = invocation.getArgument(0);
+                savedRecord.setId("record-id-001");
+                savedRecord.setCreateTime(LocalDateTime.now());
+                return savedRecord;
+            });
 
             // When
             OutpatientRecordVO result = outpatientRecordService.saveDraft(saveRequest);
 
             // Then
             assertNotNull(result);
-            assertEquals("草稿", testRecord.getStatus());
+            assertEquals("草稿", result.getStatus());
             assertEquals("头痛、发热2天", result.getChiefComplaint());
             assertEquals("急性上呼吸道感染", result.getDiagnosisName());
             verify(outpatientRecordRepository).save(any(OutpatientRecord.class));

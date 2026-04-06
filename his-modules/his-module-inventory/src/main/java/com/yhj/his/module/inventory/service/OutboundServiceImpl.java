@@ -47,6 +47,7 @@ public class OutboundServiceImpl implements OutboundService {
     private final MaterialRepository materialRepository;
     private final WarehouseRepository warehouseRepository;
     private final MaterialInventoryRepository inventoryRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -66,7 +67,7 @@ public class OutboundServiceImpl implements OutboundService {
 
         // 创建出库记录
         MaterialOutbound outbound = new MaterialOutbound();
-        outbound.setOutboundNo(SequenceGenerator.generate("CK"));
+        outbound.setOutboundNo(sequenceGenerator.generate("CK"));
         outbound.setOutboundType(OutboundType.valueOf(dto.getOutboundType()));
         outbound.setWarehouseId(dto.getWarehouseId());
         outbound.setWarehouseName(warehouse.getWarehouseName());

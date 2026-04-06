@@ -150,7 +150,6 @@ class TestRequestServiceTest {
             when(testItemRepository.findById("item-001")).thenReturn(Optional.of(testItem));
             when(testRequestRepository.save(any(TestRequest.class))).thenReturn(testRequest);
             when(testRequestItemRepository.save(any(TestRequestItem.class))).thenReturn(testRequestItem);
-            when(testRequestItemRepository.findByRequestId("request-001")).thenReturn(Arrays.asList(testRequestItem));
 
             // When
             TestRequestVO result = testRequestService.create(createDTO);
@@ -188,7 +187,6 @@ class TestRequestServiceTest {
 
             when(testItemRepository.findById("item-001")).thenReturn(Optional.of(testItem));
             when(testRequestRepository.save(any(TestRequest.class))).thenReturn(emergencyRequest);
-            when(testRequestItemRepository.findByRequestId(anyString())).thenReturn(Arrays.asList(testRequestItem));
 
             // When
             TestRequestVO result = testRequestService.create(createDTO);
@@ -242,7 +240,6 @@ class TestRequestServiceTest {
             when(testItemRepository.findById("item-001")).thenReturn(Optional.of(testItem));
             when(testItemRepository.findById("item-002")).thenReturn(Optional.of(item2));
             when(testRequestRepository.save(any(TestRequest.class))).thenReturn(multiRequest);
-            when(testRequestItemRepository.findByRequestId(anyString())).thenReturn(new ArrayList<>());
 
             // When
             TestRequestVO result = testRequestService.create(createDTO);

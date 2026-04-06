@@ -343,8 +343,8 @@ class DrugInventoryServiceTest {
             // Arrange
             List<DrugInventory> inventories = Arrays.asList(testInventory);
             Page<DrugInventory> page = new PageImpl<>(inventories);
-            when(inventoryRepository.queryInventory(any(), any(), any(),
-                    any(), any(InventoryStatus.class), any(Pageable.class))).thenReturn(page);
+            lenient().when(inventoryRepository.queryInventory(any(), any(), any(),
+                    any(), any(), any(Pageable.class))).thenReturn(page);
 
             // Act
             Result<PageResult<InventoryVO>> result = inventoryService.queryInventory(queryDTO);
@@ -357,7 +357,7 @@ class DrugInventoryServiceTest {
             assertEquals(1, result.getData().getList().size());
 
             verify(inventoryRepository).queryInventory(any(), any(), any(),
-                    any(), any(InventoryStatus.class), any(Pageable.class));
+                    any(), any(), any(Pageable.class));
         }
 
         @Test
@@ -365,8 +365,8 @@ class DrugInventoryServiceTest {
         void shouldReturnEmptyPageWhenNoInventoryFound() {
             // Arrange
             Page<DrugInventory> emptyPage = new PageImpl<>(Collections.emptyList());
-            when(inventoryRepository.queryInventory(any(), any(), any(),
-                    any(), any(InventoryStatus.class), any(Pageable.class))).thenReturn(emptyPage);
+            lenient().when(inventoryRepository.queryInventory(any(), any(), any(),
+                    any(), any(), any(Pageable.class))).thenReturn(emptyPage);
 
             // Act
             Result<PageResult<InventoryVO>> result = inventoryService.queryInventory(queryDTO);

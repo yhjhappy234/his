@@ -243,10 +243,9 @@ class DispenseRecordServiceTest {
             // Arrange
             List<DispenseRecord> records = Arrays.asList(testRecord);
             Page<DispenseRecord> page = new PageImpl<>(records);
-            when(dispenseRecordRepository.queryRecords(anyString(), anyString(), anyString(),
-                    any(AuditStatus.class), any(DispenseStatus.class), any(LocalDateTime.class),
-                    any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-            when(dispenseDetailRepository.findByDispenseId(anyString()))
+            lenient().when(dispenseRecordRepository.queryRecords(any(), any(), any(),
+                    any(), any(), any(), any(), any(Pageable.class))).thenReturn(page);
+            lenient().when(dispenseDetailRepository.findByDispenseId(any()))
                     .thenReturn(Arrays.asList(testDetail));
 
             // Act
@@ -259,9 +258,8 @@ class DispenseRecordServiceTest {
             assertEquals(1, result.getData().getTotal());
             assertEquals(1, result.getData().getList().size());
 
-            verify(dispenseRecordRepository).queryRecords(anyString(), anyString(), anyString(),
-                    any(AuditStatus.class), any(DispenseStatus.class), any(LocalDateTime.class),
-                    any(LocalDateTime.class), any(Pageable.class));
+            verify(dispenseRecordRepository).queryRecords(any(), any(), any(),
+                    any(), any(), any(), any(), any(Pageable.class));
         }
 
         @Test
@@ -269,9 +267,8 @@ class DispenseRecordServiceTest {
         void shouldReturnEmptyPageWhenNoRecordsFound() {
             // Arrange
             Page<DispenseRecord> emptyPage = new PageImpl<>(Collections.emptyList());
-            when(dispenseRecordRepository.queryRecords(anyString(), anyString(), anyString(),
-                    any(AuditStatus.class), any(DispenseStatus.class), any(LocalDateTime.class),
-                    any(LocalDateTime.class), any(Pageable.class))).thenReturn(emptyPage);
+            lenient().when(dispenseRecordRepository.queryRecords(any(), any(), any(),
+                    any(), any(), any(), any(), any(Pageable.class))).thenReturn(emptyPage);
 
             // Act
             Result<PageResult<DispenseRecordVO>> result = dispenseRecordService.queryDispenseRecords(queryDTO);

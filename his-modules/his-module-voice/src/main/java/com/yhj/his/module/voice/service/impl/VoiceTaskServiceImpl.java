@@ -42,6 +42,7 @@ public class VoiceTaskServiceImpl implements VoiceTaskService {
     private final AudioDeviceRepository audioDeviceRepository;
     private final DeviceGroupRepository deviceGroupRepository;
     private final VoiceLogRepository voiceLogRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -80,7 +81,7 @@ public class VoiceTaskServiceImpl implements VoiceTaskService {
 
         // 创建任务
         VoiceTask task = new VoiceTask();
-        task.setTaskNo(SequenceGenerator.generateWithTime("VT"));
+        task.setTaskNo(sequenceGenerator.generateWithTime("VT"));
         task.setTaskType(taskType);
         task.setContent(content);
         task.setTemplateId(templateId);

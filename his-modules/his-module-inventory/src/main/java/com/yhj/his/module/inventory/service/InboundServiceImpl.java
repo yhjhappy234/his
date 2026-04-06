@@ -47,6 +47,7 @@ public class InboundServiceImpl implements InboundService {
     private final MaterialRepository materialRepository;
     private final WarehouseRepository warehouseRepository;
     private final MaterialInventoryRepository inventoryRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -57,7 +58,7 @@ public class InboundServiceImpl implements InboundService {
 
         // 创建入库记录
         MaterialInbound inbound = new MaterialInbound();
-        inbound.setInboundNo(SequenceGenerator.generate("RK"));
+        inbound.setInboundNo(sequenceGenerator.generate("RK"));
         inbound.setInboundType(InboundType.valueOf(dto.getInboundType()));
         inbound.setWarehouseId(dto.getWarehouseId());
         inbound.setWarehouseName(warehouse.getWarehouseName());

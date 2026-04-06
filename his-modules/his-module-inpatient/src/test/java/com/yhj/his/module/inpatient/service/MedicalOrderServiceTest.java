@@ -49,21 +49,16 @@ class MedicalOrderServiceTest {
     @Mock
     private OrderExecutionRepository executionRepository;
 
+    @Mock
+    private com.yhj.his.common.core.util.SequenceGenerator sequenceGenerator;
+
     @InjectMocks
     private MedicalOrderServiceImpl medicalOrderService;
 
-    private MockedStatic<com.yhj.his.common.core.util.SequenceGenerator> sequenceGeneratorMock;
-
     @BeforeEach
     void setUp() {
-        sequenceGeneratorMock = mockStatic(com.yhj.his.common.core.util.SequenceGenerator.class);
-        sequenceGeneratorMock.when(() -> com.yhj.his.common.core.util.SequenceGenerator.generateWithTime(anyString()))
+        lenient().when(sequenceGenerator.generateWithTime(anyString()))
                 .thenReturn("MO20260406001");
-    }
-
-    @AfterEach
-    void tearDown() {
-        sequenceGeneratorMock.close();
     }
 
     // ==================== 医嘱开立测试 ====================

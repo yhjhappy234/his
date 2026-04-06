@@ -623,7 +623,7 @@ class InvoiceServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals("ELECTRONIC", invoice.getInvoiceType());
+            assertEquals("ELECTRONIC", invoice.getInvoiceType().name());
             assertEquals("电子发票", invoice.getInvoiceType().getDescription());
 
             verify(invoiceRepository, times(2)).save(any(Invoice.class));
@@ -647,7 +647,7 @@ class InvoiceServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals("ELECTRONIC", invoice.getInvoiceType());
+            assertEquals("ELECTRONIC", invoice.getInvoiceType().name());
         }
 
         @Test
@@ -668,7 +668,7 @@ class InvoiceServiceTest {
 
             // Then
             // Operator should be "SYSTEM" and "系统自动生成"
-            verify(invoiceRepository).save(any(Invoice.class));
+            verify(invoiceRepository, times(2)).save(any(Invoice.class));
         }
     }
 

@@ -67,7 +67,8 @@ public class InpatientFeeServiceImpl implements InpatientFeeService {
         // 计算未结算金额
         BigDecimal unsettled = feeRepository.sumUnsettledFeeByAdmissionId(admissionId);
         vo.setUnsettledAmount(unsettled != null ? unsettled : BigDecimal.ZERO);
-        vo.setSettledAmount(admission.getSettledCost() != null ? admission.getSettledCost() : BigDecimal.ZERO);
+        // settledCost为null表示未发生过结算，VO中应保持null以区分"无结算记录"和"结算金额为零"
+        vo.setSettledAmount(admission.getSettledCost());
 
         return vo;
     }

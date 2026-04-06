@@ -46,6 +46,7 @@ public class RequisitionServiceImpl implements RequisitionService {
     private final MaterialRepository materialRepository;
     private final WarehouseRepository warehouseRepository;
     private final MaterialInventoryRepository inventoryRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional
@@ -56,7 +57,7 @@ public class RequisitionServiceImpl implements RequisitionService {
 
         // 创建申领记录
         MaterialRequisition requisition = new MaterialRequisition();
-        requisition.setRequisitionNo(SequenceGenerator.generate("SL"));
+        requisition.setRequisitionNo(sequenceGenerator.generate("SL"));
         requisition.setWarehouseId(dto.getWarehouseId());
         requisition.setWarehouseName(warehouse.getWarehouseName());
         requisition.setDeptId(dto.getDeptId());

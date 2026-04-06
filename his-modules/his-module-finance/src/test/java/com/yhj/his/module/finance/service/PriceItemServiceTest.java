@@ -640,7 +640,10 @@ class PriceItemServiceTest {
 
             List<PriceItemCreateDTO> items = Arrays.asList(item1, item2);
 
-            when(priceItemRepository.existsByItemCode("ITEM001")).thenReturn(false);
+            // First call returns false (item doesn't exist), second call returns true (already imported)
+            when(priceItemRepository.existsByItemCode("ITEM001"))
+                    .thenReturn(false)
+                    .thenReturn(true);
             when(priceItemRepository.save(any(PriceItem.class))).thenReturn(priceItem);
 
             // When

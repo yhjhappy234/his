@@ -691,8 +691,8 @@ class InsurancePolicyServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals(BigDecimal.ZERO, result.classAAmount());
-            assertEquals(BigDecimal.ZERO, result.classBAmount());
+            assertEquals(0, result.classAAmount().compareTo(BigDecimal.ZERO));
+            assertEquals(0, result.classBAmount().compareTo(BigDecimal.ZERO));
         }
     }
 

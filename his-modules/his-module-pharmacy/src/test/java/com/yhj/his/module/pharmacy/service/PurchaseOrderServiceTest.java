@@ -441,10 +441,10 @@ class PurchaseOrderServiceTest {
             // Arrange
             List<PurchaseOrder> orders = Arrays.asList(testOrder);
             Page<PurchaseOrder> page = new PageImpl<>(orders);
-            when(purchaseOrderRepository.queryOrders(any(), any(),
-                    any(PurchaseOrderStatus.class), any(LocalDate.class), any(LocalDate.class),
+            lenient().when(purchaseOrderRepository.queryOrders(any(), any(),
+                    any(), any(), any(),
                     any(Pageable.class))).thenReturn(page);
-            when(purchaseOrderItemRepository.findByOrderId(anyString()))
+            lenient().when(purchaseOrderItemRepository.findByOrderId(any()))
                     .thenReturn(Arrays.asList(testItem));
 
             // Act
@@ -458,7 +458,7 @@ class PurchaseOrderServiceTest {
             assertEquals(1, result.getData().getList().size());
 
             verify(purchaseOrderRepository).queryOrders(any(), any(),
-                    any(PurchaseOrderStatus.class), any(LocalDate.class), any(LocalDate.class),
+                    any(), any(), any(),
                     any(Pageable.class));
         }
 
@@ -467,8 +467,8 @@ class PurchaseOrderServiceTest {
         void shouldReturnEmptyPageWhenNoOrdersFound() {
             // Arrange
             Page<PurchaseOrder> emptyPage = new PageImpl<>(Collections.emptyList());
-            when(purchaseOrderRepository.queryOrders(any(), any(),
-                    any(PurchaseOrderStatus.class), any(LocalDate.class), any(LocalDate.class),
+            lenient().when(purchaseOrderRepository.queryOrders(any(), any(),
+                    any(), any(), any(),
                     any(Pageable.class))).thenReturn(emptyPage);
 
             // Act

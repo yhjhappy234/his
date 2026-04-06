@@ -36,12 +36,13 @@ public class MedicalOrderServiceImpl implements MedicalOrderService {
 
     private final MedicalOrderRepository orderRepository;
     private final OrderExecutionRepository executionRepository;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String create(OrderCreateDTO dto) {
         MedicalOrder order = new MedicalOrder();
-        order.setOrderNo(SequenceGenerator.generateWithTime("MO"));
+        order.setOrderNo(sequenceGenerator.generateWithTime("MO"));
         order.setAdmissionId(dto.getAdmissionId());
         order.setPatientId(dto.getPatientId());
         order.setOrderType(dto.getOrderType());

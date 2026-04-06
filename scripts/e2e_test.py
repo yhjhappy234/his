@@ -98,7 +98,7 @@ class HISClient:
         """Login and get authentication token"""
         try:
             response = self.session.post(
-                f"{self.base_url}/api/system/v1/auth/login",
+                f"{self.base_url}/api/system/v1/user/login",
                 json={"loginName": username, "password": password},
                 headers=self.headers
             )
@@ -199,7 +199,7 @@ class SystemModuleTests(BaseTestCase):
             "userType": "STAFF",
             "status": "NORMAL"
         }
-        response = self.client.post("/api/system/v1/users", user_data)
+        response = self.client.post("/api/system/v1/user", user_data)
         assert response.status_code in [200, 201], f"Create user failed: {response.text}"
 
         # Query user
@@ -207,26 +207,26 @@ class SystemModuleTests(BaseTestCase):
         if data.get("code") == 0:
             user_id = data.get("data", {}).get("id")
             if user_id:
-                response = self.client.get(f"/api/system/v1/users/{user_id}")
+                response = self.client.get(f"/api/system/v1/user/{user_id}")
                 assert response.status_code == 200, f"Get user failed"
 
                 # Delete user
-                response = self.client.delete(f"/api/system/v1/users/{user_id}")
+                response = self.client.delete(f"/api/system/v1/user/{user_id}")
                 assert response.status_code == 200, f"Delete user failed"
 
     def test_role_management(self):
         """Test role management"""
-        response = self.client.get("/api/system/v1/roles")
+        response = self.client.get("/api/system/v1/role")
         assert response.status_code == 200, f"Get roles failed: {response.status_code}"
 
     def test_department_tree(self):
         """Test department tree structure"""
-        response = self.client.get("/api/system/v1/departments/tree")
+        response = self.client.get("/api/system/v1/department/tree")
         assert response.status_code == 200, f"Get department tree failed"
 
     def test_dictionary_query(self):
         """Test data dictionary query"""
-        response = self.client.get("/api/system/v1/dictionaries/gender")
+        response = self.client.get("/api/system/v1/dictionary/type/gender")
         assert response.status_code == 200, f"Get dictionary failed"
 
 class OutpatientModuleTests(BaseTestCase):
@@ -248,12 +248,12 @@ class OutpatientModuleTests(BaseTestCase):
             "idNo": f"110101199001010{int(time.time()) % 100}",
             "phone": "13800138000"
         }
-        response = self.client.post("/api/outpatient/v1/patients", patient_data)
+        response = self.client.post("/api/outpatient/v1/patient/create", patient_data)
         assert response.status_code in [200, 201], f"Patient registration failed"
 
     def test_schedule_query(self):
         """Test schedule query"""
-        response = self.client.get("/api/outpatient/v1/schedules", {"date": datetime.now().strftime("%Y-%m-%d")})
+        response = self.client.get("/api/outpatient/v1/schedule", {"date": datetime.now().strftime("%Y-%m-%d")})
         assert response.status_code == 200, f"Schedule query failed"
 
     def test_registration_flow(self):
@@ -316,12 +316,12 @@ class FinanceModuleTests(BaseTestCase):
 
     def test_price_items_query(self):
         """Test price items query"""
-        response = self.client.get("/api/finance/v1/price-items")
+        response = self.client.get("/api/finance/v1/price-item")
         assert response.status_code == 200, f"Price items query failed"
 
     def test_insurance_policy(self):
         """Test insurance policy query"""
-        response = self.client.get("/api/finance/v1/insurance-policies")
+        response = self.client.get("/api/finance/v1/insurance-policy")
         assert response.status_code == 200, f"Insurance policy query failed"
 
 class E2ETestRunner:

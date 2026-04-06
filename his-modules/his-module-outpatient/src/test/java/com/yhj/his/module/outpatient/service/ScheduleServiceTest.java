@@ -111,7 +111,14 @@ class ScheduleServiceTest {
             // Given
             when(scheduleRepository.findByDoctorIdAndScheduleDateAndTimePeriod(anyString(), any(), anyString()))
                     .thenReturn(Optional.empty());
-            when(scheduleRepository.save(any(Schedule.class))).thenReturn(testSchedule);
+            when(scheduleRepository.save(any(Schedule.class))).thenAnswer(invocation -> {
+                Schedule schedule = invocation.getArgument(0);
+                // Return the saved schedule with the values set by the implementation
+                testSchedule.setBookedQuota(schedule.getBookedQuota());
+                testSchedule.setAvailableQuota(schedule.getAvailableQuota());
+                testSchedule.setStatus(schedule.getStatus());
+                return testSchedule;
+            });
 
             // When
             ScheduleVO result = scheduleService.createSchedule(createRequest);
@@ -175,6 +182,7 @@ class ScheduleServiceTest {
         @DisplayName("成功更新排班")
         void shouldUpdateScheduleSuccessfully() {
             // Given
+            testSchedule.setBookedQuota(0);
             when(scheduleRepository.findById(anyString())).thenReturn(Optional.of(testSchedule));
             when(scheduleRepository.save(any(Schedule.class))).thenReturn(testSchedule);
 

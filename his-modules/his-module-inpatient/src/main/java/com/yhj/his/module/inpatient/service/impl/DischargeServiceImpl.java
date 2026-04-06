@@ -34,6 +34,7 @@ public class DischargeServiceImpl implements DischargeService {
     private final InpatientFeeRepository feeRepository;
     private final InpatientFeeService feeService;
     private final BedService bedService;
+    private final SequenceGenerator sequenceGenerator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -108,8 +109,8 @@ public class DischargeServiceImpl implements DischargeService {
 
         // 构建响应
         DischargeSettleResponseDTO response = new DischargeSettleResponseDTO();
-        response.setSettleId(SequenceGenerator.generate("SET"));
-        response.setInvoiceNo(SequenceGenerator.generate("INV"));
+        response.setSettleId(sequenceGenerator.generate("SET"));
+        response.setInvoiceNo(sequenceGenerator.generate("INV"));
 
         // 计算住院天数
         if (admission.getAdmissionTime() != null && admission.getDischargeTime() != null) {

@@ -41,6 +41,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.*;
 
 /**
@@ -184,7 +185,11 @@ class OutpatientBillingServiceTest {
         @DisplayName("Should settle outpatient billing successfully")
         void shouldSettleSuccessfully() {
             // Given
-            when(billingRepository.save(any(OutpatientBilling.class))).thenReturn(billing);
+            when(billingRepository.save(any(OutpatientBilling.class))).thenAnswer(invocation -> {
+                OutpatientBilling saved = invocation.getArgument(0);
+                saved.setId("billing-123");
+                return saved;
+            });
 
             // Mock invoice creation
             com.yhj.his.module.finance.vo.InvoiceVO invoiceVO = new com.yhj.his.module.finance.vo.InvoiceVO();
@@ -232,7 +237,7 @@ class OutpatientBillingServiceTest {
 
             // Then
             assertNotNull(result);
-            verify(billingRepository).save(any(OutpatientBilling.class));
+            verify(billingRepository, times(2)).save(any(OutpatientBilling.class));
         }
 
         @Test
@@ -249,7 +254,11 @@ class OutpatientBillingServiceTest {
 
             settleDTO.setPayments(Arrays.asList(payment1, payment2));
 
-            when(billingRepository.save(any(OutpatientBilling.class))).thenReturn(billing);
+            when(billingRepository.save(any(OutpatientBilling.class))).thenAnswer(invocation -> {
+                OutpatientBilling saved = invocation.getArgument(0);
+                saved.setId("billing-123");
+                return saved;
+            });
             com.yhj.his.module.finance.vo.InvoiceVO invoiceVO = new com.yhj.his.module.finance.vo.InvoiceVO();
             invoiceVO.setInvoiceNo("INV2024010100001");
             when(invoiceService.createInvoice(anyString(), anyString(), anyString(), anyString()))
@@ -391,7 +400,8 @@ class OutpatientBillingServiceTest {
             List<OutpatientBillingItem> items = Arrays.asList(billingItem, item2);
             when(billingRepository.findByBillingNo("BIL2024010100001")).thenReturn(Optional.of(billing));
             when(billingItemRepository.findByBillingId("billing-123")).thenReturn(items);
-            when(billingItemRepository.save(any(OutpatientBillingItem.class))).thenReturn(item2);
+            // billingItemRepository.save is not called because item-001 is already refunded
+            lenient().when(billingItemRepository.save(any(OutpatientBillingItem.class))).thenReturn(item2);
             when(billingRepository.save(any(OutpatientBilling.class))).thenReturn(billing);
 
             // When

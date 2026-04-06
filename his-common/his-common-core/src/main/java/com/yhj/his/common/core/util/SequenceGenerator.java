@@ -3,17 +3,19 @@ package com.yhj.his.common.core.util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.atomic.AtomicLong;
+
+import org.springframework.stereotype.Component;
 
 /**
  * 编号生成器
  */
+@Component
 public class SequenceGenerator {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    private static final AtomicLong SEQUENCE = new AtomicLong(0);
+    private long sequence = 0;
 
     /**
      * 生成业务编号
@@ -22,10 +24,10 @@ public class SequenceGenerator {
      * @param prefix 前缀
      * @return 编号
      */
-    public static synchronized String generate(String prefix) {
+    public synchronized String generate(String prefix) {
         String dateStr = LocalDate.now().format(DATE_FORMAT);
-        long seq = SEQUENCE.incrementAndGet() % 1000000;
-        return prefix + dateStr + String.format("%06d", seq);
+        sequence = (sequence + 1) % 1000000;
+        return prefix + dateStr + String.format("%06d", sequence);
     }
 
     /**
@@ -36,11 +38,13 @@ public class SequenceGenerator {
      * @param seqLength 序号长度
      * @return 编号
      */
-    public static synchronized String generate(String prefix, int seqLength) {
+    public synchronized String generate(String prefix, int seqLength) {
         String dateStr = LocalDate.now().format(DATE_FORMAT);
         long maxSeq = (long) Math.pow(10, seqLength);
-        long seq = SEQUENCE.incrementAndGet() % maxSeq;
-        return prefix + dateStr + String.format("%0" + seqLength + "d", seq);
+        sequence = (sequence + 1) % maxSeq;
+        // 使用正确的格式字符串构造方式
+        String formatPattern = "%0" + seqLength + "d";
+        return prefix + dateStr + String.format(formatPattern, sequence);
     }
 
     /**
@@ -50,10 +54,10 @@ public class SequenceGenerator {
      * @param prefix 前缀
      * @return 编号
      */
-    public static synchronized String generateWithTime(String prefix) {
+    public synchronized String generateWithTime(String prefix) {
         String datetimeStr = LocalDateTime.now().format(DATETIME_FORMAT);
-        long seq = SEQUENCE.incrementAndGet() % 10000;
-        return prefix + datetimeStr + String.format("%04d", seq);
+        sequence = (sequence + 1) % 10000;
+        return prefix + datetimeStr + String.format("%04d", sequence);
     }
 
     /**
@@ -61,7 +65,7 @@ public class SequenceGenerator {
      *
      * @return UUID
      */
-    public static String uuid() {
+    public String uuid() {
         return java.util.UUID.randomUUID().toString().replace("-", "");
     }
 }

@@ -77,6 +77,16 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
             throw new BusinessException(ErrorCode.DATA_NOT_FOUND, "字典项已删除");
         }
 
+        // 更新层级 - 需要在设置parentCode之前检查，否则条件判断会使用新值而非原值
+        String originalParentCode = dict.getParentCode();
+        if (dto.getParentCode() != null && !dto.getParentCode().equals(originalParentCode)) {
+            DataDictionary parent = dataDictionaryRepository.findByDictTypeAndDictCodeAndDeletedFalse(
+                    dto.getDictType(), dto.getParentCode()).orElse(null);
+            if (parent != null) {
+                dict.setDictLevel(parent.getDictLevel() + 1);
+            }
+        }
+
         dict.setDictName(dto.getDictName());
         dict.setDictValue(dto.getDictValue());
         dict.setParentCode(dto.getParentCode());
@@ -84,15 +94,6 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
         dict.setIsEnabled(dto.getIsEnabled());
         dict.setIsDefault(dto.getIsDefault());
         dict.setDescription(dto.getDescription());
-
-        // 更新层级
-        if (dto.getParentCode() != null && !dto.getParentCode().equals(dict.getParentCode())) {
-            DataDictionary parent = dataDictionaryRepository.findByDictTypeAndDictCodeAndDeletedFalse(
-                    dto.getDictType(), dto.getParentCode()).orElse(null);
-            if (parent != null) {
-                dict.setDictLevel(parent.getDictLevel() + 1);
-            }
-        }
 
         dict = dataDictionaryRepository.save(dict);
         return Result.success("更新成功", convertToVO(dict));

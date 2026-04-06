@@ -464,8 +464,9 @@ class PrepaymentServiceTest {
         @Test
         @DisplayName("Should return true when deposit exactly at warning threshold")
         void shouldReturnTrueWhenAtWarningThreshold() {
-            // Given
-            when(prepaymentRepository.sumDepositByAdmissionId("admission-123")).thenReturn(BigDecimal.valueOf(1000));
+            // Given - deposit at warning threshold means balance < (estimatedCost - 1000)
+            // For estimatedCost = 2000, threshold = 1000, we need balance < 1000
+            when(prepaymentRepository.sumDepositByAdmissionId("admission-123")).thenReturn(BigDecimal.valueOf(999));
             BigDecimal estimatedCost = BigDecimal.valueOf(2000);
 
             // When
