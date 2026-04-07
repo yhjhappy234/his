@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.yhj.his.module.finance.service.OutpatientBillingServiceTest
--------------------------------------------------------------------------------
-Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.722 s -- in com.yhj.his.module.finance.service.OutpatientBillingServiceTest
