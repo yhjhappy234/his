@@ -1,6 +1,6 @@
 package com.yhj.his.module.system.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.system.enums.AuditLevel;
 import com.yhj.his.module.system.enums.AuditType;
 import jakarta.persistence.*;

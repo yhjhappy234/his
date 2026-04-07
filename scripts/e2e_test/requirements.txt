@@ -1,0 +1,23 @@
+# HIS E2E Test Dependencies
+# Core testing framework
+pytest>=7.4.0
+pytest-html>=4.0.0
+pytest-json-report>=1.5.0
+pytest-timeout>=2.2.0
+pytest-xdist>=3.3.0
+
+# HTTP client
+requests>=2.31.0
+
+# Environment configuration
+python-dotenv>=1.0.0
+
+# Data handling
+python-dateutil>=2.8.2
+
+# Reporting
+allure-pytest>=2.13.0
+
+# Utilities
+colorama>=0.4.6
+faker>=18.0.0

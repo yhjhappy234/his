@@ -1,6 +1,6 @@
 package com.yhj.his.module.emr.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.emr.enums.TemplateType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

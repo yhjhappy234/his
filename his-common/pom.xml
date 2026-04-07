@@ -15,6 +15,7 @@
 
     <modules>
         <module>his-common-core</module>
+        <module>his-common-db</module>
         <module>his-common-security</module>
         <module>his-common-cache</module>
         <module>his-common-log</module>

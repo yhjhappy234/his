@@ -1,6 +1,6 @@
 package com.yhj.his.module.pharmacy.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.pharmacy.enums.AuditStatus;
 import com.yhj.his.module.pharmacy.enums.DispenseStatus;
 import com.yhj.his.module.pharmacy.enums.VisitType;

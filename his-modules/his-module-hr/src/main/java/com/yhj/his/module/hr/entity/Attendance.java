@@ -1,6 +1,6 @@
 package com.yhj.his.module.hr.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.hr.enums.AttendanceStatus;
 import com.yhj.his.module.hr.enums.LeaveType;
 import com.yhj.his.module.hr.enums.ScheduleType;

@@ -14,6 +14,12 @@
     <description>系统管理与安全模块 - 用户管理、权限控制、系统配置、数据安全、日志审计</description>
 
     <dependencies>
+        <!-- HIS Common DB -->
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-db</artifactId>
+        </dependency>
+
         <!-- HIS Common Core -->
         <dependency>
             <groupId>com.yhj.his</groupId>
@@ -42,6 +48,12 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-community-dialects</artifactId>
+        </dependency>
+
+        <!-- Flyway Database Migration -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
         </dependency>
 
         <!-- Validation -->

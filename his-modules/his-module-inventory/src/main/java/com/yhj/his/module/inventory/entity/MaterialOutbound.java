@@ -1,6 +1,6 @@
 package com.yhj.his.module.inventory.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.inventory.enums.OutboundStatus;
 import com.yhj.his.module.inventory.enums.OutboundType;
 import jakarta.persistence.*;

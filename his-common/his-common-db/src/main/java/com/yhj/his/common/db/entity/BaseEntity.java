@@ -1,4 +1,4 @@
-package com.yhj.his.common.core.domain;
+package com.yhj.his.common.db.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.yhj.his.module.voice.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.voice.enums.DeviceStatus;
 import jakarta.persistence.*;
 import lombok.Data;

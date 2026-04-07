@@ -1,6 +1,6 @@
 package com.yhj.his.module.lis.entity;
 
-import com.yhj.his.common.core.domain.BaseEntity;
+import com.yhj.his.common.db.entity.BaseEntity;
 import com.yhj.his.module.lis.enums.CriticalValueStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

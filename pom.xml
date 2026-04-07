@@ -18,12 +18,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Spring Boot 3.2.x -->
-        <spring-boot.version>3.2.5</spring-boot.version>
+        <!-- Spring Boot 3.4.x -->
+        <spring-boot.version>3.4.4</spring-boot.version>
 
         <!-- Database -->
         <sqlite-jdbc.version>3.45.2.0</sqlite-jdbc.version>
         <hibernate.version>6.4.4.Final</hibernate.version>
+        <flyway.version>11.20.3</flyway.version>
 
         <!-- Cache -->
         <caffeine.version>3.1.8</caffeine.version>
@@ -33,7 +34,7 @@
 
         <!-- Utilities -->
         <lombok.version>1.18.30</lombok.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
         <hutool.version>5.8.26</hutool.version>
         <guava.version>33.0.0-jre</guava.version>
 
@@ -76,6 +77,18 @@
                 <groupId>org.hibernate.orm</groupId>
                 <artifactId>hibernate-community-dialects</artifactId>
                 <version>${hibernate.version}</version>
+            </dependency>
+
+            <!-- Flyway Database Migration -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
             <!-- Cache -->
@@ -135,6 +148,11 @@
             <dependency>
                 <groupId>com.yhj.his</groupId>
                 <artifactId>his-common-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yhj.his</groupId>
+                <artifactId>his-common-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -14,6 +14,11 @@
     <description>人力资源管理模块 - 员工信息管理、排班管理、考勤管理、绩效管理、薪资管理</description>
 
     <dependencies>
+        <!-- HIS Common DB -->
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-db</artifactId>
+        </dependency>
         <!-- HIS Common Core -->
         <dependency>
             <groupId>com.yhj.his</groupId>
