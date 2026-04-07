@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.yhj.his</groupId>
+        <artifactId>his-starter</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>his-starter-all</artifactId>
+    <name>HIS单体应用启动器</name>
+    <description>一次性加载所有模块，适用于演示和快速部署</description>
+
+    <dependencies>
+        <!-- Common Modules -->
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-common-voice</artifactId>
+        </dependency>
+
+        <!-- API Modules -->
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-api-system</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Business Modules -->
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-system</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-outpatient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-inpatient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-pharmacy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-lis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-pacs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-finance</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-inventory</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-hr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-emr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yhj.his</groupId>
+            <artifactId>his-module-voice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

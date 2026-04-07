@@ -1,0 +1,116 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: his-gateway
+
+  cloud:
+    gateway:
+      # 路由配置
+      routes:
+        # 系统管理模块
+        - id: his-module-system
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/system/**
+          filters:
+            - StripPrefix=0
+
+        # 门诊管理模块
+        - id: his-module-outpatient
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/outpatient/**
+          filters:
+            - StripPrefix=0
+
+        # 住院管理模块
+        - id: his-module-inpatient
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/inpatient/**
+          filters:
+            - StripPrefix=0
+
+        # 药房管理模块
+        - id: his-module-pharmacy
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/pharmacy/**
+          filters:
+            - StripPrefix=0
+
+        # 检验管理模块
+        - id: his-module-lis
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/lis/**
+          filters:
+            - StripPrefix=0
+
+        # 影像管理模块
+        - id: his-module-pacs
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/pacs/**
+          filters:
+            - StripPrefix=0
+
+        # 财务收费模块
+        - id: his-module-finance
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/finance/**
+          filters:
+            - StripPrefix=0
+
+        # 库存物资模块
+        - id: his-module-inventory
+          uri: http://localhost:8088
+          predicates:
+            - Path=/api/inventory/**
+          filters:
+            - StripPrefix=0
+
+        # 人力资源管理模块
+        - id: his-module-hr
+          uri: http://localhost:8089
+          predicates:
+            - Path=/api/hr/**
+          filters:
+            - StripPrefix=0
+
+        # 电子病历模块
+        - id: his-module-emr
+          uri: http://localhost:8090
+          predicates:
+            - Path=/api/emr/**
+          filters:
+            - StripPrefix=0
+
+        # 语音呼叫模块
+        - id: his-module-voice
+          uri: http://localhost:8091
+          predicates:
+            - Path=/api/voice/**
+          filters:
+            - StripPrefix=0
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+
+# Actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
