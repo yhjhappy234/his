@@ -71,3 +71,7 @@ his:
     name: HIS医院信息系统
     version: 1.0.0
     description: 新一代智慧医院信息系统
+  # 默认用户配置
+  default:
+    username: admin
+    password: 123456

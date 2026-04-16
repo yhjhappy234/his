@@ -82,7 +82,7 @@ def http_client(config: Config) -> Generator[HISClient, None, None]:
 
     # Authenticate
     username = os.getenv("HIS_TEST_USER", "admin")
-    password = os.getenv("HIS_TEST_PASSWORD", "admin123")
+    password = os.getenv("HIS_TEST_PASSWORD", "123456")
 
     if not client.login(username, password):
         logging.warning("Authentication failed, running tests without token")

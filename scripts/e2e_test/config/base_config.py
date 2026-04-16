@@ -72,7 +72,7 @@ class Config:
     @property
     def test_password(self) -> str:
         """Default test password"""
-        return os.getenv("HIS_TEST_PASSWORD", "admin123")
+        return os.getenv("HIS_TEST_PASSWORD", "123456")
 
     # Proxy Configuration
     @property

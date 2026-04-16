@@ -13,7 +13,7 @@ class TestUsers:
 
     ADMIN = {
         "loginName": "admin",
-        "password": "admin123",
+        "password": "123456",
         "realName": "System Administrator",
         "userType": "ADMIN"
     }

@@ -143,12 +143,39 @@ cd his-starter/his-starter-all
 mvn spring-boot:run
 ```
 
+### 默认账户
+
+系统启动时自动创建默认管理员账户：
+- 账户信息可通过环境变量或配置文件自定义
+- 首次登录后建议立即修改密码
+
 ### 数据库初始化
 
 ```bash
 # 执行初始化脚本
 sqlite3 his.db < data/init_global.sql
 ```
+
+## 用户登录管理
+
+### 功能特性
+
+- JWT Token认证
+- BCrypt密码加密
+- 账号锁定机制（连续5次密码错误）
+- 自动解锁（锁定30分钟后）
+- 会话超时控制
+- 完整的审计日志记录
+
+### API接口
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/system/v1/user/login` | POST | 用户登录 |
+| `/api/system/v1/user/logout` | POST | 用户退出 |
+| `/api/system/v1/user/{userId}` | GET | 获取用户详情 |
+| `/api/system/v1/user/page` | GET | 分页查询用户 |
+| `/api/system/v1/user/password/change` | POST | 修改密码 |
 
 ## API 文档
 
