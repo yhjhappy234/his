@@ -431,6 +431,28 @@ SSO协议支持:
 - 可通过配置 his.default.username 和 his.default.password 自定义
 ```
 
+### 3.0.1 时区配置
+
+系统所有日期时间处理统一使用配置时区：
+
+```
+默认时区: Asia/Shanghai (中国上海时区)
+
+配置方式:
+- application.yml: his.timezone: Asia/Shanghai
+- 可通过配置文件自定义其他时区
+
+时区处理要求:
+- 所有 LocalDateTime 字段使用统一时区
+- API响应日期格式: yyyy-MM-dd HH:mm:ss
+- 数据库存储使用本地时区时间
+- TimeZoneConfig Bean 提供统一时区管理
+
+审计日志时间:
+- 所有审计操作自动记录时区时间
+- auditTime 字段使用 LocalDateTime.now() 配合时区配置
+```
+
 ### 3.1 核心实体
 
 #### 3.1.1 用户信息 User

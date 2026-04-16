@@ -75,3 +75,5 @@ his:
   default:
     username: admin
     password: 123456
+  # 时区配置（默认中国上海时区）
+  timezone: Asia/Shanghai
