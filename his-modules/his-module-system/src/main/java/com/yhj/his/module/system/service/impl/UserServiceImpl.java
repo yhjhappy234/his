@@ -14,6 +14,7 @@ import com.yhj.his.module.system.enums.AuditType;
 import com.yhj.his.module.system.enums.DataScopeLevel;
 import com.yhj.his.module.system.enums.UserStatus;
 import com.yhj.his.module.system.repository.*;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.service.*;
 import com.yhj.his.module.system.vo.*;
 import io.jsonwebtoken.*;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final PermissionRepository permissionRepository;
-    private final DepartmentRepository departmentRepository;
+    private final SystemDepartmentRepository departmentRepository;
     private final AuditLogService auditLogService;
 
     // JWT密钥(实际应从配置读取)

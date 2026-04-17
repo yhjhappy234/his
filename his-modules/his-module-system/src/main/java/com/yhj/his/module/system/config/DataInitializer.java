@@ -8,7 +8,7 @@ import com.yhj.his.module.system.entity.User;
 import com.yhj.his.module.system.entity.UserRole;
 import com.yhj.his.module.system.enums.DataScopeLevel;
 import com.yhj.his.module.system.enums.UserStatus;
-import com.yhj.his.module.system.repository.DepartmentRepository;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.repository.RoleRepository;
 import com.yhj.his.module.system.repository.UserRepository;
 import com.yhj.his.module.system.repository.UserRoleRepository;
@@ -33,7 +33,7 @@ public class DataInitializer implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final DepartmentRepository departmentRepository;
+    private final SystemDepartmentRepository departmentRepository;
     private final UserRoleRepository userRoleRepository;
 
     @Value("${his.default.username:admin}")

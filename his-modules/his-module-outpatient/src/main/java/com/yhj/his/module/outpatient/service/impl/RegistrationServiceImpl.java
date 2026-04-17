@@ -13,7 +13,7 @@ import com.yhj.his.module.outpatient.entity.Schedule;
 import com.yhj.his.module.outpatient.repository.PatientRepository;
 import com.yhj.his.module.outpatient.repository.QueueRepository;
 import com.yhj.his.module.outpatient.repository.RegistrationRepository;
-import com.yhj.his.module.outpatient.repository.ScheduleRepository;
+import com.yhj.his.module.outpatient.repository.OutpatientScheduleRepository;
 import com.yhj.his.module.outpatient.service.RegistrationService;
 import com.yhj.his.module.outpatient.vo.AppointmentResultVO;
 import com.yhj.his.module.outpatient.vo.CheckInResultVO;
@@ -45,7 +45,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final RegistrationRepository registrationRepository;
     private final PatientRepository patientRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final OutpatientScheduleRepository scheduleRepository;
     private final QueueRepository queueRepository;
     private final SequenceGenerator sequenceGenerator;
 

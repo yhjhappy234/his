@@ -4,7 +4,7 @@ import com.yhj.his.module.hr.dto.*;
 import com.yhj.his.module.hr.entity.ScheduleTemplate;
 import com.yhj.his.module.hr.enums.ScheduleType;
 import com.yhj.his.module.hr.repository.ScheduleTemplateRepository;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.service.ScheduleTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
 
     private final ScheduleTemplateRepository scheduleTemplateRepository;
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
 
     @Override
     public ScheduleTemplate createScheduleTemplate(ScheduleTemplate scheduleTemplate) {

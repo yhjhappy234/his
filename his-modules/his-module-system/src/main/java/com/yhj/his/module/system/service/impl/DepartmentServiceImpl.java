@@ -7,7 +7,7 @@ import com.yhj.his.common.core.exception.BusinessException;
 import com.yhj.his.common.core.util.PageUtils;
 import com.yhj.his.module.system.dto.DepartmentDTO;
 import com.yhj.his.module.system.entity.Department;
-import com.yhj.his.module.system.repository.DepartmentRepository;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.repository.UserRepository;
 import com.yhj.his.module.system.service.DepartmentService;
 import com.yhj.his.module.system.vo.DepartmentVO;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentRepository departmentRepository;
+    private final SystemDepartmentRepository departmentRepository;
     private final UserRepository userRepository;
 
     @Override

@@ -10,7 +10,7 @@ import com.yhj.his.module.hr.entity.Department;
 import com.yhj.his.module.hr.entity.Employee;
 import com.yhj.his.module.hr.enums.EmployeeStatus;
 import com.yhj.his.module.hr.enums.EmploymentType;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.repository.EmployeeRepository;
 import com.yhj.his.module.hr.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
 
     @Override
     @Transactional

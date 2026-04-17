@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 科室数据访问
+ * 科室数据访问 (System模块)
  */
 @Repository
-public interface DepartmentRepository extends JpaRepository<Department, String> {
+public interface SystemDepartmentRepository extends JpaRepository<Department, String> {
 
     /**
      * 根据科室编码查询

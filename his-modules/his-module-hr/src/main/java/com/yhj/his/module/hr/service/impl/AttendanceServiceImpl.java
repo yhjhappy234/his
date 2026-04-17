@@ -13,7 +13,7 @@ import com.yhj.his.module.hr.enums.AttendanceStatus;
 import com.yhj.his.module.hr.enums.ScheduleType;
 import com.yhj.his.module.hr.repository.AttendanceRepository;
 import com.yhj.his.module.hr.repository.EmployeeRepository;
-import com.yhj.his.module.hr.repository.ScheduleRepository;
+import com.yhj.his.module.hr.repository.HrScheduleRepository;
 import com.yhj.his.module.hr.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +36,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final EmployeeRepository employeeRepository;
-    private final ScheduleRepository scheduleRepository;
+    private final HrScheduleRepository scheduleRepository;
 
     private static final int LATE_THRESHOLD_MINUTES = 15;
     private static final int EARLY_LEAVE_THRESHOLD_MINUTES = 15;

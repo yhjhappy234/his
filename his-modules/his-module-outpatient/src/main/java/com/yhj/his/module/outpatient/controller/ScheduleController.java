@@ -20,7 +20,7 @@ import java.util.List;
  * 排班管理Controller
  */
 @Tag(name = "排班管理", description = "医生排班设置、号源管理等接口")
-@RestController
+@RestController("outpatientScheduleController")
 @RequestMapping("/api/outpatient/v1/schedule")
 @RequiredArgsConstructor
 public class ScheduleController {

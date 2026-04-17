@@ -13,7 +13,7 @@ import com.yhj.his.module.outpatient.entity.Schedule;
 import com.yhj.his.module.outpatient.repository.PatientRepository;
 import com.yhj.his.module.outpatient.repository.QueueRepository;
 import com.yhj.his.module.outpatient.repository.RegistrationRepository;
-import com.yhj.his.module.outpatient.repository.ScheduleRepository;
+import com.yhj.his.module.outpatient.repository.OutpatientScheduleRepository;
 import com.yhj.his.module.outpatient.service.impl.RegistrationServiceImpl;
 import com.yhj.his.module.outpatient.vo.AppointmentResultVO;
 import com.yhj.his.module.outpatient.vo.CheckInResultVO;
@@ -67,7 +67,7 @@ class RegistrationServiceTest {
     private PatientRepository patientRepository;
 
     @Mock
-    private ScheduleRepository scheduleRepository;
+    private OutpatientScheduleRepository scheduleRepository;
 
     @Mock
     private QueueRepository queueRepository;

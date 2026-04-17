@@ -10,7 +10,7 @@ import com.yhj.his.module.hr.entity.Department;
 import com.yhj.his.module.hr.entity.Employee;
 import com.yhj.his.module.hr.enums.DepartmentType;
 import com.yhj.his.module.hr.enums.EmployeeStatus;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.repository.EmployeeRepository;
 import com.yhj.his.module.hr.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 /**
  * 科室服务实现
  */
-@Service
+@Service("hrDepartmentService")
 @RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
 
     @Override

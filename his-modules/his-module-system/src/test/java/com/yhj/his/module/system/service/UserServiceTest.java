@@ -10,6 +10,7 @@ import com.yhj.his.module.system.entity.*;
 import com.yhj.his.module.system.enums.DataScopeLevel;
 import com.yhj.his.module.system.enums.UserStatus;
 import com.yhj.his.module.system.repository.*;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.service.impl.UserServiceImpl;
 import com.yhj.his.module.system.vo.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +59,7 @@ class UserServiceTest {
     private PermissionRepository permissionRepository;
 
     @Mock
-    private DepartmentRepository departmentRepository;
+    private SystemDepartmentRepository departmentRepository;
 
     @Mock
     private AuditLogService auditLogService;

@@ -3,7 +3,7 @@ package com.yhj.his.module.hr.service.impl;
 import com.yhj.his.module.hr.dto.*;
 import com.yhj.his.module.hr.entity.ScheduleRule;
 import com.yhj.his.module.hr.repository.ScheduleRuleRepository;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.service.ScheduleRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ScheduleRuleServiceImpl implements ScheduleRuleService {
 
     private final ScheduleRuleRepository scheduleRuleRepository;
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
 
     @Override
     public ScheduleRule createScheduleRule(ScheduleRule scheduleRule) {

@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 排班信息Repository
+ * 排班信息Repository (门诊模块)
  */
 @Repository
-public interface ScheduleRepository extends JpaRepository<Schedule, String>, JpaSpecificationExecutor<Schedule> {
+public interface OutpatientScheduleRepository extends JpaRepository<Schedule, String>, JpaSpecificationExecutor<Schedule> {
 
     /**
      * 根据医生ID、排班日期、时间段查询

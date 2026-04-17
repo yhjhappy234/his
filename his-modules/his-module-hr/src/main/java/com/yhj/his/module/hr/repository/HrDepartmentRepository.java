@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 科室Repository
+ * 科室Repository (HR模块)
  */
 @Repository
-public interface DepartmentRepository extends JpaRepository<Department, String>, JpaSpecificationExecutor<Department> {
+public interface HrDepartmentRepository extends JpaRepository<Department, String>, JpaSpecificationExecutor<Department> {
 
     /**
      * 根据编码查找科室

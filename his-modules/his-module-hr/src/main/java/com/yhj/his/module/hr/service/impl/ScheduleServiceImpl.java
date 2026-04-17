@@ -11,9 +11,9 @@ import com.yhj.his.module.hr.entity.Employee;
 import com.yhj.his.module.hr.entity.Schedule;
 import com.yhj.his.module.hr.entity.ScheduleTemplate;
 import com.yhj.his.module.hr.enums.ScheduleType;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.repository.EmployeeRepository;
-import com.yhj.his.module.hr.repository.ScheduleRepository;
+import com.yhj.his.module.hr.repository.HrScheduleRepository;
 import com.yhj.his.module.hr.repository.ScheduleTemplateRepository;
 import com.yhj.his.module.hr.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 /**
  * 排班服务实现
  */
-@Service
+@Service("hrScheduleService")
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
+    private final HrScheduleRepository scheduleRepository;
     private final EmployeeRepository employeeRepository;
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
     private final ScheduleTemplateRepository templateRepository;
 
     @Override

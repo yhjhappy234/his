@@ -6,7 +6,7 @@ import com.yhj.his.common.core.domain.Result;
 import com.yhj.his.common.core.exception.BusinessException;
 import com.yhj.his.module.system.dto.DepartmentDTO;
 import com.yhj.his.module.system.entity.Department;
-import com.yhj.his.module.system.repository.DepartmentRepository;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.repository.UserRepository;
 import com.yhj.his.module.system.service.impl.DepartmentServiceImpl;
 import com.yhj.his.module.system.vo.DepartmentVO;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 class DepartmentServiceTest {
 
     @Mock
-    private DepartmentRepository departmentRepository;
+    private SystemDepartmentRepository departmentRepository;
 
     @Mock
     private UserRepository userRepository;

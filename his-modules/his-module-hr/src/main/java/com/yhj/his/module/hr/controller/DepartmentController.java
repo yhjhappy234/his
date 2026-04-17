@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * 科室管理Controller
  */
-@RestController
+@RestController("hrDepartmentController")
 @RequestMapping("/api/hr/v1/department")
 @RequiredArgsConstructor
 @Tag(name = "科室管理", description = "科室组织架构管理接口")

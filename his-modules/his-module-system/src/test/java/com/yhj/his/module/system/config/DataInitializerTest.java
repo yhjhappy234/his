@@ -4,7 +4,7 @@ import com.yhj.his.module.system.entity.Department;
 import com.yhj.his.module.system.entity.Role;
 import com.yhj.his.module.system.entity.User;
 import com.yhj.his.module.system.entity.UserRole;
-import com.yhj.his.module.system.repository.DepartmentRepository;
+import com.yhj.his.module.system.repository.SystemDepartmentRepository;
 import com.yhj.his.module.system.repository.RoleRepository;
 import com.yhj.his.module.system.repository.UserRepository;
 import com.yhj.his.module.system.repository.UserRoleRepository;
@@ -39,7 +39,7 @@ class DataInitializerTest {
     private RoleRepository roleRepository;
 
     @Mock
-    private DepartmentRepository departmentRepository;
+    private SystemDepartmentRepository departmentRepository;
 
     @Mock
     private UserRoleRepository userRoleRepository;

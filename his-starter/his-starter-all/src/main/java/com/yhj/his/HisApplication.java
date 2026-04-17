@@ -29,7 +29,22 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     "com.yhj.his.module.emr",
     "com.yhj.his.module.voice",
     "com.yhj.his.common"
-})
+}, excludeFilters = @ComponentScan.Filter(
+    type = org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE,
+    classes = {
+        com.yhj.his.module.system.SystemModuleApplication.class,
+        com.yhj.his.module.outpatient.OutpatientModuleApplication.class,
+        com.yhj.his.module.inpatient.InpatientModuleApplication.class,
+        com.yhj.his.module.pharmacy.PharmacyModuleApplication.class,
+        com.yhj.his.module.lis.LisModuleApplication.class,
+        com.yhj.his.module.pacs.PacsModuleApplication.class,
+        com.yhj.his.module.finance.FinanceModuleApplication.class,
+        com.yhj.his.module.inventory.InventoryModuleApplication.class,
+        com.yhj.his.module.hr.HrModuleApplication.class,
+        com.yhj.his.module.emr.EmrModuleApplication.class,
+        com.yhj.his.module.voice.VoiceModuleApplication.class
+    }
+))
 @EntityScan(basePackages = {
     "com.yhj.his.module.system.entity",
     "com.yhj.his.module.outpatient.entity",

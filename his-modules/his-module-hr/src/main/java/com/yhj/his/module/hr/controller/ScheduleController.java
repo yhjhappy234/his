@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * 排班管理Controller
  */
-@RestController
+@RestController("hrScheduleController")
 @RequestMapping("/api/hr/v1/schedule")
 @RequiredArgsConstructor
 @Tag(name = "排班管理", description = "排班管理接口")

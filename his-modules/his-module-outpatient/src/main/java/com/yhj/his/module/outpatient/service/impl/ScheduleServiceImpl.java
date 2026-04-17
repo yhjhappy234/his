@@ -4,7 +4,7 @@ import com.yhj.his.common.core.domain.PageResult;
 import com.yhj.his.common.core.exception.BusinessException;
 import com.yhj.his.module.outpatient.dto.ScheduleCreateRequest;
 import com.yhj.his.module.outpatient.entity.Schedule;
-import com.yhj.his.module.outpatient.repository.ScheduleRepository;
+import com.yhj.his.module.outpatient.repository.OutpatientScheduleRepository;
 import com.yhj.his.module.outpatient.service.ScheduleService;
 import com.yhj.his.module.outpatient.vo.ScheduleVO;
 
@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
  * 排班服务实现
  */
 @Slf4j
-@Service
+@Service("outpatientScheduleService")
 @RequiredArgsConstructor
 public class ScheduleServiceImpl implements ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
+    private final OutpatientScheduleRepository scheduleRepository;
 
     @Override
     @Transactional

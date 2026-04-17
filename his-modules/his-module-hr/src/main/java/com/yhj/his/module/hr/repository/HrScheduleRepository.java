@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 排班Repository
+ * 排班Repository (HR模块)
  */
 @Repository
-public interface ScheduleRepository extends JpaRepository<Schedule, String>, JpaSpecificationExecutor<Schedule> {
+public interface HrScheduleRepository extends JpaRepository<Schedule, String>, JpaSpecificationExecutor<Schedule> {
 
     /**
      * 根据员工ID和日期查找排班

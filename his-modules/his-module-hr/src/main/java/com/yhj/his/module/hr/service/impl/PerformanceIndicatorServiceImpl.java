@@ -5,7 +5,7 @@ import com.yhj.his.module.hr.dto.*;
 import com.yhj.his.module.hr.entity.PerformanceIndicator;
 import com.yhj.his.module.hr.enums.IndicatorType;
 import com.yhj.his.module.hr.repository.PerformanceIndicatorRepository;
-import com.yhj.his.module.hr.repository.DepartmentRepository;
+import com.yhj.his.module.hr.repository.HrDepartmentRepository;
 import com.yhj.his.module.hr.service.PerformanceIndicatorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class PerformanceIndicatorServiceImpl implements PerformanceIndicatorService {
 
     private final PerformanceIndicatorRepository performanceIndicatorRepository;
-    private final DepartmentRepository departmentRepository;
+    private final HrDepartmentRepository departmentRepository;
 
     @Override
     public PerformanceIndicator createPerformanceIndicator(PerformanceIndicator indicator) {

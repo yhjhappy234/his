@@ -4,7 +4,7 @@ import com.yhj.his.common.core.domain.PageResult;
 import com.yhj.his.common.core.exception.BusinessException;
 import com.yhj.his.module.outpatient.dto.ScheduleCreateRequest;
 import com.yhj.his.module.outpatient.entity.Schedule;
-import com.yhj.his.module.outpatient.repository.ScheduleRepository;
+import com.yhj.his.module.outpatient.repository.OutpatientScheduleRepository;
 import com.yhj.his.module.outpatient.service.impl.ScheduleServiceImpl;
 import com.yhj.his.module.outpatient.vo.ScheduleVO;
 
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
 class ScheduleServiceTest {
 
     @Mock
-    private ScheduleRepository scheduleRepository;
+    private OutpatientScheduleRepository scheduleRepository;
 
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
